@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>共有レシピ帳</title>
+  
+  <!-- PWA用のマニフェストを動的に読み込むための空リンク -->
+  <link id="manifest-link" rel="manifest" href="">
+  
+  <style>
+    body { font-family: sans-serif; margin: 0; padding: 0; background: #f9f9f9; }
+    header { background: #ff9800; color: white; padding: 1rem; text-align: center; }
+    nav { display: flex; background: #333; }
+    nav button { flex: 1; padding: 10px; background: none; color: white; border: none; cursor: pointer; font-size: 16px; }
+    nav button.active { background: #ff9800; font-weight: bold; }
+    .container { padding: 1rem; max-width: 600px; margin: auto; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .recipe-card { background: white; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .recipe-card h3 { margin-top: 0; }
+    .recipe-card img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
+    input, textarea, button { width: 100%; padding: 12px; margin: 5px 0 15px; box-sizing: border-box; font-size: 16px; }
+    .btn { background: #ff9800; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; }
+    .btn:disabled { background: #ccc; }
+  </style>
+</head>
+<body>
+  <header>
+    <h2 style="margin: 0;">🍽️ 共有レシピ帳</h2>
+  </header>
+  <nav>
+    <button id="nav-list" class="active">一覧</button>
+    <button id="nav-add">追加</button>
+    <button id="nav-settings">設定</button>
+  </nav>
+
+  <div class="container">
+    <!-- レシピ一覧画面 -->
+    <div id="page-list" class="page active">
+      <div id="recipe-list-container">設定画面でFirebase情報を登録してください。</div>
+    </div>
+
+    <!-- レシピ追加画面 -->
+    <div id="page-add" class="page">
+      <h3>新しいレシピを登録</h3>
+      <input type="text" id="recipe-title" placeholder="料理名 (例: 特製ウニクリームパスタ)" required>
+      <textarea id="recipe-memo" rows="4" placeholder="材料・作り方・感想など"></textarea>
+      <label style="display: block; margin-bottom: 5px;">写真:</label>
+      <input type="file" id="recipe-image" accept="image/*">
+      <button class="btn" id="btn-save-recipe">保存する</button>
+    </div>
+
+    <!-- 設定画面 -->
+    <div id="page-settings" class="page">
+      <h3>Firebase接続設定</h3>
+      <p style="font-size: 0.85em; color: #666; margin-top: 0;">※共有相手にもこの画面で同じJSONを入力してもらってください。</p>
+      <textarea id="firebase-config-json" rows="8" placeholder='{"apiKey": "...", "authDomain": "...", ...}'></textarea>
+      <button class="btn" id="btn-save-settings">設定を保存</button>
+    </div>
+  </div>
+
+  <!-- PWAマニフェスト動的生成スクリプト -->
+  <script>
+    const manifest = {
+      "name": "共有レシピ帳",
+      "short_name": "レシピ帳",
+      "start_url": window.location.href,
+      "display": "standalone",
+      "background_color": "#f9f9f9",
+      "theme_color": "#ff9800",
+      "icons": [
+        {
+          "src": "https://via.placeholder.com/192/ff9800/ffffff?text=Recipe",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    };
+    const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+    document.getElementById('manifest-link').href = URL.createObjectURL(manifestBlob);
+  </script>
+
+  <!-- アプリのメインロジック (Firebase連携) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
+
+    // --- 画面切り替えロジック ---
+    const pages = {
+      list: document.getElementById('page-list'),
+      add: document.getElementById('page-add'),
+      settings: document.getElementById('page-settings')
+    };
+    const navButtons = {
+      list: document.getElementById('nav-list'),
+      add: document.getElementById('nav-add'),
+      settings: document.getElementById('nav-settings')
+    };
+
+    function switchPage(pageName) {
+      Object.values(pages).forEach(p => p.classList.remove('active'));
+      Object.values(navButtons).forEach(b => b.classList.remove('active'));
+      pages[pageName].classList.add('active');
+      navButtons[pageName].classList.add('active');
+      
+      if(pageName === 'list' && app) fetchRecipes();
+    }
+
+    Object.keys(navButtons).forEach(key => {
+      navButtons[key].addEventListener('click', () => switchPage(key));
+    });
+
+    // --- Firebase初期化 ---
+    let app, db, storage;
+
+    function initFirebase(configStr) {
+      try {
+        const config = JSON.parse(configStr);
+        app = initializeApp(config);
+        db = getFirestore(app);
+        storage = getStorage(app);
+        return true;
+      } catch (e) {
+        alert("Firebase設定のJSONフォーマットが正しくありません。");
+        return false;
+      }
+    }
+
+    const savedConfig = localStorage.getItem('fbConfig');
+    if (savedConfig) {
+      document.getElementById('firebase-config-json').value = savedConfig;
+      if(initFirebase(savedConfig)) fetchRecipes();
+    } else {
+      switchPage('settings');
+    }
+
+    document.getElementById('btn-save-settings').addEventListener('click', () => {
+      const configStr = document.getElementById('firebase-config-json').value;
+      if (initFirebase(configStr)) {
+        localStorage.setItem('fbConfig', configStr);
+        alert("設定を保存しました！");
+        switchPage('list');
+      }
+    });
+
+    // --- レシピ保存処理 ---
+    document.getElementById('btn-save-recipe').addEventListener('click', async () => {
+      if (!app) return alert("先に設定画面でFirebaseを連携してください。");
+      
+      const title = document.getElementById('recipe-title').value;
+      const memo = document.getElementById('recipe-memo').value;
+      const fileInput = document.getElementById('recipe-image');
+      const btn = document.getElementById('btn-save-recipe');
+
+      if (!title) return alert("料理名は必須です！");
+
+      btn.innerText = "保存中...";
+      btn.disabled = true;
+
+      try {
+        let imageUrl = "";
+        if (fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          const storageRef = ref(storage, `recipes/${Date.now()}_${file.name}`);
+          await uploadBytes(storageRef, file);
+          imageUrl = await getDownloadURL(storageRef);
+        }
+
+        await addDoc(collection(db, "recipes"), {
+          title: title,
+          memo: memo,
+          imageUrl: imageUrl,
+          createdAt: serverTimestamp()
+        });
+
+        alert("レシピを保存しました！");
+        document.getElementById('recipe-title').value = "";
+        document.getElementById('recipe-memo').value = "";
+        fileInput.value = "";
+        switchPage('list');
+
+      } catch (e) {
+        console.error(e);
+        alert("エラーが発生しました: " + e.message);
+      } finally {
+        btn.innerText = "保存する";
+        btn.disabled = false;
+      }
+    });
+
+    // --- レシピ一覧取得処理 ---
+    async function fetchRecipes() {
+      const container = document.getElementById('recipe-list-container');
+      container.innerHTML = "読み込み中...";
+      
+      try {
+        const q = query(collection(db, "recipes"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        
+        container.innerHTML = "";
+        if(querySnapshot.empty) {
+          container.innerHTML = "<p>レシピがありません。</p>";
+          return;
+        }
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const div = document.createElement('div');
+          div.className = 'recipe-card';
+          
+          let html = `<h3>${data.title}</h3>`;
+          if (data.memo) html += `<p>${data.memo.replace(/\n/g, '<br>')}</p>`;
+          if (data.imageUrl) html += `<img src="${data.imageUrl}" alt="料理写真">`;
+          
+          div.innerHTML = html;
+          container.appendChild(div);
+        });
+      } catch (e) {
+        console.error(e);
+        container.innerHTML = "データの取得に失敗しました。";
+      }
+    }
+  </script>
+</body>
+</html>
