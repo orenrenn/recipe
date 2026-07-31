@@ -148,18 +148,20 @@
     }
     .search-wrapper {
       position: relative;
+      width: 100%;
       display: flex;
       align-items: center;
     }
     .search-input {
       width: 100%;
-      padding: 12px 16px 12px 48px;
+      padding: 12px 16px 12px 52px !important;
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       background: var(--surface);
       font-size: 0.95rem;
       color: var(--text);
       outline: none;
+      box-sizing: border-box;
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
     .search-input:focus {
@@ -168,10 +170,13 @@
     }
     .search-icon {
       position: absolute;
-      left: 16px;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
       font-size: 1.1rem;
       color: var(--text-light);
       pointer-events: none;
+      z-index: 5;
     }
     .category-pills {
       display: flex;
@@ -774,7 +779,7 @@
       </div>
 
       <button class="btn" id="btn-save-recipe">
-        <span id="btn-save-icon">💾</span> <span id="btn-save-text">レシピを保存する</span>
+        <span id="btn-save-content"><span>💾</span> レシピを保存する</span>
       </button>
     </div>
 
@@ -945,8 +950,7 @@
       document.getElementById('form-header-title').innerText = '📌 基本情報';
       document.getElementById('nav-add-icon').innerText = '➕';
       document.getElementById('nav-add-text').innerText = 'レシピ登録';
-      document.getElementById('btn-save-icon').innerText = '💾';
-      document.getElementById('btn-save-text').innerText = 'レシピを保存する';
+      document.getElementById('btn-save-content').innerHTML = `<span>💾</span> レシピを保存する`;
     }
 
     // --- Settings Modal Logic ---
@@ -1102,7 +1106,8 @@
         .map(line => line.trim())
         .filter(line => line.length > 0);
 
-      btnSave.innerText = "保存中...";
+      const btnSaveContent = document.getElementById('btn-save-content');
+      btnSaveContent.innerHTML = `<span>⏳</span> 保存中...`;
       btnSave.disabled = true;
 
       try {
@@ -1117,11 +1122,11 @@
         };
 
         if (editingRecipeId) {
-          // Update existing
+          // Update existing document
           await updateDoc(doc(db, "recipes", editingRecipeId), recipeData);
           alert("レシピを更新しました！");
         } else {
-          // Add new
+          // Add new document
           recipeData.createdAt = serverTimestamp();
           await addDoc(collection(db, "recipes"), recipeData);
           alert("レシピを保存しました！");
@@ -1134,8 +1139,7 @@
         alert("エラーが発生しました: " + e.message);
       } finally {
         const isEdit = !!editingRecipeId;
-        document.getElementById('btn-save-icon').innerText = '💾';
-        document.getElementById('btn-save-text').innerText = isEdit ? 'レシピを更新する' : 'レシピを保存する';
+        btnSaveContent.innerHTML = `<span>💾</span> ${isEdit ? 'レシピを更新する' : 'レシピを保存する'}`;
         btnSave.disabled = false;
       }
     });
@@ -1164,45 +1168,160 @@
       }
     }
 
-    // Fuzzy text normalization (Hiragana -> Katakana, Full-width -> Half-width)
-    function normalizeSearchText(str) {
+    // --- 汎用的（辞書不使用）ファジー＆形態音韻アルゴリズム ---
+
+    // 1. 濁音・半濁音の標準化（「ひき」と「びき」、「か」と「が」をアルゴリズムで同一視）
+    function removeDakuon(str) {
       if (!str) return '';
-      let n = str.toLowerCase();
-      // Full-width Alphanumeric to Half-width
-      n = n.replace(/[\uFF01-\uFF5E]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xfee0));
-      // Full-width space to half-width
-      n = n.replace(/\u3000/g, ' ');
-      // Hiragana to Katakana
-      n = n.replace(/[\u3041-\u3096]/g, match => String.fromCharCode(match.charCodeAt(0) + 0x60));
-      return n;
+      const dakuonMap = {
+        'ガ':'カ','ギ':'キ','グ':'ク','ゲ':'ケ','ゴ':'コ',
+        'ザ':'サ','ジ':'シ','ズ':'ス','ゼ':'セ','ゾ':'ソ',
+        'ダ':'タ','ヂ':'チ','ヅ':'ツ','デ':'テ','ド':'ト',
+        'バ':'ハ','ビ':'ヒ','ブ':'フ','ベ':'ヘ','ボ':'ホ',
+        'パ':'ハ','ピ':'ヒ','プ':'フ','ペ':'ヘ','ポ':'ホ','ヴ':'ウ',
+        'が':'か','ぎ':'き','ぐ':'く','げ':'け','ご':'こ',
+        'ざ':'さ','じ':'し','ず':'す','ぜ':'せ','ぞ':'そ',
+        'だ':'た','ぢ':'ち','づ':'つ','で':'て','ど':'と',
+        'ば':'は','び':'ひ','ぶ':'ふ','べ':'へ','ぼ':'ほ',
+        'ぱ':'は','ぴ':'ひ','ぷ':'ふ','ぺ':'へ','ぽ':'ほ'
+      };
+      return str.replace(/[ガ-ポが-ほヴ]/g, m => dakuonMap[m] || m);
     }
 
-    // Filter & Render List
+    // 2. 超正規化（ひらがな→カタカナ、全角半角、長音・促音記号の除去）
+    function superNormalize(str) {
+      if (!str) return '';
+      let s = String(str).toLowerCase();
+      // 全角英数字を半角化
+      s = s.replace(/[\uFF01-\uFF5E]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xfee0));
+      // 記号・スペースの除去
+      s = s.replace(/[\s\u3000・,\-_\/\\\(\)\u3001\u3002]/g, '');
+      // ひらがなをカタカナに統一
+      s = s.replace(/[\u3041-\u3096]/g, match => String.fromCharCode(match.charCodeAt(0) + 0x60));
+      // 長音記号(ー)および小文字の「ッ/っ」を平滑化
+      s = s.replace(/[ーッっ]/g, '');
+      return s;
+    }
+
+    // 3. 最長共通部分列 (LCS: Longest Common Subsequence) アルゴリズム
+    // 例: 「合挽肉」と「合い挽き肉」-> 共通文字順序 "合挽肉" (長さ3) が抽出され、送り仮名があっても自動判定
+    function getLcsLength(s1, s2) {
+      const m = s1.length;
+      const n = s2.length;
+      if (m === 0 || n === 0) return 0;
+      const dp = Array.from({ length: m + 1 }, () => new Int32Array(n + 1));
+      for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+          if (s1[i - 1] === s2[j - 1]) {
+            dp[i][j] = dp[i - 1][j - 1] + 1;
+          } else {
+            dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+          }
+        }
+      }
+      return dp[m][n];
+    }
+
+    // 4. 汎用ファジーマッチ判定・スコアリング関数（特定の単語辞書に依存しない汎用ロジック）
+    function calculateGenericFuzzyScore(queryWord, targetText) {
+      if (!queryWord || !targetText) return 0;
+
+      const normQ = superNormalize(queryWord);
+      const normT = superNormalize(targetText);
+
+      if (normQ.length === 0 || normT.length === 0) return 0;
+
+      // [レベルA] 完全部分文字列一致（最優先）
+      if (normT.includes(normQ)) return 3.0;
+
+      // [レベルB] 濁音・半濁音非依存の一致（「合い挽き肉」vs「合い引き肉」等）
+      const dakuonQ = removeDakuon(normQ);
+      const dakuonT = removeDakuon(normT);
+      if (dakuonT.includes(dakuonQ)) return 2.6;
+
+      // [レベルC] 送り仮名・文字挿入非依存の最長共通順序一致 (LCS)
+      // 例: 検索語「合挽肉」(長さ3) に対し「合い挽き肉」は "合","挽","肉" が順に登場するためLCS=3 (一致率1.0)
+      const lcsNormal = getLcsLength(normQ, normT);
+      const lcsDakuon = getLcsLength(dakuonQ, dakuonT);
+      
+      const maxLcs = Math.max(lcsNormal, lcsDakuon);
+      const lcsRatio = maxLcs / normQ.length;
+
+      // 検索語の80%以上の文字が順番通りに含まれていればヒット扱い
+      if (lcsRatio >= 0.75) {
+        return 2.0 * lcsRatio;
+      }
+
+      // [レベルD] Bigram 部分一致（2文字ずつのペア一致率）
+      if (normQ.length >= 2) {
+        let matchPairCount = 0;
+        for (let i = 0; i < normQ.length - 1; i++) {
+          const pair = normQ.slice(i, i + 2);
+          const dPair = dakuonQ.slice(i, i + 2);
+          if (normT.includes(pair) || dakuonT.includes(dPair)) {
+            matchPairCount++;
+          }
+        }
+        const bigramRatio = matchPairCount / (normQ.length - 1);
+        if (bigramRatio >= 0.5) {
+          return 1.4 * bigramRatio;
+        }
+      }
+
+      return 0;
+    }
+
+    // レシピ全フィールドに対する総合スコアリング計算
+    function computeRecipeSemanticScore(recipe, queryStr) {
+      const keywords = queryStr.trim().split(/\s+/).filter(k => k.length > 0);
+      if (keywords.length === 0) return 1.0;
+
+      let totalScore = 0;
+
+      for (const kw of keywords) {
+        let kwMaxScore = 0;
+
+        // 1. タイトルチェック
+        const titleScore = calculateGenericFuzzyScore(kw, recipe.title);
+        kwMaxScore = Math.max(kwMaxScore, titleScore * 1.5);
+
+        // 2. 材料リストチェック
+        if (Array.isArray(recipe.ingredients)) {
+          for (const ing of recipe.ingredients) {
+            const ingScore = calculateGenericFuzzyScore(kw, ing);
+            kwMaxScore = Math.max(kwMaxScore, ingScore * 1.2);
+          }
+        }
+
+        // 3. メモ・コツチェック
+        if (recipe.memo) {
+          const memoScore = calculateGenericFuzzyScore(kw, recipe.memo);
+          kwMaxScore = Math.max(kwMaxScore, memoScore * 0.9);
+        }
+
+        // キーワードごとのしきい値判定（どれか1つのキーワードでもマッチしなければ不可）
+        if (kwMaxScore < 0.5) return 0;
+
+        totalScore += kwMaxScore;
+      }
+
+      return totalScore;
+    }
+
+    // フィルター ＆ スコア順レンダー
     function renderRecipeList() {
       const container = document.getElementById('recipe-list-container');
 
-      const keywords = normalizeSearchText(searchQuery).split(/\s+/).filter(k => k.length > 0);
+      const scoredRecipes = recipesCache.map(item => {
+        let categoryMatch = (activeCategory === 'all' || (item.category || 'その他') === activeCategory);
+        let score = categoryMatch ? computeRecipeSemanticScore(item, searchQuery) : 0;
+        return { item, score };
+      }).filter(res => res.score > 0);
 
-      const filtered = recipesCache.filter(item => {
-        // Category filter
-        if (activeCategory !== 'all' && (item.category || 'その他') !== activeCategory) {
-          return false;
-        }
-        // Search query fuzzy filter (Matches all space-separated keywords)
-        if (keywords.length > 0) {
-          const normTitle = normalizeSearchText(item.title);
-          const normIngredients = Array.isArray(item.ingredients) 
-            ? item.ingredients.map(ing => normalizeSearchText(ing)).join(' ')
-            : '';
-          const normMemo = normalizeSearchText(item.memo);
+      // 関連度スコア順に降順ソート
+      scoredRecipes.sort((a, b) => b.score - a.score);
 
-          const fullText = `${normTitle} ${normIngredients} ${normMemo}`;
-
-          const allMatch = keywords.every(kw => fullText.includes(kw));
-          if (!allMatch) return false;
-        }
-        return true;
-      });
+      const filtered = scoredRecipes.map(res => res.item);
 
       if (filtered.length === 0) {
         container.innerHTML = `
@@ -1368,8 +1487,7 @@
       document.getElementById('form-header-title').innerText = '✏️ レシピを編集';
       document.getElementById('nav-add-icon').innerText = '✏️';
       document.getElementById('nav-add-text').innerText = 'レシピ編集';
-      document.getElementById('btn-save-icon').innerText = '💾';
-      document.getElementById('btn-save-text').innerText = 'レシピを更新する';
+      document.getElementById('btn-save-content').innerHTML = `<span>💾</span> レシピを更新する`;
 
       // Close modal and switch tab
       modalDetail.classList.remove('active');
