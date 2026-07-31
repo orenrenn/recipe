@@ -480,6 +480,28 @@
     }
     .btn-remove-step:hover { color: #EF4444; background: #FEE2E2; }
 
+    .btn-add-step-bottom {
+      width: 100%;
+      border-radius: var(--radius-sm);
+      border: 2px dashed var(--border-dark);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.92rem;
+      font-weight: 800;
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .btn-add-step-bottom:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
     /* Multi Photo Picker Grid in Form */
     .photos-preview-grid {
       display: grid;
@@ -1038,23 +1060,26 @@
 
       <!-- スマート自動解析付き 作り方入力フォーム -->
       <div class="form-card">
-        <div class="form-section-title" style="display: flex; align-items: center; justify-content: space-between;">
-          <span>👩‍🍳 作り方</span>
-          <button type="button" id="btn-add-step-item" class="btn-secondary" style="width: auto; padding: 4px 12px; font-size: 0.82rem; border-radius: 12px; cursor: pointer;">
-            ➕ 手動で追加
-          </button>
-        </div>
+        <div class="form-section-title">👩‍🍳 作り方</div>
         <div class="field-desc">※ 文章をそのままコピペすると、自動で「見出し」と「詳細」に分割されます！</div>
 
-        <div class="form-group" style="margin-bottom: 12px;">
+        <div class="form-group" style="margin-bottom: 14px;">
           <textarea id="recipe-steps-raw" rows="5" placeholder="ここに作り方の文章をまとめてコピペできます！&#10;&#10;例:&#10;予熱とパン粉の準備&#10;オーブンを200℃に予熱しておきます...&#10;&#10;具材をカットする&#10;レンコンの皮をむき..."></textarea>
         </div>
 
-        <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 4px;">
-          <span>✨ 解析されたステップ (下で微調整も可能です)</span>
+        <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary); margin-bottom: 10px;">
+          <span>✨ 各ステップの見出し・詳細（個別で微調整が可能です）</span>
         </div>
 
+        <!-- 各ステップカード一覧 -->
         <div id="steps-form-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
+
+        <!-- 追加位置のすぐ下に分かりやすいボタンを配置 -->
+        <div style="margin-top: 14px;">
+          <button type="button" id="btn-add-step-item" class="btn-add-step-bottom">
+            <span>➕ 新しいステップを追加する</span>
+          </button>
+        </div>
       </div>
 
       <div class="form-card">
