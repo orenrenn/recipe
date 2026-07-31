@@ -259,6 +259,21 @@
       border-radius: 12px;
       backdrop-filter: blur(4px);
     }
+    .card-photo-count-tag {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
     .card-content {
       padding: 1rem;
       flex: 1;
@@ -354,48 +369,61 @@
       .form-row { grid-template-columns: 1fr; }
     }
 
-    .image-picker-box {
-      border: 2px dashed var(--border-dark);
-      border-radius: var(--radius-sm);
-      padding: 1rem;
-      text-align: center;
-      background: var(--bg);
-      cursor: pointer;
-      transition: all 0.2s ease;
+    /* Multi Photo Picker Grid in Form */
+    .photos-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+    .photo-thumb-wrapper {
       position: relative;
-    }
-    .image-picker-box:hover {
-      border-color: var(--primary);
-      background: var(--primary-light);
-    }
-    .image-preview-container {
-      margin-top: 10px;
-      position: relative;
-      display: inline-block;
-      max-width: 100%;
-    }
-    .image-preview-img {
-      max-width: 100%;
-      max-height: 220px;
+      width: 100%;
+      padding-top: 100%;
       border-radius: var(--radius-sm);
-      object-fit: cover;
+      overflow: hidden;
+      border: 1px solid var(--border);
       box-shadow: var(--shadow-sm);
     }
-    .btn-remove-preview {
+    .photo-thumb-img {
       position: absolute;
-      top: 6px;
-      right: 6px;
-      background: rgba(0,0,0,0.7);
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .btn-remove-thumb {
+      position: absolute;
+      top: 4px; right: 4px;
+      background: rgba(0,0,0,0.75);
       color: white;
       border: none;
-      width: 28px;
-      height: 28px;
+      width: 22px; height: 22px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.9rem;
+      font-size: 0.75rem;
+      z-index: 2;
+    }
+    .btn-remove-thumb:hover { background: #EF4444; }
+    .add-photo-box {
+      border: 2px dashed var(--border-dark);
+      border-radius: var(--radius-sm);
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-muted);
+    }
+    .add-photo-box:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
     }
 
     /* Buttons */
@@ -522,14 +550,80 @@
       padding: 1.2rem;
       overflow-y: auto;
     }
-    .modal-hero-img {
+
+    /* Detail Photo Gallery (Full aspect ratio, contain mode to prevent cropping) */
+    .detail-gallery-container {
       width: 100%;
-      max-height: 280px;
-      object-fit: cover;
+      background: #18181B;
       border-radius: var(--radius-md);
+      overflow: hidden;
       margin-bottom: 1.2rem;
-      box-shadow: var(--shadow-sm);
+      position: relative;
     }
+    .detail-main-img-wrapper {
+      width: 100%;
+      min-height: 240px;
+      max-height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: #09090B;
+    }
+    .detail-main-img {
+      max-width: 100%;
+      max-height: 420px;
+      width: auto;
+      height: auto;
+      object-fit: contain; /* 縦長画像も一切切れずに全表示 */
+      display: block;
+    }
+    .gallery-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.65);
+      color: white;
+      border: none;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      z-index: 5;
+      transition: background 0.2s ease;
+    }
+    .gallery-nav-btn:hover { background: rgba(0,0,0,0.9); }
+    .gallery-nav-btn.prev { left: 10px; }
+    .gallery-nav-btn.next { right: 10px; }
+
+    .gallery-thumbs-row {
+      display: flex;
+      gap: 8px;
+      padding: 8px 12px;
+      background: #27272A;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .gallery-thumbs-row::-webkit-scrollbar { display: none; }
+    .gallery-thumb-item {
+      width: 54px;
+      height: 54px;
+      border-radius: 6px;
+      object-fit: cover;
+      cursor: pointer;
+      opacity: 0.5;
+      border: 2px solid transparent;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .gallery-thumb-item.active {
+      opacity: 1;
+      border-color: var(--primary);
+    }
+
     .detail-section {
       margin-bottom: 1.4rem;
     }
@@ -764,16 +858,14 @@
       </div>
 
       <div class="form-card">
-        <div class="form-section-title">📷 写真</div>
+        <div class="form-section-title">📷 写真 (複数選択可能)</div>
         <div class="form-group">
-          <input type="file" id="recipe-image" accept="image/*" style="display: none;">
-          <div class="image-picker-box" id="btn-select-image">
-            <span style="font-size: 1.8rem;">📷</span>
-            <div style="font-size: 0.9rem; font-weight: 600; margin-top: 4px;">写真を選択する</div>
-          </div>
-          <div class="image-preview-container" id="preview-container" style="display: none;">
-            <img id="preview-img" class="image-preview-img" src="" alt="プレビュー">
-            <button id="btn-remove-image" class="btn-remove-preview" title="写真を削除">✕</button>
+          <input type="file" id="recipe-images-input" accept="image/*" multiple style="display: none;">
+          <div class="photos-preview-grid" id="photos-preview-grid">
+            <div class="add-photo-box" id="btn-add-photos">
+              <span style="font-size: 1.6rem;">➕</span>
+              <span style="font-size: 0.8rem; font-weight: 600;">写真を追加</span>
+            </div>
           </div>
         </div>
       </div>
@@ -800,7 +892,15 @@
       </div>
 
       <div class="modal-body">
-        <img id="detail-img" class="modal-hero-img" src="" alt="料理写真" style="display: none;">
+        <!-- 多機能ギャラリー（縦長写真も切れない contain モード） -->
+        <div id="detail-gallery-container" class="detail-gallery-container" style="display: none;">
+          <div class="detail-main-img-wrapper">
+            <button id="gallery-btn-prev" class="gallery-nav-btn prev" style="display: none;">❮</button>
+            <img id="detail-main-img" class="detail-main-img" src="" alt="料理写真">
+            <button id="gallery-btn-next" class="gallery-nav-btn next" style="display: none;">❯</button>
+          </div>
+          <div id="gallery-thumbs-row" class="gallery-thumbs-row" style="display: none;"></div>
+        </div>
 
         <!-- 材料 -->
         <div id="section-ingredients" class="detail-section" style="display: none;">
@@ -897,8 +997,9 @@
     let recipesCache = [];
     let activeCategory = 'all';
     let searchQuery = '';
-    let selectedImageBase64 = '';
+    let selectedImagesBase64 = []; // 複数枚写真の配列
     let currentDetailRecipe = null;
+    let currentGalleryIndex = 0;
     let editingRecipeId = null;
 
     // --- Page & Modal DOM Elements ---
@@ -936,16 +1037,61 @@
       switchPage('add');
     });
 
-    // --- Reset Form UI ---
+    // --- Form Multiple Photo Picker UI Logic ---
+    const fileInput = document.getElementById('recipe-images-input');
+    const btnAddPhotos = document.getElementById('btn-add-photos');
+    const photosPreviewGrid = document.getElementById('photos-preview-grid');
+
+    btnAddPhotos.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
+      if (files.length === 0) return;
+
+      for (const file of files) {
+        try {
+          const b64 = await compressImage(file);
+          selectedImagesBase64.push(b64);
+        } catch (err) {
+          alert(err.message);
+        }
+      }
+      fileInput.value = '';
+      renderFormPhotoPreviews();
+    });
+
+    function renderFormPhotoPreviews() {
+      // Remove all thumbs except the add button
+      const existingThumbs = photosPreviewGrid.querySelectorAll('.photo-thumb-wrapper');
+      existingThumbs.forEach(t => t.remove());
+
+      selectedImagesBase64.forEach((b64, idx) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'photo-thumb-wrapper';
+        wrap.innerHTML = `
+          <img src="${b64}" class="photo-thumb-img" alt="写真">
+          <button class="btn-remove-thumb" title="削除">✕</button>
+        `;
+        wrap.querySelector('.btn-remove-thumb').addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectedImagesBase64.splice(idx, 1);
+          renderFormPhotoPreviews();
+        });
+        photosPreviewGrid.insertBefore(wrap, btnAddPhotos);
+      });
+    }
+
+    // Reset Form UI
     function resetForm() {
       editingRecipeId = null;
+      selectedImagesBase64 = [];
       document.getElementById('recipe-title').value = '';
       document.getElementById('recipe-category').value = '主菜';
       document.getElementById('recipe-servings').value = '';
       document.getElementById('recipe-ingredients').value = '';
       document.getElementById('recipe-steps').value = '';
       document.getElementById('recipe-memo').value = '';
-      btnRemoveImage.click();
+      renderFormPhotoPreviews();
 
       document.getElementById('form-header-title').innerText = '📌 基本情報';
       document.getElementById('nav-add-icon').innerText = '➕';
@@ -977,37 +1123,7 @@
       });
     });
 
-    // --- Image Upload & Compression Logic ---
-    const fileInput = document.getElementById('recipe-image');
-    const btnSelectImage = document.getElementById('btn-select-image');
-    const previewContainer = document.getElementById('preview-container');
-    const previewImg = document.getElementById('preview-img');
-    const btnRemoveImage = document.getElementById('btn-remove-image');
-
-    btnSelectImage.addEventListener('click', () => fileInput.click());
-
-    fileInput.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      try {
-        selectedImageBase64 = await compressImage(file);
-        previewImg.src = selectedImageBase64;
-        previewContainer.style.display = 'inline-block';
-        btnSelectImage.style.display = 'none';
-      } catch (err) {
-        alert(err.message);
-        fileInput.value = '';
-      }
-    });
-
-    btnRemoveImage.addEventListener('click', () => {
-      selectedImageBase64 = '';
-      fileInput.value = '';
-      previewImg.src = '';
-      previewContainer.style.display = 'none';
-      btnSelectImage.style.display = 'block';
-    });
-
+    // --- Image Compression Logic ---
     function compressImage(file, maxWidth = 900, maxHeight = 900, quality = 0.75) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -1118,15 +1234,14 @@
           ingredients,
           steps,
           memo,
-          imageUrl: selectedImageBase64
+          imageUrls: selectedImagesBase64,
+          imageUrl: selectedImagesBase64[0] || "" // 互換用
         };
 
         if (editingRecipeId) {
-          // Update existing document
           await updateDoc(doc(db, "recipes", editingRecipeId), recipeData);
           alert("レシピを更新しました！");
         } else {
-          // Add new document
           recipeData.createdAt = serverTimestamp();
           await addDoc(collection(db, "recipes"), recipeData);
           alert("レシピを保存しました！");
@@ -1168,9 +1283,7 @@
       }
     }
 
-    // --- 汎用的（辞書不使用）ファジー＆形態音韻アルゴリズム ---
-
-    // 1. 濁音・半濁音の標準化（「ひき」と「びき」、「か」と「が」をアルゴリズムで同一視）
+    // --- 汎用ファジーサーチアルゴリズム ---
     function removeDakuon(str) {
       if (!str) return '';
       const dakuonMap = {
@@ -1188,23 +1301,16 @@
       return str.replace(/[ガ-ポが-ほヴ]/g, m => dakuonMap[m] || m);
     }
 
-    // 2. 超正規化（ひらがな→カタカナ、全角半角、長音・促音記号の除去）
     function superNormalize(str) {
       if (!str) return '';
       let s = String(str).toLowerCase();
-      // 全角英数字を半角化
       s = s.replace(/[\uFF01-\uFF5E]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xfee0));
-      // 記号・スペースの除去
       s = s.replace(/[\s\u3000・,\-_\/\\\(\)\u3001\u3002]/g, '');
-      // ひらがなをカタカナに統一
       s = s.replace(/[\u3041-\u3096]/g, match => String.fromCharCode(match.charCodeAt(0) + 0x60));
-      // 長音記号(ー)および小文字の「ッ/っ」を平滑化
       s = s.replace(/[ーッっ]/g, '');
       return s;
     }
 
-    // 3. 最長共通部分列 (LCS: Longest Common Subsequence) アルゴリズム
-    // 例: 「合挽肉」と「合い挽き肉」-> 共通文字順序 "合挽肉" (長さ3) が抽出され、送り仮名があっても自動判定
     function getLcsLength(s1, s2) {
       const m = s1.length;
       const n = s2.length;
@@ -1222,93 +1328,57 @@
       return dp[m][n];
     }
 
-    // 4. 汎用ファジーマッチ判定・スコアリング関数（特定の単語辞書に依存しない汎用ロジック）
     function calculateGenericFuzzyScore(queryWord, targetText) {
       if (!queryWord || !targetText) return 0;
-
       const normQ = superNormalize(queryWord);
       const normT = superNormalize(targetText);
 
       if (normQ.length === 0 || normT.length === 0) return 0;
-
-      // [レベルA] 完全部分文字列一致（最優先）
       if (normT.includes(normQ)) return 3.0;
 
-      // [レベルB] 濁音・半濁音非依存の一致（「合い挽き肉」vs「合い引き肉」等）
       const dakuonQ = removeDakuon(normQ);
       const dakuonT = removeDakuon(normT);
       if (dakuonT.includes(dakuonQ)) return 2.6;
 
-      // [レベルC] 送り仮名・文字挿入非依存の最長共通順序一致 (LCS)
-      // 例: 検索語「合挽肉」(長さ3) に対し「合い挽き肉」は "合","挽","肉" が順に登場するためLCS=3 (一致率1.0)
-      const lcsNormal = getLcsLength(normQ, normT);
-      const lcsDakuon = getLcsLength(dakuonQ, dakuonT);
-      
-      const maxLcs = Math.max(lcsNormal, lcsDakuon);
+      const maxLcs = Math.max(getLcsLength(normQ, normT), getLcsLength(dakuonQ, dakuonT));
       const lcsRatio = maxLcs / normQ.length;
+      if (lcsRatio >= 0.75) return 2.0 * lcsRatio;
 
-      // 検索語の80%以上の文字が順番通りに含まれていればヒット扱い
-      if (lcsRatio >= 0.75) {
-        return 2.0 * lcsRatio;
-      }
-
-      // [レベルD] Bigram 部分一致（2文字ずつのペア一致率）
       if (normQ.length >= 2) {
         let matchPairCount = 0;
         for (let i = 0; i < normQ.length - 1; i++) {
-          const pair = normQ.slice(i, i + 2);
-          const dPair = dakuonQ.slice(i, i + 2);
-          if (normT.includes(pair) || dakuonT.includes(dPair)) {
+          if (normT.includes(normQ.slice(i, i + 2)) || dakuonT.includes(dakuonQ.slice(i, i + 2))) {
             matchPairCount++;
           }
         }
         const bigramRatio = matchPairCount / (normQ.length - 1);
-        if (bigramRatio >= 0.5) {
-          return 1.4 * bigramRatio;
-        }
+        if (bigramRatio >= 0.5) return 1.4 * bigramRatio;
       }
-
       return 0;
     }
 
-    // レシピ全フィールドに対する総合スコアリング計算
     function computeRecipeSemanticScore(recipe, queryStr) {
       const keywords = queryStr.trim().split(/\s+/).filter(k => k.length > 0);
       if (keywords.length === 0) return 1.0;
-
       let totalScore = 0;
 
       for (const kw of keywords) {
-        let kwMaxScore = 0;
-
-        // 1. タイトルチェック
-        const titleScore = calculateGenericFuzzyScore(kw, recipe.title);
-        kwMaxScore = Math.max(kwMaxScore, titleScore * 1.5);
-
-        // 2. 材料リストチェック
+        let kwMaxScore = calculateGenericFuzzyScore(kw, recipe.title) * 1.5;
         if (Array.isArray(recipe.ingredients)) {
           for (const ing of recipe.ingredients) {
-            const ingScore = calculateGenericFuzzyScore(kw, ing);
-            kwMaxScore = Math.max(kwMaxScore, ingScore * 1.2);
+            kwMaxScore = Math.max(kwMaxScore, calculateGenericFuzzyScore(kw, ing) * 1.2);
           }
         }
-
-        // 3. メモ・コツチェック
         if (recipe.memo) {
-          const memoScore = calculateGenericFuzzyScore(kw, recipe.memo);
-          kwMaxScore = Math.max(kwMaxScore, memoScore * 0.9);
+          kwMaxScore = Math.max(kwMaxScore, calculateGenericFuzzyScore(kw, recipe.memo) * 0.9);
         }
-
-        // キーワードごとのしきい値判定（どれか1つのキーワードでもマッチしなければ不可）
         if (kwMaxScore < 0.5) return 0;
-
         totalScore += kwMaxScore;
       }
-
       return totalScore;
     }
 
-    // フィルター ＆ スコア順レンダー
+    // Filter & Render List
     function renderRecipeList() {
       const container = document.getElementById('recipe-list-container');
 
@@ -1318,7 +1388,6 @@
         return { item, score };
       }).filter(res => res.score > 0);
 
-      // 関連度スコア順に降順ソート
       scoredRecipes.sort((a, b) => b.score - a.score);
 
       const filtered = scoredRecipes.map(res => res.item);
@@ -1340,12 +1409,16 @@
         card.className = 'recipe-card';
         card.addEventListener('click', () => openRecipeDetail(item));
 
-        const imageHtml = item.imageUrl
-          ? `<img src="${item.imageUrl}" alt="${item.title}" class="card-img">`
+        const photos = getRecipePhotos(item);
+        const coverPhoto = photos[0] || "";
+
+        const imageHtml = coverPhoto
+          ? `<img src="${coverPhoto}" alt="${item.title}" class="card-img">`
           : `<div class="card-placeholder">🍳</div>`;
 
         const categoryTag = item.category ? `<div class="card-category-tag">${item.category}</div>` : '';
         const servingsTag = item.servings ? `<span>👤 ${item.servings}</span>` : '';
+        const photoCountBadge = photos.length > 1 ? `<div class="card-photo-count-tag">📷 ${photos.length}</div>` : '';
 
         let ingredientsPreview = '';
         if (Array.isArray(item.ingredients) && item.ingredients.length > 0) {
@@ -1358,6 +1431,7 @@
           <div class="card-img-wrapper">
             ${imageHtml}
             ${categoryTag}
+            ${photoCountBadge}
           </div>
           <div class="card-content">
             <h3 class="card-title">${escapeHtml(item.title)}</h3>
@@ -1375,9 +1449,21 @@
       container.appendChild(grid);
     }
 
-    // --- Open Detail Modal ---
+    // Helper: Extract all photos for a recipe (handles legacy single imageUrl & array imageUrls)
+    function getRecipePhotos(recipe) {
+      if (Array.isArray(recipe.imageUrls) && recipe.imageUrls.length > 0) {
+        return recipe.imageUrls;
+      }
+      if (recipe.imageUrl) {
+        return [recipe.imageUrl];
+      }
+      return [];
+    }
+
+    // --- Open Detail Modal & Photo Gallery ---
     function openRecipeDetail(recipe) {
       currentDetailRecipe = recipe;
+      currentGalleryIndex = 0;
 
       document.getElementById('detail-title').innerText = recipe.title || '無題';
       document.getElementById('detail-category-badge').innerText = recipe.category || 'その他';
@@ -1390,13 +1476,41 @@
         servingsEl.style.display = 'none';
       }
 
-      // Hero Image
-      const imgEl = document.getElementById('detail-img');
-      if (recipe.imageUrl) {
-        imgEl.src = recipe.imageUrl;
-        imgEl.style.display = 'block';
+      // Render Photo Gallery
+      const photos = getRecipePhotos(recipe);
+      const galleryContainer = document.getElementById('detail-gallery-container');
+      const mainImg = document.getElementById('detail-main-img');
+      const btnPrev = document.getElementById('gallery-btn-prev');
+      const btnNext = document.getElementById('gallery-btn-next');
+      const thumbsRow = document.getElementById('gallery-thumbs-row');
+
+      if (photos.length > 0) {
+        galleryContainer.style.display = 'block';
+        updateGalleryPhoto(photos);
+
+        if (photos.length > 1) {
+          btnPrev.style.display = 'flex';
+          btnNext.style.display = 'flex';
+          thumbsRow.style.display = 'flex';
+          thumbsRow.innerHTML = '';
+
+          photos.forEach((p, idx) => {
+            const thumb = document.createElement('img');
+            thumb.className = `gallery-thumb-item ${idx === 0 ? 'active' : ''}`;
+            thumb.src = p;
+            thumb.addEventListener('click', () => {
+              currentGalleryIndex = idx;
+              updateGalleryPhoto(photos);
+            });
+            thumbsRow.appendChild(thumb);
+          });
+        } else {
+          btnPrev.style.display = 'none';
+          btnNext.style.display = 'none';
+          thumbsRow.style.display = 'none';
+        }
       } else {
-        imgEl.style.display = 'none';
+        galleryContainer.style.display = 'none';
       }
 
       // Ingredients
@@ -1453,6 +1567,35 @@
       modalDetail.classList.add('active');
     }
 
+    function updateGalleryPhoto(photos) {
+      const mainImg = document.getElementById('detail-main-img');
+      const thumbsRow = document.getElementById('gallery-thumbs-row');
+      
+      mainImg.src = photos[currentGalleryIndex] || '';
+
+      const thumbs = thumbsRow.querySelectorAll('.gallery-thumb-item');
+      thumbs.forEach((t, i) => {
+        if (i === currentGalleryIndex) t.classList.add('active');
+        else t.classList.remove('active');
+      });
+    }
+
+    document.getElementById('gallery-btn-prev').addEventListener('click', () => {
+      if (!currentDetailRecipe) return;
+      const photos = getRecipePhotos(currentDetailRecipe);
+      if (photos.length <= 1) return;
+      currentGalleryIndex = (currentGalleryIndex - 1 + photos.length) % photos.length;
+      updateGalleryPhoto(photos);
+    });
+
+    document.getElementById('gallery-btn-next').addEventListener('click', () => {
+      if (!currentDetailRecipe) return;
+      const photos = getRecipePhotos(currentDetailRecipe);
+      if (photos.length <= 1) return;
+      currentGalleryIndex = (currentGalleryIndex + 1) % photos.length;
+      updateGalleryPhoto(photos);
+    });
+
     // --- Edit Recipe Click Handler ---
     document.getElementById('btn-edit-recipe').addEventListener('click', () => {
       if (!currentDetailRecipe) return;
@@ -1474,14 +1617,8 @@
 
       document.getElementById('recipe-memo').value = currentDetailRecipe.memo || '';
 
-      if (currentDetailRecipe.imageUrl) {
-        selectedImageBase64 = currentDetailRecipe.imageUrl;
-        previewImg.src = currentDetailRecipe.imageUrl;
-        previewContainer.style.display = 'inline-block';
-        btnSelectImage.style.display = 'none';
-      } else {
-        btnRemoveImage.click();
-      }
+      selectedImagesBase64 = getRecipePhotos(currentDetailRecipe).slice();
+      renderFormPhotoPreviews();
 
       // Update Form Titles
       document.getElementById('form-header-title').innerText = '✏️ レシピを編集';
