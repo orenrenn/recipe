@@ -3,42 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>共有レシピ帳</title>
+  <title>もぐもぐレシピ帳 🍳✨</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <!-- Dynamic PWA Manifest -->
+  <!-- Dynamic Favicon & PWA Manifest -->
+  <link id="favicon-link" rel="icon" type="image/svg+xml" href="">
   <link id="manifest-link" rel="manifest" href="">
 
   <style>
     :root {
-      --primary: #E05638;
-      --primary-hover: #C84326;
-      --primary-light: #FDF2F0;
-      --accent: #F97316;
+      --primary: #FF6B52;
+      --primary-hover: #E8533A;
+      --primary-light: #FFF0ED;
+      --accent: #FFA048;
       --star-color: #F59E0B;
-      --bg: #FAFAF9;
+      --bg: #FFFDF9;
       --surface: #FFFFFF;
-      --border: #E7E5E4;
-      --border-dark: #D6D3D1;
-      --text: #1C1917;
-      --text-muted: #78716C;
-      --text-light: #A8A29E;
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-      --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.12), 0 8px 10px -6px rgba(0,0,0,0.08);
+      --border: #F3ECE7;
+      --border-dark: #E6D7CE;
+      --text: #2D2725;
+      --text-muted: #8C7F79;
+      --text-light: #BDB3AD;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --shadow-sm: 0 2px 6px rgba(232, 83, 58, 0.06);
+      --shadow-md: 0 6px 16px rgba(232, 83, 58, 0.09);
+      --shadow-lg: 0 12px 30px -5px rgba(232, 83, 58, 0.15);
     }
 
     * { box-sizing: border-box; }
 
     body {
-      font-family: 'Noto Sans JP', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'M PLUS Rounded 1c', 'Noto Sans JP', -apple-system, sans-serif;
       margin: 0;
       padding: 0;
       background-color: var(--bg);
@@ -55,7 +56,7 @@
       top: 0;
       z-index: 50;
       backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.92);
+      background-color: rgba(255, 255, 255, 0.94);
     }
     .header-inner {
       max-width: 680px;
@@ -68,65 +69,17 @@
     .app-logo {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-weight: 700;
-      font-size: 1.2rem;
+      gap: 6px;
+      font-weight: 800;
+      font-size: 1.25rem;
       color: var(--primary);
       text-decoration: none;
+      letter-spacing: -0.02em;
     }
     .header-actions {
       display: flex;
       align-items: center;
       gap: 8px;
-    }
-
-    /* Google Auth Header UI */
-    .user-auth-wrapper {
-      display: flex;
-      align-items: center;
-    }
-    .btn-google-login {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 5px 12px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text);
-      cursor: pointer;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.2s ease;
-    }
-    .btn-google-login:hover {
-      background: var(--primary-light);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-    .user-profile-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--primary-light);
-      padding: 3px 8px 3px 3px;
-      border-radius: 20px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--primary);
-    }
-    .user-avatar {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-    .user-name {
-      max-width: 90px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .icon-btn {
@@ -155,16 +108,16 @@
       margin: 1rem auto 0;
       padding: 0 1rem;
       display: flex;
-      gap: 8px;
+      gap: 10px;
     }
     .nav-tab {
       flex: 1;
-      padding: 10px 16px;
+      padding: 12px 16px;
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       border-radius: var(--radius-md);
-      font-size: 0.95rem;
-      font-weight: 600;
+      font-size: 0.98rem;
+      font-weight: 800;
       color: var(--text-muted);
       cursor: pointer;
       display: flex;
@@ -177,7 +130,7 @@
       background: var(--primary);
       color: white;
       border-color: var(--primary);
-      box-shadow: 0 2px 8px rgba(224, 86, 56, 0.3);
+      box-shadow: 0 4px 12px rgba(255, 107, 82, 0.3);
     }
 
     /* Main Container */
@@ -195,7 +148,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Controls (Search & Filter) */
+    /* Controls (Search & Filter & Sort) */
     .search-filter-box {
       margin-bottom: 1.2rem;
       display: flex;
@@ -211,7 +164,7 @@
     .search-input {
       width: 100%;
       padding: 12px 16px 12px 52px !important;
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       border-radius: var(--radius-md);
       background: var(--surface);
       font-size: 0.95rem;
@@ -222,7 +175,7 @@
     }
     .search-input:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(224, 86, 56, 0.15);
+      box-shadow: 0 0 0 3px rgba(255, 107, 82, 0.15);
     }
     .search-icon {
       position: absolute;
@@ -247,9 +200,9 @@
       padding: 6px 14px;
       border-radius: 20px;
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       font-size: 0.85rem;
-      font-weight: 500;
+      font-weight: 700;
       color: var(--text-muted);
       cursor: pointer;
       transition: all 0.2s ease;
@@ -270,6 +223,27 @@
       border-color: #F59E0B;
     }
 
+    .sort-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2px 4px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    /* Standardized Star Pop Animation */
+    @keyframes starPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.45) rotate(15deg); }
+      100% { transform: scale(1); }
+    }
+    .star-animating {
+      display: inline-block !important;
+      animation: starPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
     /* Recipe Grid & Cards */
     .recipe-grid {
       display: grid;
@@ -279,7 +253,7 @@
     .recipe-card {
       background: var(--surface);
       border-radius: var(--radius-md);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       overflow: hidden;
       box-shadow: var(--shadow-sm);
       cursor: pointer;
@@ -295,7 +269,7 @@
     .card-img-wrapper {
       width: 100%;
       height: 160px;
-      background: #F3F4F6;
+      background: #FFF0ED;
       position: relative;
       overflow: hidden;
     }
@@ -310,9 +284,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 3rem;
-      color: #D1D5DB;
-      background: linear-gradient(135deg, #FEF3C7, #FFEDD5);
+      font-size: 3.5rem;
+      background: linear-gradient(135deg, #FFE8E0, #FFF3E0);
     }
     .card-category-tag {
       position: absolute;
@@ -321,28 +294,29 @@
       background: rgba(0, 0, 0, 0.65);
       color: white;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 700;
       padding: 3px 10px;
       border-radius: 12px;
       backdrop-filter: blur(4px);
     }
+
     .card-fav-btn {
       position: absolute;
       top: 10px;
       right: 10px;
-      background: rgba(255, 255, 255, 0.88);
+      background: rgba(255, 255, 255, 0.92);
       border: none;
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 1.2rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      transition: transform 0.2s ease, background 0.2s ease;
-      z-index: 6;
+      font-size: 1.25rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      transition: transform 0.15s ease, background 0.15s ease;
+      z-index: 10;
     }
     .card-fav-btn:hover {
       transform: scale(1.1);
@@ -355,7 +329,7 @@
       background: rgba(0, 0, 0, 0.7);
       color: white;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 700;
       padding: 2px 8px;
       border-radius: 10px;
       backdrop-filter: blur(4px);
@@ -368,7 +342,7 @@
     }
     .card-title {
       font-size: 1.1rem;
-      font-weight: 700;
+      font-weight: 800;
       margin: 0 0 6px 0;
       color: var(--text);
       line-height: 1.4;
@@ -380,6 +354,15 @@
       font-size: 0.82rem;
       color: var(--text-muted);
       margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .cooked-badge {
+      background: #FFF7F5;
+      color: var(--primary);
+      border: 1px solid #FFD6CE;
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-weight: 700;
     }
     .card-ingredients-preview {
       font-size: 0.85rem;
@@ -396,7 +379,7 @@
     /* Form Styles */
     .form-card {
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       border-radius: var(--radius-md);
       padding: 1.2rem;
       box-shadow: var(--shadow-sm);
@@ -404,7 +387,7 @@
     }
     .form-section-title {
       font-size: 1.05rem;
-      font-weight: 700;
+      font-weight: 800;
       margin: 0 0 1rem 0;
       color: var(--text);
       display: flex;
@@ -420,7 +403,7 @@
     label {
       display: block;
       font-size: 0.88rem;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text);
       margin-bottom: 6px;
     }
@@ -433,7 +416,7 @@
     input[type="text"], select, textarea {
       width: 100%;
       padding: 10px 14px;
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       border-radius: var(--radius-sm);
       font-size: 0.95rem;
       font-family: inherit;
@@ -444,7 +427,7 @@
     }
     input[type="text"]:focus, select:focus, textarea:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(224, 86, 56, 0.15);
+      box-shadow: 0 0 0 3px rgba(255, 107, 82, 0.15);
     }
     .form-row {
       display: grid;
@@ -521,10 +504,10 @@
       border: none;
       border-radius: var(--radius-md);
       font-size: 1rem;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 2px 6px rgba(224, 86, 56, 0.25);
+      box-shadow: 0 4px 12px rgba(255, 107, 82, 0.25);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -532,7 +515,7 @@
     }
     .btn:hover {
       background: var(--primary-hover);
-      box-shadow: 0 4px 12px rgba(224, 86, 56, 0.35);
+      box-shadow: 0 6px 16px rgba(255, 107, 82, 0.35);
     }
     .btn:disabled {
       background: var(--border-dark);
@@ -555,6 +538,58 @@
     }
     .btn-secondary:hover {
       background: #E5E7EB;
+    }
+
+    /* Cooked Counter Component & Stepper Controls */
+    .cooked-counter-box {
+      background: #FFF7F5;
+      border: 1.5px solid #FFD6CE;
+      border-radius: var(--radius-md);
+      padding: 0.9rem 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.2rem;
+    }
+    .cooked-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-cooked-action {
+      border: none;
+      border-radius: 20px;
+      padding: 8px 14px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+    }
+    .btn-cooked-plus {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 3px 8px rgba(255, 107, 82, 0.25);
+    }
+    .btn-cooked-plus:hover {
+      background: var(--primary-hover);
+      transform: scale(1.05);
+    }
+    .btn-cooked-minus {
+      background: #F3F4F6;
+      color: var(--text-muted);
+      border: 1.5px solid var(--border);
+    }
+    .btn-cooked-minus:hover:not(:disabled) {
+      background: #E5E7EB;
+      color: var(--text);
+      transform: scale(1.05);
+    }
+    .btn-cooked-minus:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
 
     /* Modal Overlay & Dialog */
@@ -606,7 +641,7 @@
     .modal-title-group { flex: 1; padding-right: 12px; }
     .modal-title {
       font-size: 1.3rem;
-      font-weight: 700;
+      font-weight: 800;
       margin: 0;
       color: var(--text);
     }
@@ -715,7 +750,7 @@
     }
     .detail-section-title {
       font-size: 1rem;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--primary);
       margin: 0 0 0.6rem 0;
       display: flex;
@@ -731,7 +766,7 @@
       background: var(--bg);
       padding: 0.8rem;
       border-radius: var(--radius-md);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
     }
     .ingredient-item {
       display: flex;
@@ -768,12 +803,12 @@
       background: var(--surface);
       padding: 0.8rem 1rem;
       border-radius: var(--radius-md);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
     }
     .step-number {
       background: var(--primary-light);
       color: var(--primary);
-      font-weight: 700;
+      font-weight: 800;
       width: 28px;
       height: 28px;
       border-radius: 50%;
@@ -792,7 +827,7 @@
 
     .notes-box {
       background: #FFFBEB;
-      border: 1px solid #FDE68A;
+      border: 1.5px solid #FDE68A;
       padding: 0.9rem 1rem;
       border-radius: var(--radius-md);
       font-size: 0.92rem;
@@ -817,7 +852,7 @@
       padding: 3rem 1rem;
       background: var(--surface);
       border-radius: var(--radius-md);
-      border: 1px dashed var(--border-dark);
+      border: 1.5px dashed var(--border-dark);
       color: var(--text-muted);
     }
     .empty-icon {
@@ -832,23 +867,11 @@
   <header>
     <div class="header-inner">
       <a href="#" class="app-logo">
-        <span>🍳</span>
-        <span>共有レシピ帳</span>
+        <span>🍳✨</span>
+        <span>もぐもぐレシピ帳</span>
       </a>
       <div class="header-actions">
-        <!-- Google Auth Profile / Login Button -->
-        <div class="user-auth-wrapper">
-          <button id="btn-google-login" class="btn-google-login">
-            <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-            <span>ログイン</span>
-          </button>
-          <div id="user-profile-badge" class="user-profile-badge" style="display: none;">
-            <img id="user-avatar" class="user-avatar" src="" alt="ユーザー">
-            <span id="user-name" class="user-name">ユーザー</span>
-            <button id="btn-logout" class="icon-btn" title="ログアウト" style="width: 26px; height: 26px; font-size: 0.75rem; border: none; margin-left: 2px;">🚪</button>
-          </div>
-        </div>
-        <button id="btn-open-settings" class="icon-btn" title="Firebase設定">
+        <button id="btn-open-settings" class="icon-btn" title="データ同期設定">
           ⚙️
         </button>
       </div>
@@ -871,12 +894,13 @@
     <!-- PAGE 1: レシピ一覧 -->
     <div id="page-list" class="page active">
       
-      <!-- 検索・フィルター -->
+      <!-- 検索・フィルター・ソート -->
       <div class="search-filter-box">
         <div class="search-wrapper">
           <span class="search-icon">🔍</span>
           <input type="text" id="search-input" class="search-input" placeholder="料理名や材料名で検索...">
         </div>
+        
         <div class="category-pills" id="category-pills">
           <button class="pill active" data-cat="all">全て</button>
           <button class="pill pill-fav" data-cat="fav">⭐ お気に入り</button>
@@ -887,13 +911,27 @@
           <button class="pill" data-cat="デザート">デザート</button>
           <button class="pill" data-cat="その他">その他</button>
         </div>
+
+        <div class="sort-bar">
+          <div>全 <span id="recipe-count">0</span> 件</div>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span>並び替え:</span>
+            <select id="sort-select" style="width: auto; padding: 4px 10px; font-size: 0.82rem; border-radius: 14px; border: 1.5px solid var(--border); font-weight: 700; color: var(--text);">
+              <option value="newest">新着順 🆕</option>
+              <option value="oldest">古い順 📜</option>
+              <option value="cooked">作った回数が多い順 🍳</option>
+              <option value="title">名前順 (あ→ん) 🔤</option>
+              <option value="fav">お気に入り優先 ⭐</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <!-- レシピカードグリッド -->
       <div id="recipe-list-container">
         <div class="empty-state">
-          <div class="empty-icon">🍳</div>
-          <p>設定画面でFirebase接続情報を登録してください。</p>
+          <div class="empty-icon">🍳✨</div>
+          <p>設定画面でFirebase接続情報を登録すると自動で連携されます。</p>
         </div>
       </div>
     </div>
@@ -965,7 +1003,7 @@
           <div class="photos-preview-grid" id="photos-preview-grid">
             <div class="add-photo-box" id="btn-add-photos">
               <span style="font-size: 1.6rem;">➕</span>
-              <span style="font-size: 0.8rem; font-weight: 600;">写真を追加</span>
+              <span style="font-size: 0.8rem; font-weight: 700;">写真を追加</span>
             </div>
           </div>
         </div>
@@ -996,6 +1034,24 @@
       </div>
 
       <div class="modal-body">
+        <!-- 作った回数カウンター (増やす・減らすコントロール) -->
+        <div class="cooked-counter-box">
+          <div>
+            <div style="font-size: 0.82rem; color: var(--text-muted); font-weight: 700;">通算で作った回数</div>
+            <div style="font-size: 1.3rem; font-weight: 800; color: var(--primary);">
+              🍳 <span id="detail-cooked-count">0</span> 回
+            </div>
+          </div>
+          <div class="cooked-btn-group">
+            <button id="btn-decrement-cooked" class="btn-cooked-action btn-cooked-minus" title="間違いを取り消し (-1)">
+              <span>↩️ -1</span>
+            </button>
+            <button id="btn-increment-cooked" class="btn-cooked-action btn-cooked-plus" title="作った！ (+1)">
+              <span>🍳 「作った！」 (+1)</span>
+            </button>
+          </div>
+        </div>
+
         <div id="detail-gallery-container" class="detail-gallery-container" style="display: none;">
           <div class="detail-main-img-wrapper">
             <button id="gallery-btn-prev" class="gallery-nav-btn prev" style="display: none;">❮</button>
@@ -1035,42 +1091,69 @@
     </div>
   </div>
 
-  <!-- Firebase設定 モーダル -->
+  <!-- データ同期設定 モーダル -->
   <div id="modal-settings" class="modal-backdrop">
-    <div class="modal-card" style="max-width: 480px;">
-      <div class="modal-header">
-        <h3 class="modal-title">⚙️ Firebase接続設定</h3>
+    <div class="modal-card" style="max-width: 480px; padding: 1.5rem; border-radius: 24px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.6rem; color: #3B82F6;">☁️</span>
+          <h2 style="font-size: 1.35rem; font-weight: 800; margin: 0; color: #1E293B;">データ同期設定</h2>
+        </div>
         <button id="btn-close-settings" class="modal-close-btn">✕</button>
       </div>
-      <div class="modal-body">
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0;">
-          共有相手と共有するため、Firebaseプロジェクトの構成情報(JSON)を入力してください。
-        </p>
-        <div class="form-group">
-          <label for="firebase-config-json">Firebase Config JSON</label>
-          <textarea id="firebase-config-json" rows="8" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "..."}'></textarea>
+
+      <!-- クラウド同期完了表示バナー -->
+      <div id="sync-status-banner" style="display: none; background: #ECFDF5; border: 1.5px solid #A7F3D0; border-radius: 14px; padding: 12px 14px; margin-bottom: 1.2rem; font-size: 0.9rem; color: #065F46; font-weight: 700; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.3rem;">✅</span>
+          <span>データはクラウドに同期されています</span>
         </div>
+        <button id="btn-disconnect-sync" style="background: none; border: none; color: #EF4444; font-size: 0.82rem; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0;">解除</button>
       </div>
-      <div class="modal-footer">
-        <button id="btn-save-settings" class="btn">設定を保存する</button>
+
+      <p id="sync-description" style="font-size: 0.88rem; color: #64748B; margin-top: 0; margin-bottom: 1.2rem; line-height: 1.5;">
+        Firebaseの設定(JSON)を貼り付けると、Googleアカウントでのログイン画面が開き、データをクラウドに保存できます。
+      </p>
+
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <textarea id="firebase-config-json" rows="6" 
+          style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 14px; padding: 12px; font-size: 0.88rem; color: #334155; resize: vertical;"
+          placeholder='{"apiKey": "AIzaSy...", "authDomain": "...", ...}'></textarea>
       </div>
+
+      <button id="btn-sync-google" class="btn" 
+        style="background: linear-gradient(135deg, #818CF8, #6366F1); border-radius: 14px; padding: 14px; font-size: 1.05rem; font-weight: 800; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; border: none; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);">
+        <svg width="22" height="22" viewBox="0 0 24 24" style="background: white; border-radius: 50%; padding: 2px;">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <span>Googleでログインして同期</span>
+      </button>
     </div>
   </div>
 
-  <!-- PWA マニフェスト -->
+  <!-- 超可愛い PWA Favicon ＆ SVG アイコン生成 -->
   <script>
+    function generateCuteSvgIcon() {
+      return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="28" fill="%23FF6B52"/><circle cx="50" cy="50" r="40" fill="%23FFFFFF"/><text x="50" y="58" font-size="44" text-anchor="middle">🍳</text></svg>`;
+    }
+    const cuteIconUri = generateCuteSvgIcon();
+    document.getElementById('favicon-link').href = cuteIconUri;
+
     const manifest = {
-      "name": "共有レシピ帳",
-      "short_name": "レシピ帳",
+      "name": "もぐもぐレシピ帳",
+      "short_name": "もぐレシピ",
       "start_url": window.location.href,
       "display": "standalone",
-      "background_color": "#FAFAF9",
-      "theme_color": "#E05638",
+      "background_color": "#FFFDF9",
+      "theme_color": "#FF6B52",
       "icons": [
         {
-          "src": "https://via.placeholder.com/192/E05638/ffffff?text=Recipe",
+          "src": cuteIconUri,
           "sizes": "192x192",
-          "type": "image/png"
+          "type": "image/svg+xml"
         }
       ]
     };
@@ -1100,6 +1183,7 @@
       updateDoc, 
       arrayUnion,
       arrayRemove,
+      increment,
       orderBy, 
       query, 
       serverTimestamp 
@@ -1114,6 +1198,7 @@
     let recipesCache = [];
     let activeCategory = 'all';
     let searchQuery = '';
+    let sortBy = 'newest';
     let selectedImagesBase64 = [];
     let currentDetailRecipe = null;
     let currentGalleryIndex = 0;
@@ -1148,84 +1233,84 @@
       return userFavorites.includes(recipeId);
     }
 
-    async function toggleFavorite(recipeId) {
-      if (!currentUser) {
-        if (confirm("お気に入り機能を利用するにはGoogleログインが必要です。\nGoogleでログインしますか？")) {
-          loginWithGoogle();
-        }
-        return;
+    // --- Standardized Latency-Free Toggle Favorite with Pop Animation ---
+    async function toggleFavorite(recipeId, starBtnElement = null) {
+      if (!currentUser || !db) {
+        openSettingsModal();
+        return alert("お気に入り機能を利用するには、設定画面(⚙️)から「Googleでログインして同期」してください。");
       }
 
       const userDocRef = doc(db, "users", currentUser.uid);
       const isFav = userFavorites.includes(recipeId);
 
+      // 1. In-memory state update
       if (isFav) {
         userFavorites = userFavorites.filter(id => id !== recipeId);
-        try {
-          await updateDoc(userDocRef, { favorites: arrayRemove(recipeId) });
-        } catch {
-          await setDoc(userDocRef, { favorites: userFavorites }, { merge: true });
-        }
       } else {
         userFavorites.push(recipeId);
-        try {
-          await updateDoc(userDocRef, { favorites: arrayUnion(recipeId) });
-        } catch {
-          await setDoc(userDocRef, { favorites: userFavorites }, { merge: true });
-        }
       }
 
+      // 2. Standardized instant visual animation on target element
+      if (starBtnElement) {
+        const iconSpan = starBtnElement.querySelector('span') || starBtnElement;
+        iconSpan.innerText = userFavorites.includes(recipeId) ? '⭐' : '☆';
+        starBtnElement.classList.remove('star-animating');
+        iconSpan.classList.remove('star-animating');
+        void starBtnElement.offsetWidth; // trigger reflow
+        starBtnElement.classList.add('star-animating');
+        iconSpan.classList.add('star-animating');
+      }
+
+      // 3. Update list UI & Detail Modal UI instantly
       renderRecipeList();
       if (currentDetailRecipe && currentDetailRecipe.id === recipeId) {
         updateDetailFavStar();
       }
-    }
 
-    // --- Google Auth Login & UI ---
-    async function loginWithGoogle() {
-      if (!app || !auth) {
-        modalSettings.classList.add('active');
-        return alert("先にFirebaseの接続情報を設定してください。");
-      }
+      // 4. Pure Firestore Update in Background
       try {
-        const result = await signInWithPopup(auth, googleAuthProvider);
-        currentUser = result.user;
-        updateUserHeaderUI();
-        await loadUserFavorites();
-      } catch (e) {
-        console.error("Google Auth error:", e);
-        alert("Googleログインに失敗しました: " + e.message);
+        if (isFav) {
+          await updateDoc(userDocRef, { favorites: arrayRemove(recipeId) });
+        } else {
+          await updateDoc(userDocRef, { favorites: arrayUnion(recipeId) });
+        }
+      } catch (err) {
+        await setDoc(userDocRef, { favorites: userFavorites, updatedAt: serverTimestamp() }, { merge: true });
       }
     }
 
+    // --- Logout / Disconnect ---
     async function logoutUser() {
       if (auth) {
         await signOut(auth);
         currentUser = null;
-        updateUserHeaderUI();
+        updateSyncModalUI();
         loadUserFavorites();
       }
     }
 
-    function updateUserHeaderUI() {
-      const btnLogin = document.getElementById('btn-google-login');
-      const badge = document.getElementById('user-profile-badge');
-      const avatar = document.getElementById('user-avatar');
-      const name = document.getElementById('user-name');
+    document.getElementById('btn-disconnect-sync').addEventListener('click', async () => {
+      if (confirm("同期を解除してログアウトしますか？")) {
+        await logoutUser();
+        alert("同期を解除しました。");
+      }
+    });
+
+    function updateSyncModalUI() {
+      const syncBanner = document.getElementById('sync-status-banner');
+      const btnSyncGoogle = document.getElementById('btn-sync-google');
+      const jsonArea = document.getElementById('firebase-config-json');
 
       if (currentUser) {
-        btnLogin.style.display = 'none';
-        badge.style.display = 'flex';
-        avatar.src = currentUser.photoURL || 'https://via.placeholder.com/28';
-        name.innerText = currentUser.displayName || 'ユーザー';
+        syncBanner.style.display = 'flex';
+        btnSyncGoogle.style.display = 'none';
+        jsonArea.readOnly = true;
       } else {
-        btnLogin.style.display = 'flex';
-        badge.style.display = 'none';
+        syncBanner.style.display = 'none';
+        btnSyncGoogle.style.display = 'flex';
+        jsonArea.readOnly = false;
       }
     }
-
-    document.getElementById('btn-google-login').addEventListener('click', loginWithGoogle);
-    document.getElementById('btn-logout').addEventListener('click', logoutUser);
 
     // --- Page & Modal DOM Elements ---
     const pages = {
@@ -1238,6 +1323,11 @@
     };
     const modalSettings = document.getElementById('modal-settings');
     const modalDetail = document.getElementById('modal-recipe-detail');
+
+    function openSettingsModal() {
+      updateSyncModalUI();
+      modalSettings.classList.add('active');
+    }
 
     // --- Navigation Logic ---
     function switchPage(pageName) {
@@ -1324,9 +1414,7 @@
     }
 
     // --- Settings Modal Logic ---
-    document.getElementById('btn-open-settings').addEventListener('click', () => {
-      modalSettings.classList.add('active');
-    });
+    document.getElementById('btn-open-settings').addEventListener('click', openSettingsModal);
     document.getElementById('btn-close-settings').addEventListener('click', () => {
       modalSettings.classList.remove('active');
     });
@@ -1398,7 +1486,7 @@
 
         onAuthStateChanged(auth, (user) => {
           currentUser = user;
-          updateUserHeaderUI();
+          updateSyncModalUI();
           loadUserFavorites();
         });
 
@@ -1414,24 +1502,39 @@
       document.getElementById('firebase-config-json').value = savedConfig;
       if (initFirebase(savedConfig)) fetchRecipes();
     } else {
-      modalSettings.classList.add('active');
+      openSettingsModal();
     }
 
-    document.getElementById('btn-save-settings').addEventListener('click', () => {
-      const configStr = document.getElementById('firebase-config-json').value;
+    // --- データ同期ボタン処理 ---
+    document.getElementById('btn-sync-google').addEventListener('click', async () => {
+      const configStr = document.getElementById('firebase-config-json').value.trim();
+      if (!configStr) {
+        return alert("Firebase設定(JSON)を貼り付けてください。");
+      }
+
       if (initFirebase(configStr)) {
         localStorage.setItem('fbConfig', configStr);
-        modalSettings.classList.remove('active');
-        alert("Firebase設定を保存しました！");
         fetchRecipes();
+
+        try {
+          const result = await signInWithPopup(auth, googleAuthProvider);
+          currentUser = result.user;
+          updateSyncModalUI();
+          await loadUserFavorites();
+          modalSettings.classList.remove('active');
+          alert("データ同期とGoogleログインが完了しました！");
+        } catch (e) {
+          console.error(e);
+          alert("Googleログインに失敗しました: " + e.message);
+        }
       }
     });
 
     // --- Save / Update Recipe ---
     document.getElementById('btn-save-recipe').addEventListener('click', async () => {
       if (!app) {
-        modalSettings.classList.add('active');
-        return alert("先にFirebaseの接続情報を設定してください。");
+        openSettingsModal();
+        return alert("先にデータ同期設定画面でFirebase情報を入力してください。");
       }
 
       const title = document.getElementById('recipe-title').value.trim();
@@ -1468,6 +1571,7 @@
           memo,
           imageUrls: selectedImagesBase64,
           imageUrl: selectedImagesBase64[0] || "",
+          cookedCount: editingRecipeId ? (recipesCache.find(r => r.id === editingRecipeId)?.cookedCount || 0) : 0,
           createdBy: currentUser ? currentUser.displayName || currentUser.email : "匿名"
         };
 
@@ -1516,7 +1620,7 @@
       }
     }
 
-    // --- 超強力な Google風 漢字・音訓・形態音韻ファジーエンジン ---
+    // --- Google風 漢字・音訓ファジーエンジン ---
 
     const KANJI_READING_MAP = {
       '合': 'アイ', '挽': 'ヒキ', '肉': 'ニク', '豚': 'ブタ', '牛': 'ギュウ',
@@ -1637,7 +1741,7 @@
       return totalScore;
     }
 
-    // Filter & Render List
+    // Filter & Render List with Multi-Criteria Sorting
     function renderRecipeList() {
       const container = document.getElementById('recipe-list-container');
 
@@ -1655,17 +1759,43 @@
         return { item, score };
       }).filter(res => res.score > 0);
 
-      scoredRecipes.sort((a, b) => b.score - a.score);
+      // Multi-criteria sorting algorithm
+      scoredRecipes.sort((a, b) => {
+        if (searchQuery.trim().length > 0) {
+          if (b.score !== a.score) return b.score - a.score;
+        }
+
+        if (sortBy === 'newest') {
+          const timeA = a.item.createdAt?.toMillis ? a.item.createdAt.toMillis() : (a.item.createdAt || 0);
+          const timeB = b.item.createdAt?.toMillis ? b.item.createdAt.toMillis() : (b.item.createdAt || 0);
+          return timeB - timeA;
+        } else if (sortBy === 'oldest') {
+          const timeA = a.item.createdAt?.toMillis ? a.item.createdAt.toMillis() : (a.item.createdAt || 0);
+          const timeB = b.item.createdAt?.toMillis ? b.item.createdAt.toMillis() : (b.item.createdAt || 0);
+          return timeA - timeB;
+        } else if (sortBy === 'cooked') {
+          return (b.item.cookedCount || 0) - (a.item.cookedCount || 0);
+        } else if (sortBy === 'title') {
+          return (a.item.title || '').localeCompare(b.item.title || '', 'ja');
+        } else if (sortBy === 'fav') {
+          const isFavA = isFavorite(a.item.id) ? 1 : 0;
+          const isFavB = isFavorite(b.item.id) ? 1 : 0;
+          return isFavB - isFavA;
+        }
+        return 0;
+      });
 
       const filtered = scoredRecipes.map(res => res.item);
 
+      document.getElementById('recipe-count').innerText = filtered.length;
+
       if (filtered.length === 0) {
         const msg = activeCategory === 'fav' 
-          ? (currentUser ? 'お気に入りに登録されたレシピがありません。カードの ⭐ ボタンで追加できます。' : 'Googleログインするとお気に入り機能が利用できます。')
+          ? (currentUser ? 'お気に入りに登録されたレシピがありません。カードの ⭐ ボタンで追加できます。' : 'データ同期設定（⚙️）からGoogleログインするとお気に入り機能が利用できます。')
           : '該当するレシピが見つかりません。';
         container.innerHTML = `
           <div class="empty-state">
-            <div class="empty-icon">🍽️</div>
+            <div class="empty-icon">🍳✨</div>
             <p>${msg}</p>
           </div>`;
         return;
@@ -1688,10 +1818,11 @@
 
         const categoryTag = item.category ? `<div class="card-category-tag">${item.category}</div>` : '';
         const servingsTag = item.servings ? `<span>👤 ${item.servings}</span>` : '';
+        const cookedBadgeHtml = `<span class="cooked-badge">🍳 作った: ${item.cookedCount || 0}回</span>`;
         const photoCountBadge = photos.length > 1 ? `<div class="card-photo-count-tag">📷 ${photos.length}</div>` : '';
 
         const faved = isFavorite(item.id);
-        const favBtnHtml = `<button class="card-fav-btn" title="お気に入り">${faved ? '⭐' : '☆'}</button>`;
+        const favBtnHtml = `<button class="card-fav-btn" title="お気に入り"><span>${faved ? '⭐' : '☆'}</span></button>`;
 
         let ingredientsPreview = '';
         if (Array.isArray(item.ingredients) && item.ingredients.length > 0) {
@@ -1711,14 +1842,17 @@
             <h3 class="card-title">${escapeHtml(item.title)}</h3>
             <div class="card-meta">
               ${servingsTag}
+              ${cookedBadgeHtml}
             </div>
             ${ingredientsPreview ? `<div class="card-ingredients-preview">${escapeHtml(ingredientsPreview)}</div>` : ''}
           </div>
         `;
 
-        card.querySelector('.card-fav-btn').addEventListener('click', (e) => {
+        // Bind pure Firestore instant favorite star click with uniform animation
+        const favBtn = card.querySelector('.card-fav-btn');
+        favBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          toggleFavorite(item.id);
+          toggleFavorite(item.id, favBtn);
         });
 
         grid.appendChild(card);
@@ -1746,6 +1880,10 @@
 
       document.getElementById('detail-title').innerText = recipe.title || '無題';
       document.getElementById('detail-category-badge').innerText = recipe.category || 'その他';
+      
+      const count = recipe.cookedCount || 0;
+      document.getElementById('detail-cooked-count').innerText = count;
+      document.getElementById('btn-decrement-cooked').disabled = count <= 0;
 
       updateDetailFavStar();
 
@@ -1848,19 +1986,71 @@
     }
 
     function updateDetailFavStar() {
-      const star = document.getElementById('detail-fav-star');
+      const starBtn = document.getElementById('btn-toggle-fav-detail');
+      const starText = document.getElementById('detail-fav-star');
       if (currentDetailRecipe && isFavorite(currentDetailRecipe.id)) {
-        star.innerText = '⭐';
-        star.style.color = 'var(--star-color)';
+        starText.innerText = '⭐';
+        starBtn.style.color = 'var(--star-color)';
       } else {
-        star.innerText = '☆';
-        star.style.color = 'var(--text-muted)';
+        starText.innerText = '☆';
+        starBtn.style.color = 'var(--text-muted)';
       }
     }
 
     document.getElementById('btn-toggle-fav-detail').addEventListener('click', () => {
       if (currentDetailRecipe) {
-        toggleFavorite(currentDetailRecipe.id);
+        const starBtn = document.getElementById('btn-toggle-fav-detail');
+        toggleFavorite(currentDetailRecipe.id, starBtn);
+      }
+    });
+
+    // --- Increment Cooked Count Button Listener ---
+    document.getElementById('btn-increment-cooked').addEventListener('click', async () => {
+      if (!currentDetailRecipe || !db) return;
+
+      currentDetailRecipe.cookedCount = (currentDetailRecipe.cookedCount || 0) + 1;
+      document.getElementById('detail-cooked-count').innerText = currentDetailRecipe.cookedCount;
+      document.getElementById('btn-decrement-cooked').disabled = currentDetailRecipe.cookedCount <= 0;
+
+      const cacheItem = recipesCache.find(r => r.id === currentDetailRecipe.id);
+      if (cacheItem) cacheItem.cookedCount = currentDetailRecipe.cookedCount;
+
+      const btnInc = document.getElementById('btn-increment-cooked');
+      btnInc.classList.remove('star-animating');
+      void btnInc.offsetWidth;
+      btnInc.classList.add('star-animating');
+
+      renderRecipeList();
+
+      try {
+        await updateDoc(doc(db, "recipes", currentDetailRecipe.id), {
+          cookedCount: increment(1)
+        });
+      } catch (e) {
+        console.error("Cooked count increment failed:", e);
+      }
+    });
+
+    // --- Decrement Cooked Count (Undo / -1) Button Listener ---
+    document.getElementById('btn-decrement-cooked').addEventListener('click', async () => {
+      if (!currentDetailRecipe || !db) return;
+      if ((currentDetailRecipe.cookedCount || 0) <= 0) return;
+
+      currentDetailRecipe.cookedCount -= 1;
+      document.getElementById('detail-cooked-count').innerText = currentDetailRecipe.cookedCount;
+      document.getElementById('btn-decrement-cooked').disabled = currentDetailRecipe.cookedCount <= 0;
+
+      const cacheItem = recipesCache.find(r => r.id === currentDetailRecipe.id);
+      if (cacheItem) cacheItem.cookedCount = currentDetailRecipe.cookedCount;
+
+      renderRecipeList();
+
+      try {
+        await updateDoc(doc(db, "recipes", currentDetailRecipe.id), {
+          cookedCount: increment(-1)
+        });
+      } catch (e) {
+        console.error("Cooked count decrement failed:", e);
       }
     });
 
@@ -1968,6 +2158,12 @@
         activeCategory = e.target.dataset.cat;
         renderRecipeList();
       }
+    });
+
+    // Sort Listener
+    document.getElementById('sort-select').addEventListener('change', (e) => {
+      sortBy = e.target.value;
+      renderRecipeList();
     });
 
     // Helper: HTML Escape
