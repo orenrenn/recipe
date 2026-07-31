@@ -445,6 +445,41 @@
       .form-row { grid-template-columns: 1fr; }
     }
 
+    /* Structured Step Builder in Form */
+    .step-form-row {
+      background: #FFFDF9;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .step-form-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .step-form-num {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 2px 10px;
+      border-radius: 12px;
+    }
+    .btn-remove-step {
+      background: none;
+      border: none;
+      color: #9CA3AF;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 50%;
+    }
+    .btn-remove-step:hover { color: #EF4444; background: #FEE2E2; }
+
     /* Multi Photo Picker Grid in Form */
     .photos-preview-grid {
       display: grid;
@@ -798,38 +833,51 @@
       color: var(--text-light);
     }
 
-    /* Step List */
+    /* Structured Step List Display in Detail Modal */
     .step-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
     .step-item {
       display: flex;
-      gap: 12px;
+      gap: 14px;
       background: var(--surface);
-      padding: 0.8rem 1rem;
+      padding: 1rem 1.1rem;
       border-radius: var(--radius-md);
       border: 1.5px solid var(--border);
+      box-shadow: var(--shadow-sm);
     }
     .step-number {
       background: var(--primary-light);
       color: var(--primary);
       font-weight: 800;
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       flex-shrink: 0;
     }
-    .step-text {
-      margin: 0;
-      font-size: 0.95rem;
+    .step-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .step-heading {
+      font-weight: 800;
+      font-size: 1rem;
       color: var(--text);
-      align-self: center;
+      line-height: 1.4;
+    }
+    .step-desc {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      white-space: pre-wrap;
     }
 
     .notes-box {
@@ -988,12 +1036,25 @@
         </div>
       </div>
 
+      <!-- スマート自動解析付き 作り方入力フォーム -->
       <div class="form-card">
-        <div class="form-section-title">👩‍🍳 作り方</div>
-        <div class="form-group">
-          <div class="field-desc">※ 1行に1ステップずつ順に入力してください</div>
-          <textarea id="recipe-steps" rows="5"></textarea>
+        <div class="form-section-title" style="display: flex; align-items: center; justify-content: space-between;">
+          <span>👩‍🍳 作り方</span>
+          <button type="button" id="btn-add-step-item" class="btn-secondary" style="width: auto; padding: 4px 12px; font-size: 0.82rem; border-radius: 12px; cursor: pointer;">
+            ➕ 手動で追加
+          </button>
         </div>
+        <div class="field-desc">※ 文章をそのままコピペすると、自動で「見出し」と「詳細」に分割されます！</div>
+
+        <div class="form-group" style="margin-bottom: 12px;">
+          <textarea id="recipe-steps-raw" rows="5" placeholder="ここに作り方の文章をまとめてコピペできます！&#10;&#10;例:&#10;予熱とパン粉の準備&#10;オーブンを200℃に予熱しておきます...&#10;&#10;具材をカットする&#10;レンコンの皮をむき..."></textarea>
+        </div>
+
+        <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 4px;">
+          <span>✨ 解析されたステップ (下で微調整も可能です)</span>
+        </div>
+
+        <div id="steps-form-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
       </div>
 
       <div class="form-card">
@@ -1074,7 +1135,7 @@
           <div id="detail-ingredients-list" class="ingredient-list"></div>
         </div>
 
-        <!-- 作り方 -->
+        <!-- 作り方 (見出し＋詳細構造表示) -->
         <div id="section-steps" class="detail-section" style="display: none;">
           <div class="detail-section-title">👩‍🍳 作り方</div>
           <div id="detail-steps-list" class="step-list"></div>
@@ -1248,6 +1309,88 @@
     let editingRecipeId = null;
 
     const googleAuthProvider = new GoogleAuthProvider();
+
+    // --- Dynamic Smart Steps Builder Logic ---
+    const stepsFormContainer = document.getElementById('steps-form-container');
+    const btnAddStepItem = document.getElementById('btn-add-step-item');
+    const recipeStepsRaw = document.getElementById('recipe-steps-raw');
+
+    function addStepInputRow(title = '', text = '') {
+      const rowIdx = stepsFormContainer.children.length + 1;
+      const row = document.createElement('div');
+      row.className = 'step-form-row';
+      row.innerHTML = `
+        <div class="step-form-header">
+          <span class="step-form-num">ステップ ${rowIdx}</span>
+          <button type="button" class="btn-remove-step" title="削除">✕</button>
+        </div>
+        <div>
+          <input type="text" class="step-title-input" placeholder="見出し (例: 予熱とパン粉の準備)" value="${escapeHtml(title)}">
+        </div>
+        <div>
+          <textarea class="step-text-input" rows="2" placeholder="詳細 (例: オーブンを200℃〜220℃に予熱しておきます...)">${escapeHtml(text)}</textarea>
+        </div>
+      `;
+
+      row.querySelector('.btn-remove-step').addEventListener('click', () => {
+        row.remove();
+        updateStepRowNumbers();
+      });
+
+      stepsFormContainer.appendChild(row);
+    }
+
+    function updateStepRowNumbers() {
+      const rows = stepsFormContainer.querySelectorAll('.step-form-row');
+      rows.forEach((r, idx) => {
+        r.querySelector('.step-form-num').innerText = `ステップ ${idx + 1}`;
+      });
+    }
+
+    btnAddStepItem.addEventListener('click', () => {
+      addStepInputRow();
+    });
+
+    // --- Smart Auto-Parsing for Copied Raw Text ---
+    function parsePastedStepsText(rawText) {
+      if (!rawText || !rawText.trim()) return [];
+
+      const blocks = rawText
+        .split(/\n\s*\n+/)
+        .map(b => b.trim())
+        .filter(b => b.length > 0);
+
+      const parsed = [];
+      blocks.forEach(block => {
+        const lines = block.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        if (lines.length >= 2) {
+          const cleanTitle = lines[0].replace(/^[\d\.\s【】■◆①-⑨・\-]+/, '').trim() || lines[0];
+          const text = lines.slice(1).join('\n');
+          parsed.push({ title: cleanTitle, text });
+        } else if (lines.length === 1) {
+          const line = lines[0];
+          const match = line.match(/^(.+?)[：:](.+)$/);
+          if (match) {
+            parsed.push({ title: match[1].trim(), text: match[2].trim() });
+          } else {
+            parsed.push({ title: '', text: line });
+          }
+        }
+      });
+      return parsed;
+    }
+
+    recipeStepsRaw.addEventListener('input', (e) => {
+      const rawText = e.target.value;
+      const parsedSteps = parsePastedStepsText(rawText);
+
+      stepsFormContainer.innerHTML = '';
+      if (parsedSteps.length > 0) {
+        parsedSteps.forEach(st => addStepInputRow(st.title, st.text));
+      } else {
+        addStepInputRow();
+      }
+    });
 
     // --- Cloud Firebase Personal Favorites Logic ---
     async function loadUserFavorites() {
@@ -1446,8 +1589,12 @@
       document.getElementById('recipe-category').value = '主菜';
       document.getElementById('recipe-servings').value = '';
       document.getElementById('recipe-ingredients').value = '';
-      document.getElementById('recipe-steps').value = '';
       document.getElementById('recipe-memo').value = '';
+      
+      recipeStepsRaw.value = '';
+      stepsFormContainer.innerHTML = '';
+      addStepInputRow(); // start with 1 step
+      
       renderFormPhotoPreviews();
 
       document.getElementById('form-header-title').innerText = '📌 基本情報';
@@ -1584,7 +1731,6 @@
       const category = document.getElementById('recipe-category').value;
       const servings = document.getElementById('recipe-servings').value;
       const rawIngredients = document.getElementById('recipe-ingredients').value;
-      const rawSteps = document.getElementById('recipe-steps').value;
       const memo = document.getElementById('recipe-memo').value.trim();
       const btnSave = document.getElementById('btn-save-recipe');
 
@@ -1595,10 +1741,20 @@
         .map(line => line.trim())
         .filter(line => line.length > 0);
 
-      const steps = rawSteps
-        .split('\n')
-        .map(line => line.trim())
-        .filter(line => line.length > 0);
+      // Collect structured steps (title + text)
+      const stepRows = stepsFormContainer.querySelectorAll('.step-form-row');
+      let steps = [];
+      stepRows.forEach(row => {
+        const stepTitle = row.querySelector('.step-title-input').value.trim();
+        const stepText = row.querySelector('.step-text-input').value.trim();
+        if (stepTitle || stepText) {
+          steps.push({ title: stepTitle, text: stepText });
+        }
+      });
+
+      if (steps.length === 0 && recipeStepsRaw.value.trim()) {
+        steps = parsePastedStepsText(recipeStepsRaw.value);
+      }
 
       const btnSaveContent = document.getElementById('btn-save-content');
       btnSaveContent.innerHTML = `<span>⏳</span> 保存中...`;
@@ -1773,6 +1929,12 @@
         if (Array.isArray(recipe.ingredients)) {
           for (const ing of recipe.ingredients) {
             kwMaxScore = Math.max(kwMaxScore, calculateGoogleFuzzyScore(kw, ing) * 1.2);
+          }
+        }
+        if (Array.isArray(recipe.steps)) {
+          for (const st of recipe.steps) {
+            const stText = typeof st === 'object' ? `${st.title || ''} ${st.text || st.desc || ''}` : String(st);
+            kwMaxScore = Math.max(kwMaxScore, calculateGoogleFuzzyScore(kw, stText) * 1.1);
           }
         }
         if (recipe.memo) {
@@ -1995,7 +2157,7 @@
         secIngredients.style.display = 'none';
       }
 
-      // Steps
+      // Render Structured Steps (Title + Detail)
       const secSteps = document.getElementById('section-steps');
       const listSteps = document.getElementById('detail-steps-list');
       listSteps.innerHTML = '';
@@ -2003,11 +2165,30 @@
       if (Array.isArray(recipe.steps) && recipe.steps.length > 0) {
         secSteps.style.display = 'block';
         recipe.steps.forEach((step, idx) => {
+          let stepTitle = '';
+          let stepText = '';
+
+          if (typeof step === 'object' && step !== null) {
+            stepTitle = step.title || '';
+            stepText = step.text || step.desc || '';
+          } else if (typeof step === 'string') {
+            const lines = step.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            if (lines.length >= 2) {
+              stepTitle = lines[0];
+              stepText = lines.slice(1).join('\n');
+            } else {
+              stepText = step;
+            }
+          }
+
           const item = document.createElement('div');
           item.className = 'step-item';
           item.innerHTML = `
             <div class="step-number">${idx + 1}</div>
-            <p class="step-text">${escapeHtml(step)}</p>
+            <div class="step-body">
+              ${stepTitle ? `<div class="step-heading">${escapeHtml(stepTitle)}</div>` : ''}
+              ${stepText ? `<div class="step-desc">${escapeHtml(stepText)}</div>` : ''}
+            </div>
           `;
           listSteps.appendChild(item);
         });
@@ -2132,7 +2313,7 @@
 
       editingRecipeId = currentDetailRecipe.id;
 
-      // Populate form
+      // Populate form basic info
       document.getElementById('recipe-title').value = currentDetailRecipe.title || '';
       document.getElementById('recipe-category').value = currentDetailRecipe.category || '主菜';
       document.getElementById('recipe-servings').value = currentDetailRecipe.servings || '';
@@ -2141,9 +2322,32 @@
         ? currentDetailRecipe.ingredients.join('\n')
         : '';
         
-      document.getElementById('recipe-steps').value = Array.isArray(currentDetailRecipe.steps)
-        ? currentDetailRecipe.steps.join('\n')
-        : '';
+      // Populate structured steps & raw textarea
+      stepsFormContainer.innerHTML = '';
+      const rawLines = [];
+      if (Array.isArray(currentDetailRecipe.steps) && currentDetailRecipe.steps.length > 0) {
+        currentDetailRecipe.steps.forEach(st => {
+          if (typeof st === 'object' && st !== null) {
+            addStepInputRow(st.title || '', st.text || st.desc || '');
+            if (st.title) rawLines.push(st.title);
+            if (st.text || st.desc) rawLines.push(st.text || st.desc);
+            rawLines.push('');
+          } else if (typeof st === 'string') {
+            const lines = st.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            if (lines.length >= 2) {
+              addStepInputRow(lines[0], lines.slice(1).join('\n'));
+            } else {
+              addStepInputRow('', st);
+            }
+            rawLines.push(st);
+            rawLines.push('');
+          }
+        });
+      } else {
+        addStepInputRow();
+      }
+
+      recipeStepsRaw.value = rawLines.join('\n').trim();
 
       document.getElementById('recipe-memo').value = currentDetailRecipe.memo || '';
 
