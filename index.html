@@ -2,7 +2,8 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Disable unwanted viewport scaling / double-tap zoom on iOS & mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>もぐもぐレシピ帳 🍳✨</title>
 
   <!-- iOS Safari PWA Meta Tags -->
@@ -44,6 +45,11 @@
     }
 
     * { box-sizing: border-box; }
+
+    html, body {
+      touch-action: manipulation; /* Prevent double-tap zoom */
+      -webkit-text-size-adjust: 100%;
+    }
 
     body {
       font-family: 'M PLUS Rounded 1c', 'Noto Sans JP', -apple-system, sans-serif;
@@ -174,7 +180,7 @@
       border: 1.5px solid var(--border);
       border-radius: var(--radius-md);
       background: var(--surface);
-      font-size: 0.95rem;
+      font-size: 16px !important; /* Prevent iOS safari input focus zoom */
       color: var(--text);
       outline: none;
       box-sizing: border-box;
@@ -425,7 +431,7 @@
       padding: 10px 14px;
       border: 1.5px solid var(--border);
       border-radius: var(--radius-sm);
-      font-size: 0.95rem;
+      font-size: 16px !important; /* 16px prevents iOS Safari automatic page zooming */
       font-family: inherit;
       color: var(--text);
       background: var(--surface);
@@ -1699,15 +1705,20 @@
         db = getFirestore(app);
         auth = getAuth(app);
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
           currentUser = user;
           updateSyncModalUI();
-          loadUserFavorites();
+          if (currentUser) {
+            modalSettings.classList.remove('active');
+            await loadUserFavorites();
+          } else {
+            loadUserFavorites();
+          }
         });
 
         return true;
       } catch (e) {
-        alert("Firebase設定JSONのフォーマットが正しくありません。");
+        console.warn("Silent Firebase init note:", e);
         return false;
       }
     }
@@ -1720,7 +1731,7 @@
       openSettingsModal();
     }
 
-    // --- データ同期ボタン処理 ---
+    // --- Silent Google Sync / Auth Handling ---
     document.getElementById('btn-sync-google').addEventListener('click', async () => {
       const configStr = document.getElementById('firebase-config-json').value.trim();
       if (!configStr) {
@@ -1737,10 +1748,15 @@
           updateSyncModalUI();
           await loadUserFavorites();
           modalSettings.classList.remove('active');
-          alert("データ同期とGoogleログインが完了しました！");
         } catch (e) {
-          console.error(e);
-          alert("Googleログインに失敗しました: " + e.message);
+          console.warn("Silent login popup note:", e);
+          // If login is already active or succeeds asynchronously via onAuthStateChanged, close quietly
+          if (auth && auth.currentUser) {
+            currentUser = auth.currentUser;
+            updateSyncModalUI();
+            await loadUserFavorites();
+            modalSettings.classList.remove('active');
+          }
         }
       }
     });
@@ -2310,9 +2326,9 @@
       mainImg.src = photos[currentGalleryIndex] || '';
 
       const thumbs = thumbsRow.querySelectorAll('.gallery-thumb-item');
-      thumbs.forEach((t, i) => {
-        if (i === currentGalleryIndex) t.classList.add('active');
-        else t.classList.remove('active');
+      thumbs.forEach((i, iIdx) => {
+        if (iIdx === currentGalleryIndex) i.classList.add('active');
+        else i.classList.remove('active');
       });
     }
 
