@@ -1216,7 +1216,7 @@
         Firebaseの設定(JSON)を貼り付けると、Googleアカウントでのログイン画面が開き、データをクラウドに保存できます。
       </p>
 
-      <div class="form-group" style="margin-bottom: 1.5rem;">
+      <div id="firebase-config-container" class="form-group" style="margin-bottom: 1.5rem;">
         <textarea id="firebase-config-json" rows="6" 
           style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 14px; padding: 12px; font-size: 0.88rem; color: #334155; resize: vertical;"
           placeholder='{"apiKey": "AIzaSy...", "authDomain": "...", ...}'></textarea>
@@ -1538,15 +1538,19 @@
       const syncBanner = document.getElementById('sync-status-banner');
       const btnSyncGoogle = document.getElementById('btn-sync-google');
       const jsonArea = document.getElementById('firebase-config-json');
+      const jsonContainer = document.getElementById('firebase-config-container');
+      const syncDescription = document.getElementById('sync-description');
 
       if (currentUser) {
         syncBanner.style.display = 'flex';
         btnSyncGoogle.style.display = 'none';
-        jsonArea.readOnly = true;
+        if (jsonContainer) jsonContainer.style.display = 'none';
+        if (syncDescription) syncDescription.style.display = 'none';
       } else {
         syncBanner.style.display = 'none';
         btnSyncGoogle.style.display = 'flex';
-        jsonArea.readOnly = false;
+        if (jsonContainer) jsonContainer.style.display = 'block';
+        if (syncDescription) syncDescription.style.display = 'block';
       }
     }
 
@@ -1894,7 +1898,8 @@
     function normalizeJapaneseText(str) {
       if (!str) return '';
       let s = String(str).normalize('NFKC').toLowerCase();
-      s = s.replace(/[\s\u3000・,\-_\/\\\(\)\u3001\u3002\u300C\u300D\u3010\u3011「」【】]/g, '');
+      // Remove spaces, slashes, brackets, Japanese punctuation, wave dashes (~, 〜), !, ?, +, *
+      s = s.replace(/[\s\u3000・,\-_\/\\\(\)\u3001\u3002\u300C\u300D\u3010\u3011「」【】〜~！？!\?\+\*＊]/g, '');
       return s;
     }
 
@@ -1919,51 +1924,157 @@
       const tNorm = normalizeJapaneseText(targetText);
       if (!qNorm || !tNorm) return 0;
 
+      const allQueryWords = { ...(window.FOOD_VECTORS || {}), ...(window.QUERY_VECTORS || {}) };
+      const qHira = toHiragana(qNorm);
+      const isSemanticQuery = (qNorm in allQueryWords) || (qHira in allQueryWords);
+
+      // Prevent garbage results for short, non-semantic queries (e.g. "あ", "する", "ウニ" when not in dict)
+      const isAllHiragana = /^[\u3040-\u309F]+$/.test(qNorm);
+      const isAllKatakana = /^[\u30A0-\u30FF]+$/.test(qNorm);
+      if (!isSemanticQuery && (isAllHiragana || isAllKatakana) && qNorm.length <= 2) {
+        // Only allow Layer 0 strict substring match, completely skip Layer 1 Hiragana fuzzy match
+        // because 1-2 character Hiragana/Katakana (like うに) falsely match grammar particles (ように).
+        if (tNorm.includes(qNorm)) {
+          return 2.5; // Exact Katakana/Hiragana match (e.g. recipe actually contains "ウニ")
+        }
+        return 0;
+      }
+
       let maxScore = 0;
+      // If query is in Semantic Dict, we TRUST Semantic Search (Layer 2) to give the main score (up to 7.0).
+      // Layer 0/1 only gives a tiny boost (0.5) for exact matches to help sorting, but not enough to pass the 1.8 threshold alone.
+      // If query is NOT in Semantic Dict (e.g. "簡単", "レンジ", "フライパン"), Layer 0/1 gives a passing score (2.5).
+      let baseSubstringScore = isSemanticQuery ? 0.5 : 2.5;
 
       // --- Layer 0: Direct normalized substring match ---
-      if (tNorm.includes(qNorm)) maxScore = 10.0;
-
-      // --- Layer 1: Hiragana-unified substring match ---
-      const qHira = toHiragana(qNorm);
-      const tHira = toHiragana(tNorm);
-      if (tHira.includes(qHira) && maxScore < 9.0) maxScore = 9.0;
+      if (tNorm.includes(qNorm)) {
+        maxScore = baseSubstringScore;
+      } else {
+        // --- Layer 1: Hiragana-unified substring match ---
+        // (Only safe for semantic queries OR queries > 2 chars, to avoid false positive particle matches)
+        const tHira = toHiragana(tNorm);
+        if (tHira.includes(qHira) && maxScore < baseSubstringScore - 0.1) {
+          maxScore = baseSubstringScore - 0.1;
+        }
+      }
 
       // --- Layer 2: Offline Category Semantic Search ---
       if (window.FOOD_VECTORS) {
         let maxSemanticSim = 0;
-        for (const qWord in window.FOOD_VECTORS) {
-          const qWordHira = toHiragana(qWord);
-          
-          // Strict matching for query vs dictionary word to avoid false positives (e.g. "パスタ" matching "酢"(す))
-          const isQueryMatch = (
-            qNorm === qWord || 
-            qHira === qWordHira ||
-            (qWord.length >= 2 && (qNorm.includes(qWord) || qHira.includes(qWordHira))) ||
-            (qNorm.length >= 2 && (qWord.includes(qNorm) || qWordHira.includes(qHira)))
-          );
 
-          if (isQueryMatch) {
-            const qVec = window.FOOD_VECTORS[qWord];
-            for (const tWord in window.FOOD_VECTORS) {
-              const tWordHira = toHiragana(tWord);
-              
-              // Target text (recipe) can loosely contain the dictionary word
-              const isTargetMatch = (
-                tNorm.includes(tWord) || tHira.includes(tWordHira)
-              );
+          // Strict matching for query vs dictionary word with Subsumption
+          const matchedWords = [];
+          for (const qWord in allQueryWords) {
+            const qWordHira = toHiragana(qWord);
+            
+            let idx = -1;
+            let matchLen = 0;
+            if (qNorm === qWord || qHira === qWordHira) {
+              idx = 0; matchLen = qNorm.length;
+            } else if (qWord.length >= 2 && qNorm.includes(qWord)) {
+              idx = qNorm.indexOf(qWord); matchLen = qWord.length;
+            } else if (qWord.length >= 2 && qHira.includes(qWordHira)) {
+              idx = qHira.indexOf(qWordHira); matchLen = qWordHira.length;
+            }
 
-              if (isTargetMatch) {
-                const tVec = window.FOOD_VECTORS[tWord];
-                let dot = 0;
-                for (let i = 0; i < qVec.length; i++) {
-                  dot += qVec[i] * tVec[i];
-                }
-                if (dot > maxSemanticSim) maxSemanticSim = dot;
-              }
+            if (idx !== -1) {
+              matchedWords.push({ word: qWord, start: idx, end: idx + matchLen });
             }
           }
-        }
+
+          // Filter out matches that are strictly contained within another match
+          // (e.g. "にく" inside "にんにく")
+          const queryWordsToUse = [];
+          for (let i = 0; i < matchedWords.length; i++) {
+            let isSubsumed = false;
+            for (let j = 0; j < matchedWords.length; j++) {
+              if (i === j) continue;
+              if (matchedWords[i].start >= matchedWords[j].start && 
+                  matchedWords[i].end <= matchedWords[j].end && 
+                  (matchedWords[j].end - matchedWords[j].start) > (matchedWords[i].end - matchedWords[i].start)) {
+                isSubsumed = true;
+                break;
+              }
+            }
+            if (!isSubsumed) {
+              queryWordsToUse.push(matchedWords[i].word);
+            }
+          }
+
+          // === Target Word Subsumption ===
+          // Pre-compute all valid dictionary words present in the target text
+          // to prevent generic substrings (e.g. "ねぎ") from being extracted out of
+          // specific compounds (e.g. "玉ねぎ") if they overlap in the exact same position.
+          const matchedTargetWords = [];
+          for (const tWord in window.FOOD_VECTORS) {
+            let searchIdx = 0;
+            while (true) {
+              searchIdx = tNorm.indexOf(tWord, searchIdx);
+              if (searchIdx === -1) break;
+              
+              let isValid = true;
+              const isKatakanaWord = /^[\u30A0-\u30FF]+$/.test(tWord);
+              if (isKatakanaWord) {
+                const prevChar = searchIdx > 0 ? tNorm[searchIdx - 1] : '';
+                const nextChar = searchIdx + tWord.length < tNorm.length ? tNorm[searchIdx + tWord.length] : '';
+                const isPrevKatakana = /[\u30A0-\u30FF]/.test(prevChar);
+                const isNextKatakana = /[\u30A0-\u30FF]/.test(nextChar);
+                
+                if (isPrevKatakana || isNextKatakana) {
+                  isValid = false;
+                }
+              }
+
+              // Critical Heuristic: Prevent short Hiragana words (e.g. "うに", "いか", "す") 
+              // from being falsely extracted out of grammar or other words (e.g. "ように", "すいか", "します").
+              const isHiraganaWord = /^[\u3040-\u309F]+$/.test(tWord);
+              if (isHiraganaWord && tWord.length <= 2) {
+                const prevChar = searchIdx > 0 ? tNorm[searchIdx - 1] : '';
+                const isPrevHiragana = /[\u3040-\u309F]/.test(prevChar);
+                if (isPrevHiragana) {
+                  isValid = false;
+                }
+              }
+              
+              if (isValid) {
+                matchedTargetWords.push({ word: tWord, start: searchIdx, end: searchIdx + tWord.length });
+              }
+              searchIdx += 1;
+            }
+          }
+
+          const validTargetWords = new Set();
+          for (let i = 0; i < matchedTargetWords.length; i++) {
+            let isSubsumed = false;
+            for (let j = 0; j < matchedTargetWords.length; j++) {
+              if (i === j) continue;
+              const wi = matchedTargetWords[i];
+              const wj = matchedTargetWords[j];
+              if (wi.start >= wj.start && wi.end <= wj.end && (wj.end - wj.start) > (wi.end - wi.start)) {
+                isSubsumed = true;
+                break;
+              }
+            }
+            if (!isSubsumed) {
+              validTargetWords.add(matchedTargetWords[i].word);
+            }
+          }
+
+          // Compute max semantic similarity between any qWord and valid tWord
+          for (const qWord of queryWordsToUse) {
+            const qVec = allQueryWords[qWord];
+            for (const tWord of validTargetWords) {
+              const tVec = window.FOOD_VECTORS[tWord];
+              let dot = 0;
+              for (let i = 0; i < qVec.length; i++) {
+                dot += qVec[i] * tVec[i];
+              }
+              // Prevent Dimensional Explosion by capping the dot product at 1.0
+              if (dot > 1.0) dot = 1.0;
+              
+              if (dot > maxSemanticSim) maxSemanticSim = dot;
+            }
+          }
         
         // Exact category match (dot == 1.0) gives semanticScore = 7.0
         if (maxSemanticSim >= 0.55) {
@@ -1976,11 +2087,31 @@
     }
 
     function computeRecipeSemanticScore(recipe, queryStr) {
-      const keywords = queryStr.trim().split(/\s+/).filter(k => k.length > 0);
-      if (keywords.length === 0) return 1.0;
+      // 1. Convert common punctuation separators to spaces to prevent words from merging (e.g. "豚肉、玉ねぎ" -> "豚肉 玉ねぎ")
+      let normalizedQuery = queryStr.replace(/[\u3000・,\/、。｜\|]/g, ' ');
+      const rawKeywords = normalizedQuery.trim().split(/\s+/).filter(k => k.length > 0);
+      if (rawKeywords.length === 0) return 1.0;
+
+      // 2. Filter out short, non-semantic hiragana noise particles (e.g. "と", "で", "の")
+      // because they would return score 0 and fail the entire AND-search.
+      const keywords = [];
+      const allQueryWords = { ...(window.FOOD_VECTORS || {}), ...(window.QUERY_VECTORS || {}) };
+      for (const kw of rawKeywords) {
+        const qNorm = normalizeJapaneseText(kw);
+        const qHira = toHiragana(qNorm);
+        const isSemantic = (qNorm in allQueryWords) || (qHira in allQueryWords);
+        const isAllHira = /^[\u3040-\u309F]+$/.test(qNorm);
+        
+        if (!isSemantic && isAllHira && qNorm.length <= 2) continue;
+        keywords.push(kw);
+      }
+      
+      // If all keywords were noise particles, fallback to the raw keywords to prevent empty array
+      const finalKeywords = keywords.length > 0 ? keywords : rawKeywords;
+
       let totalScore = 0;
 
-      for (const kw of keywords) {
+      for (const kw of finalKeywords) {
         let kwMaxScore = computeSearchMatchScore(kw, recipe.title) * 2.0;
 
         if (Array.isArray(recipe.ingredients)) {
