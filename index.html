@@ -5,13 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>もぐもぐレシピ帳 🍳✨</title>
 
+  <!-- iOS Safari PWA Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="もぐレシピ">
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <!-- Dynamic Favicon & PWA Manifest -->
-  <link id="favicon-link" rel="icon" type="image/svg+xml" href="">
+  <!-- Dynamic Favicon, Apple Touch Icon & PWA Manifest -->
+  <link id="favicon-link" rel="icon" type="image/png" href="">
+  <link id="apple-touch-icon-link" rel="apple-touch-icon" href="">
+  <link id="apple-touch-icon-precomposed-link" rel="apple-touch-icon-precomposed" href="">
   <link id="manifest-link" rel="manifest" href="">
 
   <style>
@@ -1034,7 +1041,7 @@
       </div>
 
       <div class="modal-body">
-        <!-- 作った回数カウンター (増やす・減らすコントロール) -->
+        <!-- 作った回数カウンター -->
         <div class="cooked-counter-box">
           <div>
             <div style="font-size: 0.82rem; color: var(--text-muted); font-weight: 700;">通算で作った回数</div>
@@ -1134,13 +1141,49 @@
     </div>
   </div>
 
-  <!-- 超可愛い PWA Favicon ＆ SVG アイコン生成 -->
+  <!-- Dynamic PNG Canvas Generator for iOS Safari Apple Touch Icon -->
   <script>
-    function generateCuteSvgIcon() {
-      return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="28" fill="%23FF6B52"/><circle cx="50" cy="50" r="40" fill="%23FFFFFF"/><text x="50" y="58" font-size="44" text-anchor="middle">🍳</text></svg>`;
+    function generateCutePngIcon(size = 192) {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      // Rounded rectangle background (coral primary)
+      const radius = size * 0.28;
+      ctx.fillStyle = '#FF6B52';
+      ctx.beginPath();
+      ctx.moveTo(radius, 0);
+      ctx.lineTo(size - radius, 0);
+      ctx.quadraticCurveTo(size, 0, size, radius);
+      ctx.lineTo(size, size - radius);
+      ctx.quadraticCurveTo(size, size, size - radius, size);
+      ctx.lineTo(radius, size);
+      ctx.quadraticCurveTo(0, size, 0, size - radius);
+      ctx.lineTo(0, radius);
+      ctx.quadraticCurveTo(0, 0, radius, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      // White inner circle
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size * 0.38, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Fried egg emoji
+      ctx.font = `${size * 0.48}px sans-serif, "Apple Color Emoji", "Segoe UI Emoji"`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🍳', size / 2, size / 2 + size * 0.04);
+
+      return canvas.toDataURL('image/png');
     }
-    const cuteIconUri = generateCuteSvgIcon();
-    document.getElementById('favicon-link').href = cuteIconUri;
+
+    const cutePngUri = generateCutePngIcon(192);
+    document.getElementById('favicon-link').href = cutePngUri;
+    document.getElementById('apple-touch-icon-link').href = cutePngUri;
+    document.getElementById('apple-touch-icon-precomposed-link').href = cutePngUri;
 
     const manifest = {
       "name": "もぐもぐレシピ帳",
@@ -1151,9 +1194,9 @@
       "theme_color": "#FF6B52",
       "icons": [
         {
-          "src": cuteIconUri,
+          "src": cutePngUri,
           "sizes": "192x192",
-          "type": "image/svg+xml"
+          "type": "image/png"
         }
       ]
     };
