@@ -4,74 +4,851 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>共有レシピ帳</title>
-  
-  <!-- PWA用のマニフェストを動的に読み込むための空リンク -->
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Dynamic PWA Manifest -->
   <link id="manifest-link" rel="manifest" href="">
-  
+
   <style>
-    body { font-family: sans-serif; margin: 0; padding: 0; background: #f9f9f9; }
-    header { background: #ff9800; color: white; padding: 1rem; text-align: center; }
-    nav { display: flex; background: #333; }
-    nav button { flex: 1; padding: 10px; background: none; color: white; border: none; cursor: pointer; font-size: 16px; }
-    nav button.active { background: #ff9800; font-weight: bold; }
-    .container { padding: 1rem; max-width: 600px; margin: auto; }
+    :root {
+      --primary: #E05638;
+      --primary-hover: #C84326;
+      --primary-light: #FDF2F0;
+      --accent: #F97316;
+      --bg: #FAFAF9;
+      --surface: #FFFFFF;
+      --border: #E7E5E4;
+      --border-dark: #D6D3D1;
+      --text: #1C1917;
+      --text-muted: #78716C;
+      --text-light: #A8A29E;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.12), 0 8px 10px -6px rgba(0,0,0,0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans JP', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.92);
+    }
+    .header-inner {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0.8rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .app-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .icon-btn {
+      background: none;
+      border: 1px solid var(--border);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+    .icon-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    /* Navigation Bar */
+    nav {
+      max-width: 680px;
+      margin: 1rem auto 0;
+      padding: 0 1rem;
+      display: flex;
+      gap: 8px;
+    }
+    .nav-tab {
+      flex: 1;
+      padding: 10px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .nav-tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(224, 86, 56, 0.3);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
     .page { display: none; }
-    .page.active { display: block; }
-    .recipe-card { background: white; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .recipe-card h3 { margin-top: 0; }
-    .recipe-card img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
-    input, textarea, button { width: 100%; padding: 12px; margin: 5px 0 15px; box-sizing: border-box; font-size: 16px; }
-    .btn { background: #ff9800; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; }
-    .btn:disabled { background: #ccc; }
+    .page.active { display: block; animation: fadeIn 0.25s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Controls (Search & Filter) */
+    .search-filter-box {
+      margin-bottom: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .search-wrapper {
+      position: relative;
+    }
+    .search-input {
+      width: 100%;
+      padding: 12px 16px 12px 42px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      font-size: 0.95rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(224, 86, 56, 0.15);
+    }
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      color: var(--text-light);
+      pointer-events: none;
+    }
+    .category-pills {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .category-pills::-webkit-scrollbar { display: none; }
+    .pill {
+      white-space: nowrap;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .pill.active {
+      background: var(--text);
+      color: white;
+      border-color: var(--text);
+    }
+
+    /* Recipe Grid & Cards */
+    .recipe-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .recipe-card {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .recipe-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+    .card-img-wrapper {
+      width: 100%;
+      height: 160px;
+      background: #F3F4F6;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: #D1D5DB;
+      background: linear-gradient(135deg, #FEF3C7, #FFEDD5);
+    }
+    .card-category-tag {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.65);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 12px;
+      backdrop-filter: blur(4px);
+    }
+    .card-content {
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0 0 6px 0;
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .card-ingredients-preview {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+    }
+
+    /* Form Styles */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.2rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+    }
+    .form-section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 0 0 1rem 0;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--primary-light);
+    }
+    .form-group {
+      margin-bottom: 1.1rem;
+    }
+    .form-group:last-child { margin-bottom: 0; }
+    label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .field-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: -4px;
+      margin-bottom: 6px;
+    }
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--surface);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    input[type="text"]:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(224, 86, 56, 0.15);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 480px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .image-picker-box {
+      border: 2px dashed var(--border-dark);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      text-align: center;
+      background: var(--bg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .image-picker-box:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .image-preview-container {
+      margin-top: 10px;
+      position: relative;
+      display: inline-block;
+      max-width: 100%;
+    }
+    .image-preview-img {
+      max-width: 100%;
+      max-height: 220px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      box-shadow: var(--shadow-sm);
+    }
+    .btn-remove-preview {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(224, 86, 56, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 4px 12px rgba(224, 86, 56, 0.35);
+    }
+    .btn:disabled {
+      background: var(--border-dark);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .btn-danger {
+      background: #EF4444;
+      box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25);
+    }
+    .btn-danger:hover {
+      background: #DC2626;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+    }
+    .btn-secondary {
+      background: #F3F4F6;
+      color: var(--text);
+      box-shadow: none;
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: #E5E7EB;
+    }
+
+    /* Modal Overlay & Dialog */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease;
+    }
+    .modal-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 580px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-backdrop.active .modal-card {
+      transform: scale(1);
+    }
+    .modal-header {
+      padding: 1.2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      z-index: 10;
+    }
+    .modal-title-group { flex: 1; padding-right: 12px; }
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 0;
+      color: var(--text);
+    }
+    .modal-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .modal-close-btn {
+      background: #F3F4F6;
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+    }
+    .modal-close-btn:hover { background: #E5E7EB; color: var(--text); }
+    .modal-body {
+      padding: 1.2rem;
+      overflow-y: auto;
+    }
+    .modal-hero-img {
+      width: 100%;
+      max-height: 280px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      margin-bottom: 1.2rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .detail-section {
+      margin-bottom: 1.4rem;
+    }
+    .detail-section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0 0 0.6rem 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Ingredient Checklist */
+    .ingredient-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: var(--bg);
+      padding: 0.8rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+    .ingredient-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s ease;
+    }
+    .ingredient-item:hover { background: rgba(0,0,0,0.03); }
+    .ingredient-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+    .ingredient-item.checked span {
+      text-decoration: line-through;
+      color: var(--text-light);
+    }
+
+    /* Step List */
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .step-item {
+      display: flex;
+      gap: 12px;
+      background: var(--surface);
+      padding: 0.8rem 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+    .step-number {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .step-text {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text);
+      align-self: center;
+    }
+
+    .notes-box {
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      padding: 0.9rem 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.92rem;
+      color: #92400E;
+      white-space: pre-wrap;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      background: var(--surface);
+      border-bottom-left-radius: var(--radius-lg);
+      border-bottom-right-radius: var(--radius-lg);
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--border-dark);
+      color: var(--text-muted);
+    }
+    .empty-icon {
+      font-size: 3.5rem;
+      margin-bottom: 0.5rem;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Header -->
   <header>
-    <h2 style="margin: 0;">🍽️ 共有レシピ帳</h2>
+    <div class="header-inner">
+      <a href="#" class="app-logo">
+        <span>🍳</span>
+        <span>共有レシピ帳</span>
+      </a>
+      <button id="btn-open-settings" class="icon-btn" title="Firebase設定">
+        ⚙️
+      </button>
+    </div>
   </header>
+
+  <!-- Navigation Tabs -->
   <nav>
-    <button id="nav-list" class="active">一覧</button>
-    <button id="nav-add">追加</button>
-    <button id="nav-settings">設定</button>
+    <button id="nav-list" class="nav-tab active">
+      <span>📋</span> レシピ一覧
+    </button>
+    <button id="nav-add" class="nav-tab">
+      <span>➕</span> レシピ登録
+    </button>
   </nav>
 
+  <!-- Main Content Area -->
   <div class="container">
-    <!-- レシピ一覧画面 -->
+    
+    <!-- PAGE 1: レシピ一覧 -->
     <div id="page-list" class="page active">
-      <div id="recipe-list-container">設定画面でFirebase情報を登録してください。</div>
+      
+      <!-- 検索・フィルター -->
+      <div class="search-filter-box">
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" class="search-input" placeholder="料理名や材料名で検索...">
+        </div>
+        <div class="category-pills" id="category-pills">
+          <button class="pill active" data-cat="all">全て</button>
+          <button class="pill" data-cat="主菜">主菜</button>
+          <button class="pill" data-cat="副菜">副菜</button>
+          <button class="pill" data-cat="汁物">汁物</button>
+          <button class="pill" data-cat="主食">主食</button>
+          <button class="pill" data-cat="デザート">デザート</button>
+          <button class="pill" data-cat="その他">その他</button>
+        </div>
+      </div>
+
+      <!-- レシピカードグリッド -->
+      <div id="recipe-list-container">
+        <div class="empty-state">
+          <div class="empty-icon">🍳</div>
+          <p>設定画面でFirebase接続情報を登録してください。</p>
+        </div>
+      </div>
     </div>
 
-    <!-- レシピ追加画面 -->
+    <!-- PAGE 2: レシピ追加 -->
     <div id="page-add" class="page">
-      <h3>新しいレシピを登録</h3>
-      <input type="text" id="recipe-title" placeholder="料理名 (例: 特製ウニクリームパスタ)" required>
-      <textarea id="recipe-memo" rows="4" placeholder="材料・作り方・感想など"></textarea>
-      <label style="display: block; margin-bottom: 5px;">写真:</label>
-      <input type="file" id="recipe-image" accept="image/*">
-      <button class="btn" id="btn-save-recipe">保存する</button>
+      <div class="form-card">
+        <div class="form-section-title">📌 基本情報</div>
+        
+        <div class="form-group">
+          <label for="recipe-title">料理名 <span style="color: var(--primary);">*</span></label>
+          <input type="text" id="recipe-title" placeholder="例: 特製ウニクリームパスタ" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="recipe-category">カテゴリ</label>
+            <select id="recipe-category">
+              <option value="主菜">主菜</option>
+              <option value="副菜">副菜</option>
+              <option value="汁物">汁物</option>
+              <option value="主食">主食</option>
+              <option value="デザート">デザート</option>
+              <option value="その他">その他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="recipe-servings">分量 (人数など)</label>
+            <input type="text" id="recipe-servings" placeholder="例: 2人分">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-section-title">🛒 材料</div>
+        <div class="form-group">
+          <div class="field-desc">※ 1行に1項目ずつ入力してください（例: 豚肉 200g）</div>
+          <textarea id="recipe-ingredients" rows="5" placeholder="豚バラ薄切り肉 200g&#10;キャベツ 1/4個&#10;しょうゆ 大さじ1.5&#10;みりん 大さじ1"></textarea>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-section-title">👩‍🍳 作り方</div>
+        <div class="form-group">
+          <div class="field-desc">※ 1行に1ステップずつ順に入力してください</div>
+          <textarea id="recipe-steps" rows="5" placeholder="キャベツと豚肉を一口大に切る。&#10;熱したフライパンで豚肉を炒める。&#10;火が通ったらキャベツと調味料を加えて炒め合わせる。"></textarea>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-section-title">💡 コツ・メモ</div>
+        <div class="form-group">
+          <textarea id="recipe-memo" rows="3" placeholder="隠し味に生姜を入れると美味しくなります。"></textarea>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-section-title">📷 写真</div>
+        <div class="form-group">
+          <input type="file" id="recipe-image" accept="image/*" style="display: none;">
+          <div class="image-picker-box" id="btn-select-image">
+            <span style="font-size: 1.8rem;">📷</span>
+            <div style="font-size: 0.9rem; font-weight: 600; margin-top: 4px;">写真を選択する</div>
+          </div>
+          <div class="image-preview-container" id="preview-container" style="display: none;">
+            <img id="preview-img" class="image-preview-img" src="" alt="プレビュー">
+            <button id="btn-remove-image" class="btn-remove-preview" title="写真を削除">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn" id="btn-save-recipe">
+        <span>💾</span> レシピを保存する
+      </button>
     </div>
 
-    <!-- 設定画面 -->
-    <div id="page-settings" class="page">
-      <h3>Firebase接続設定</h3>
-      <p style="font-size: 0.85em; color: #666; margin-top: 0;">※共有相手にもこの画面で同じJSONを入力してもらってください。</p>
-      <textarea id="firebase-config-json" rows="8" placeholder='{"apiKey": "...", "authDomain": "...", ...}'></textarea>
-      <button class="btn" id="btn-save-settings">設定を保存</button>
+  </div>
+
+  <!-- レシピ詳細 モーダル -->
+  <div id="modal-recipe-detail" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 id="detail-title" class="modal-title">料理名</h2>
+          <div class="modal-meta">
+            <span id="detail-category-badge" class="pill" style="background: var(--primary-light); color: var(--primary); border: none;">主菜</span>
+            <span id="detail-servings">👤 2人分</span>
+          </div>
+        </div>
+        <button id="btn-close-detail" class="modal-close-btn">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <img id="detail-img" class="modal-hero-img" src="" alt="料理写真" style="display: none;">
+
+        <!-- 材料 -->
+        <div id="section-ingredients" class="detail-section" style="display: none;">
+          <div class="detail-section-title">🛒 材料</div>
+          <div id="detail-ingredients-list" class="ingredient-list"></div>
+        </div>
+
+        <!-- 作り方 -->
+        <div id="section-steps" class="detail-section" style="display: none;">
+          <div class="detail-section-title">👩‍🍳 作り方</div>
+          <div id="detail-steps-list" class="step-list"></div>
+        </div>
+
+        <!-- コツ・メモ -->
+        <div id="section-memo" class="detail-section" style="display: none;">
+          <div class="detail-section-title">💡 コツ・メモ</div>
+          <div id="detail-memo-content" class="notes-box"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-delete-recipe" class="btn btn-danger" style="margin-left: auto; width: auto; padding: 10px 18px;">
+          <span>🗑️</span> レシピを削除
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- PWAマニフェスト動的生成スクリプト -->
+  <!-- Firebase設定 モーダル -->
+  <div id="modal-settings" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3 class="modal-title">⚙️ Firebase接続設定</h3>
+        <button id="btn-close-settings" class="modal-close-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0;">
+          共有相手と共有するため、Firebaseプロジェクトの構成情報(JSON)を入力してください。
+        </p>
+        <div class="form-group">
+          <label for="firebase-config-json">Firebase Config JSON</label>
+          <textarea id="firebase-config-json" rows="8" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "..."}'></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-save-settings" class="btn">設定を保存する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PWA マニフェスト -->
   <script>
     const manifest = {
       "name": "共有レシピ帳",
       "short_name": "レシピ帳",
       "start_url": window.location.href,
       "display": "standalone",
-      "background_color": "#f9f9f9",
-      "theme_color": "#ff9800",
+      "background_color": "#FAFAF9",
+      "theme_color": "#E05638",
       "icons": [
         {
-          "src": "https://via.placeholder.com/192/ff9800/ffffff?text=Recipe",
+          "src": "https://via.placeholder.com/192/E05638/ffffff?text=Recipe",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -81,38 +858,111 @@
     document.getElementById('manifest-link').href = URL.createObjectURL(manifestBlob);
   </script>
 
-  <!-- アプリのメインロジック (Firebase連携) -->
+  <!-- App Main JavaScript Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { 
+      getFirestore, 
+      collection, 
+      addDoc, 
+      getDocs, 
+      deleteDoc, 
+      doc, 
+      orderBy, 
+      query, 
+      serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-    // --- 画面切り替えロジック ---
+    // --- State Variables ---
+    let app = null;
+    let db = null;
+    let recipesCache = [];
+    let activeCategory = 'all';
+    let searchQuery = '';
+    let selectedImageBase64 = '';
+    let currentDetailRecipeId = null;
+
+    // --- Page & Modal DOM Elements ---
     const pages = {
       list: document.getElementById('page-list'),
-      add: document.getElementById('page-add'),
-      settings: document.getElementById('page-settings')
+      add: document.getElementById('page-add')
     };
     const navButtons = {
       list: document.getElementById('nav-list'),
-      add: document.getElementById('nav-add'),
-      settings: document.getElementById('nav-settings')
+      add: document.getElementById('nav-add')
     };
+    const modalSettings = document.getElementById('modal-settings');
+    const modalDetail = document.getElementById('modal-recipe-detail');
 
+    // --- Navigation Logic ---
     function switchPage(pageName) {
       Object.values(pages).forEach(p => p.classList.remove('active'));
       Object.values(navButtons).forEach(b => b.classList.remove('active'));
       pages[pageName].classList.add('active');
       navButtons[pageName].classList.add('active');
       
-      if(pageName === 'list' && app) fetchRecipes();
+      if (pageName === 'list' && app) fetchRecipes();
     }
 
-    Object.keys(navButtons).forEach(key => {
-      navButtons[key].addEventListener('click', () => switchPage(key));
+    navButtons.list.addEventListener('click', () => switchPage('list'));
+    navButtons.add.addEventListener('click', () => switchPage('add'));
+
+    // --- Settings Modal Logic ---
+    document.getElementById('btn-open-settings').addEventListener('click', () => {
+      modalSettings.classList.add('active');
+    });
+    document.getElementById('btn-close-settings').addEventListener('click', () => {
+      modalSettings.classList.remove('active');
     });
 
-    // --- 画像圧縮ロジック (Firestoreの1MB制限対策) ---
-    function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.7) {
+    // --- Detail Modal Close ---
+    document.getElementById('btn-close-detail').addEventListener('click', () => {
+      modalDetail.classList.remove('active');
+      currentDetailRecipeId = null;
+    });
+
+    // Close modal when clicking backdrop
+    [modalSettings, modalDetail].forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.remove('active');
+          currentDetailRecipeId = null;
+        }
+      });
+    });
+
+    // --- Image Upload & Compression Logic ---
+    const fileInput = document.getElementById('recipe-image');
+    const btnSelectImage = document.getElementById('btn-select-image');
+    const previewContainer = document.getElementById('preview-container');
+    const previewImg = document.getElementById('preview-img');
+    const btnRemoveImage = document.getElementById('btn-remove-image');
+
+    btnSelectImage.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        selectedImageBase64 = await compressImage(file);
+        previewImg.src = selectedImageBase64;
+        previewContainer.style.display = 'inline-block';
+        btnSelectImage.style.display = 'none';
+      } catch (err) {
+        alert(err.message);
+        fileInput.value = '';
+      }
+    });
+
+    btnRemoveImage.addEventListener('click', () => {
+      selectedImageBase64 = '';
+      fileInput.value = '';
+      previewImg.src = '';
+      previewContainer.style.display = 'none';
+      btnSelectImage.style.display = 'block';
+    });
+
+    function compressImage(file, maxWidth = 900, maxHeight = 900, quality = 0.75) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -123,13 +973,12 @@
             let width = img.width;
             let height = img.height;
 
-            // アスペクト比を保ったまま縮小
             if (width > maxWidth || height > maxHeight) {
               if (width > height) {
-                height = Math.round((height *= maxWidth / width));
+                height = Math.round(height * (maxWidth / width));
                 width = maxWidth;
               } else {
-                width = Math.round((width *= maxHeight / height));
+                width = Math.round(width * (maxHeight / height));
                 height = maxHeight;
               }
             }
@@ -140,25 +989,20 @@
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Base64文字列として出力 (JPEG)
             const base64 = canvas.toDataURL('image/jpeg', quality);
-            
-            // Firestoreの1MB上限を考慮し、約900KBを超えた場合はエラーにする
             if (base64.length * 0.75 > 900000) {
-              reject(new Error("画像サイズが大きすぎます。別の写真を選ぶか、カメラの解像度を下げてください。"));
+              reject(new Error("画像サイズが大きすぎます。別の画像を選ぶか、解像度を下げてください。"));
             } else {
               resolve(base64);
             }
           };
-          img.onerror = () => reject(new Error("画像の読み込みに失敗しました。"));
+          img.onerror = () => reject(new Error("画像の読込に失敗しました。"));
         };
-        reader.onerror = () => reject(new Error("ファイルの読み込みに失敗しました。"));
+        reader.onerror = () => reject(new Error("ファイルの読込に失敗しました。"));
       });
     }
 
-    // --- Firebase初期化 ---
-    let app, db;
-
+    // --- Firebase Initialization ---
     function initFirebase(configStr) {
       try {
         const config = JSON.parse(configStr);
@@ -166,7 +1010,7 @@
         db = getFirestore(app);
         return true;
       } catch (e) {
-        alert("Firebase設定のJSONフォーマットが正しくありません。");
+        alert("Firebase設定JSONのフォーマットが正しくありません。");
         return false;
       }
     }
@@ -174,95 +1018,310 @@
     const savedConfig = localStorage.getItem('fbConfig');
     if (savedConfig) {
       document.getElementById('firebase-config-json').value = savedConfig;
-      if(initFirebase(savedConfig)) fetchRecipes();
+      if (initFirebase(savedConfig)) fetchRecipes();
     } else {
-      switchPage('settings');
+      modalSettings.classList.add('active');
     }
 
     document.getElementById('btn-save-settings').addEventListener('click', () => {
       const configStr = document.getElementById('firebase-config-json').value;
       if (initFirebase(configStr)) {
         localStorage.setItem('fbConfig', configStr);
-        alert("設定を保存しました！");
-        switchPage('list');
+        modalSettings.classList.remove('active');
+        alert("Firebase設定を保存しました！");
+        fetchRecipes();
       }
     });
 
-    // --- レシピ保存処理 ---
+    // --- Save Recipe ---
     document.getElementById('btn-save-recipe').addEventListener('click', async () => {
-      if (!app) return alert("先に設定画面でFirebaseを連携してください。");
-      
-      const title = document.getElementById('recipe-title').value;
-      const memo = document.getElementById('recipe-memo').value;
-      const fileInput = document.getElementById('recipe-image');
-      const btn = document.getElementById('btn-save-recipe');
+      if (!app) {
+        modalSettings.classList.add('active');
+        return alert("先にFirebaseの接続情報を設定してください。");
+      }
 
-      if (!title) return alert("料理名は必須です！");
+      const title = document.getElementById('recipe-title').value.trim();
+      const category = document.getElementById('recipe-category').value;
+      const servings = document.getElementById('recipe-servings').value.trim();
+      const rawIngredients = document.getElementById('recipe-ingredients').value;
+      const rawSteps = document.getElementById('recipe-steps').value;
+      const memo = document.getElementById('recipe-memo').value.trim();
+      const btnSave = document.getElementById('btn-save-recipe');
 
-      btn.innerText = "保存中...";
-      btn.disabled = true;
+      if (!title) return alert("料理名は必須項目です！");
+
+      const ingredients = rawIngredients
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+
+      const steps = rawSteps
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+
+      btnSave.innerText = "保存中...";
+      btnSave.disabled = true;
 
       try {
-        let imageUrl = "";
-        if (fileInput.files.length > 0) {
-          // 画像を圧縮してBase64文字列に変換
-          imageUrl = await compressImage(fileInput.files[0]);
-        }
-
         await addDoc(collection(db, "recipes"), {
-          title: title,
-          memo: memo,
-          imageUrl: imageUrl, // Base64文字列をそのまま保存
+          title,
+          category: category || "その他",
+          servings: servings || "",
+          ingredients,
+          steps,
+          memo,
+          imageUrl: selectedImageBase64,
           createdAt: serverTimestamp()
         });
 
         alert("レシピを保存しました！");
-        document.getElementById('recipe-title').value = "";
-        document.getElementById('recipe-memo').value = "";
-        fileInput.value = "";
-        switchPage('list');
 
+        // Form Reset
+        document.getElementById('recipe-title').value = '';
+        document.getElementById('recipe-servings').value = '';
+        document.getElementById('recipe-ingredients').value = '';
+        document.getElementById('recipe-steps').value = '';
+        document.getElementById('recipe-memo').value = '';
+        btnRemoveImage.click();
+
+        switchPage('list');
       } catch (e) {
         console.error(e);
         alert("エラーが発生しました: " + e.message);
       } finally {
-        btn.innerText = "保存する";
-        btn.disabled = false;
+        btnSave.innerHTML = `<span>💾</span> レシピを保存する`;
+        btnSave.disabled = false;
       }
     });
 
-    // --- レシピ一覧取得処理 ---
+    // --- Fetch Recipes & Render List ---
     async function fetchRecipes() {
       const container = document.getElementById('recipe-list-container');
-      container.innerHTML = "読み込み中...";
-      
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔄</div><p>レシピを読み込み中...</p></div>`;
+
       try {
         const q = query(collection(db, "recipes"), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
-        
-        container.innerHTML = "";
-        if(querySnapshot.empty) {
-          container.innerHTML = "<p>レシピがありません。</p>";
-          return;
-        }
 
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          const div = document.createElement('div');
-          div.className = 'recipe-card';
-          
-          let html = `<h3>${data.title}</h3>`;
-          if (data.memo) html += `<p>${data.memo.replace(/\n/g, '<br>')}</p>`;
-          // imageUrlにはBase64文字列が入っているので、そのままsrcに指定できる
-          if (data.imageUrl) html += `<img src="${data.imageUrl}" alt="料理写真">`;
-          
-          div.innerHTML = html;
-          container.appendChild(div);
+        recipesCache = [];
+        querySnapshot.forEach((docSnap) => {
+          recipesCache.push({
+            id: docSnap.id,
+            ...docSnap.data()
+          });
         });
+
+        renderRecipeList();
       } catch (e) {
         console.error(e);
-        container.innerHTML = "データの取得に失敗しました。";
+        container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>データの取得に失敗しました。設定情報を確認してください。</p></div>`;
       }
+    }
+
+    // Filter & Render List
+    function renderRecipeList() {
+      const container = document.getElementById('recipe-list-container');
+
+      const filtered = recipesCache.filter(item => {
+        // Category filter
+        if (activeCategory !== 'all' && (item.category || 'その他') !== activeCategory) {
+          return false;
+        }
+        // Search query filter
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          const matchTitle = (item.title || '').toLowerCase().includes(q);
+          const matchIng = Array.isArray(item.ingredients) 
+            ? item.ingredients.some(ing => ing.toLowerCase().includes(q))
+            : false;
+          const matchMemo = (item.memo || '').toLowerCase().includes(q);
+          if (!matchTitle && !matchIng && !matchMemo) return false;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🍽️</div>
+            <p>該当するレシピが見つかりません。</p>
+          </div>`;
+        return;
+      }
+
+      const grid = document.createElement('div');
+      grid.className = 'recipe-grid';
+
+      filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'recipe-card';
+        card.addEventListener('click', () => openRecipeDetail(item));
+
+        const imageHtml = item.imageUrl
+          ? `<img src="${item.imageUrl}" alt="${item.title}" class="card-img">`
+          : `<div class="card-placeholder">🍳</div>`;
+
+        const categoryTag = item.category ? `<div class="card-category-tag">${item.category}</div>` : '';
+        const servingsTag = item.servings ? `<span>👤 ${item.servings}</span>` : '';
+
+        let ingredientsPreview = '';
+        if (Array.isArray(item.ingredients) && item.ingredients.length > 0) {
+          ingredientsPreview = `🛒 ${item.ingredients.slice(0, 3).join('・')}${item.ingredients.length > 3 ? '...' : ''}`;
+        } else if (item.memo) {
+          ingredientsPreview = item.memo;
+        }
+
+        card.innerHTML = `
+          <div class="card-img-wrapper">
+            ${imageHtml}
+            ${categoryTag}
+          </div>
+          <div class="card-content">
+            <h3 class="card-title">${escapeHtml(item.title)}</h3>
+            <div class="card-meta">
+              ${servingsTag}
+            </div>
+            ${ingredientsPreview ? `<div class="card-ingredients-preview">${escapeHtml(ingredientsPreview)}</div>` : ''}
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+
+      container.innerHTML = '';
+      container.appendChild(grid);
+    }
+
+    // --- Open Detail Modal ---
+    function openRecipeDetail(recipe) {
+      currentDetailRecipeId = recipe.id;
+
+      document.getElementById('detail-title').innerText = recipe.title || '無題';
+      document.getElementById('detail-category-badge').innerText = recipe.category || 'その他';
+
+      const servingsEl = document.getElementById('detail-servings');
+      if (recipe.servings) {
+        servingsEl.innerText = `👤 ${recipe.servings}`;
+        servingsEl.style.display = 'inline';
+      } else {
+        servingsEl.style.display = 'none';
+      }
+
+      // Hero Image
+      const imgEl = document.getElementById('detail-img');
+      if (recipe.imageUrl) {
+        imgEl.src = recipe.imageUrl;
+        imgEl.style.display = 'block';
+      } else {
+        imgEl.style.display = 'none';
+      }
+
+      // Ingredients
+      const secIngredients = document.getElementById('section-ingredients');
+      const listIngredients = document.getElementById('detail-ingredients-list');
+      listIngredients.innerHTML = '';
+
+      if (Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0) {
+        secIngredients.style.display = 'block';
+        recipe.ingredients.forEach(ing => {
+          const label = document.createElement('label');
+          label.className = 'ingredient-item';
+          label.innerHTML = `<input type="checkbox"> <span>${escapeHtml(ing)}</span>`;
+          label.querySelector('input').addEventListener('change', (e) => {
+            if (e.target.checked) label.classList.add('checked');
+            else label.classList.remove('checked');
+          });
+          listIngredients.appendChild(label);
+        });
+      } else {
+        secIngredients.style.display = 'none';
+      }
+
+      // Steps
+      const secSteps = document.getElementById('section-steps');
+      const listSteps = document.getElementById('detail-steps-list');
+      listSteps.innerHTML = '';
+
+      if (Array.isArray(recipe.steps) && recipe.steps.length > 0) {
+        secSteps.style.display = 'block';
+        recipe.steps.forEach((step, idx) => {
+          const item = document.createElement('div');
+          item.className = 'step-item';
+          item.innerHTML = `
+            <div class="step-number">${idx + 1}</div>
+            <p class="step-text">${escapeHtml(step)}</p>
+          `;
+          listSteps.appendChild(item);
+        });
+      } else {
+        secSteps.style.display = 'none';
+      }
+
+      // Memo (or Legacy Memo fallback)
+      const secMemo = document.getElementById('section-memo');
+      const contentMemo = document.getElementById('detail-memo-content');
+      if (recipe.memo) {
+        secMemo.style.display = 'block';
+        contentMemo.innerText = recipe.memo;
+      } else {
+        secMemo.style.display = 'none';
+      }
+
+      modalDetail.classList.add('active');
+    }
+
+    // --- Delete Recipe ---
+    document.getElementById('btn-delete-recipe').addEventListener('click', async () => {
+      if (!currentDetailRecipeId || !db) return;
+
+      if (!confirm("本当にこのレシピを削除しますか？\n削除すると元に戻せません。")) {
+        return;
+      }
+
+      const btnDelete = document.getElementById('btn-delete-recipe');
+      btnDelete.innerText = "削除中...";
+      btnDelete.disabled = true;
+
+      try {
+        await deleteDoc(doc(db, "recipes", currentDetailRecipeId));
+        modalDetail.classList.remove('active');
+        currentDetailRecipeId = null;
+        alert("レシピを削除しました。");
+        fetchRecipes();
+      } catch (e) {
+        console.error(e);
+        alert("削除に失敗しました: " + e.message);
+      } finally {
+        btnDelete.innerHTML = `<span>🗑️</span> レシピを削除`;
+        btnDelete.disabled = false;
+      }
+    });
+
+    // --- Search & Filter Listeners ---
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim();
+      renderRecipeList();
+    });
+
+    document.getElementById('category-pills').addEventListener('click', (e) => {
+      if (e.target.classList.contains('pill')) {
+        document.querySelectorAll('#category-pills .pill').forEach(p => p.classList.remove('active'));
+        e.target.classList.add('active');
+        activeCategory = e.target.dataset.cat;
+        renderRecipeList();
+      }
+    });
+
+    // Helper: HTML Escape
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
   </script>
 </body>
