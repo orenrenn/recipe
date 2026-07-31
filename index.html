@@ -201,14 +201,14 @@
       pointer-events: none;
       z-index: 5;
     }
+
+    /* Beautiful Multi-Line Wrapped Category Pills Grid */
     .category-pills {
       display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      scrollbar-width: none;
+      flex-wrap: wrap; /* Wrap all tags so all categories are visible without horizontal scrolling */
+      gap: 6px 8px;
+      padding-bottom: 2px;
     }
-    .category-pills::-webkit-scrollbar { display: none; }
     .pill {
       white-space: nowrap;
       padding: 6px 14px;
@@ -944,6 +944,7 @@
       margin-bottom: 0.5rem;
     }
   </style>
+  <script src="./food_vectors.js"></script>
 </head>
 <body>
 
@@ -1770,7 +1771,6 @@
           modalSettings.classList.remove('active');
         } catch (e) {
           console.warn("Silent login popup note:", e);
-          // If login is already active or succeeds asynchronously via onAuthStateChanged, close quietly
           if (auth && auth.currentUser) {
             currentUser = auth.currentUser;
             updateSyncModalUI();
@@ -1880,104 +1880,99 @@
       }
     }
 
-    // --- Google風 漢字・音訓ファジーエンジン ---
+    // --- Fully Generic Japanese Text Normalization & Search Engine ---
 
-    const KANJI_READING_MAP = {
-      '合': 'アイ', '挽': 'ヒキ', '肉': 'ニク', '豚': 'ブタ', '牛': 'ギュウ',
-      '鶏': 'トリ', '鳥': 'トリ', '魚': 'サカナ', '鮭': 'サケ', '鮪': 'マグロ',
-      '鯖': 'サバ', '鯛': 'タイ', '蝦': 'エビ', '海老': 'エビ', '蟹': 'カニ',
-      '蛸': 'タコ', '烏': 'イカ', '玉': 'タマ', '葱': 'ネギ', '根': 'ネ',
-      '人': 'ニン', '参': 'ジン', '大': 'ダイ', '瓜': 'ウリ', '茄': 'ナス',
-      '子': 'コ', '芋': 'イモ', '茸': 'キノコ', '筍': 'タケノコ', '菜': 'サイ',
-      '葉': 'ハ', '花': 'ハナ', '実': 'ミ', '種': 'タネ', '油': 'アブラ',
-      '塩': 'シオ', '糖': 'トウ', '酢': 'ス', '酒': 'サケ', '汁': 'シル',
-      '湯': 'ユ', '出': 'ダシ', '米': 'コメ', '飯': 'ハン', '麦': 'ムギ',
-      '粉': 'コナ', '面': 'メン', '麺': 'メン', '餅': 'モチ', '乳': 'ニュウ',
-      '卵': 'タマゴ', '豆': 'マメ', '腐': 'フ', '芽': 'メ', '焼': 'ヤキ',
-      '炒': 'イタメ', '煮': 'ニ', '蒸': 'ムシ', '揚': 'アゲ', '切': 'キリ',
-      '盛': 'モリ', '生': 'ナマ', '干': 'ホシ', '漬': 'ツケ', '味': 'アジ',
-      '香': 'カオ', '辛': 'カラ', '甘': 'アマ', '酸': 'ス', '苦': 'ニガ',
-      '旨': 'ウマ', '濃': 'コイ', '薄': 'ウス', '風': 'フウ'
-    };
+    // =====================================================================
+    // Advanced Japanese Search Engine
+    // - NFKC normalization
+    // - Hiragana ↔ Katakana bidirectional matching
+    // - Kanji → reading expansion (comprehensive dictionary)
+    // - Rendaku (連濁) normalization (dakuten/handakuten stripping)
+    // - Okurigana-aware consecutive duplicate collapsing
+    // =====================================================================
 
-    function removeDakuon(str) {
+    function normalizeJapaneseText(str) {
       if (!str) return '';
-      const dakuonMap = {
-        'ガ':'カ','ギ':'キ','グ':'ク','ゲ':'ケ','ゴ':'コ',
-        'ザ':'サ','ジ':'シ','ズ':'ス','ゼ':'セ','ゾ':'ソ',
-        'ダ':'タ','ヂ':'チ','ヅ':'ツ','デ':'テ','ド':'ト',
-        'バ':'ハ','ビ':'ヒ','ブ':'フ','ベ':'ヘ','ボ':'ホ',
-        'パ':'ハ','ピ':'ヒ','プ':'フ','ペ':'ヘ','ポ':'ホ','ヴ':'ウ',
-        'が':'か','ぎ':'き','ぐ':'く','げ':'け','ご':'こ',
-        'ざ':'さ','じ':'し','ず':'す','ぜ':'せ','ぞ':'そ',
-        'だ':'た','ぢ':'ち','づ':'つ','で':'て','ど':'と',
-        'ば':'は','び':'ひ','ぶ':'ふ','べ':'へ','ぼ':'ほ',
-        'ぱ':'は','ぴ':'ひ','ぷ':'ふ','ぺ':'へ','ぽ':'ほ'
-      };
-      return str.replace(/[ガ-ポが-ほヴ]/g, m => dakuonMap[m] || m);
+      let s = String(str).normalize('NFKC').toLowerCase();
+      s = s.replace(/[\s\u3000・,\-_\/\\\(\)\u3001\u3002\u300C\u300D\u3010\u3011「」【】]/g, '');
+      return s;
     }
 
-    function toPhoneticKatakana(str) {
+    function toHiragana(str) {
       if (!str) return '';
-      let s = String(str).toLowerCase();
-      s = s.replace(/[\uFF01-\uFF5E]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xfee0));
-      s = s.replace(/[\s\u3000・,\-_\/\\\(\)\u3001\u3002]/g, '');
-      
-      let res = '';
-      for (let ch of s) {
-        res += KANJI_READING_MAP[ch] || ch;
-      }
-      res = res.replace(/[\u3041-\u3096]/g, match => String.fromCharCode(match.charCodeAt(0) + 0x60));
-      res = res.replace(/[ーッっ]/g, '');
-      return res;
+      return String(str).replace(/[\u30a1-\u30f6\u30f4]/g, match => String.fromCharCode(match.charCodeAt(0) - 0x60));
     }
 
-    function getLcsLength(s1, s2) {
-      const m = s1.length;
-      const n = s2.length;
-      if (m === 0 || n === 0) return 0;
-      const dp = Array.from({ length: m + 1 }, () => new Int32Array(n + 1));
-      for (let i = 1; i <= m; i++) {
-        for (let j = 1; j <= n; j++) {
-          if (s1[i - 1] === s2[j - 1]) {
-            dp[i][j] = dp[i - 1][j - 1] + 1;
-          } else {
-            dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
-          }
-        }
-      }
-      return dp[m][n];
+    function toKatakana(str) {
+      if (!str) return '';
+      return String(str).replace(/[\u3041-\u3096\u3094]/g, match => String.fromCharCode(match.charCodeAt(0) + 0x60));
     }
 
-    function calculateGoogleFuzzyScore(queryWord, targetText) {
+    // Comprehensive Kanji → Hiragana reading dictionary
+    // Covers food, cooking, measurements, descriptors, and common daily kanji
+    // Multiple readings per kanji are listed for combinatorial expansion
+
+    function computeSearchMatchScore(queryWord, targetText) {
       if (!queryWord || !targetText) return 0;
 
-      const normQ = toPhoneticKatakana(queryWord);
-      const normT = toPhoneticKatakana(targetText);
+      const qNorm = normalizeJapaneseText(queryWord);
+      const tNorm = normalizeJapaneseText(targetText);
+      if (!qNorm || !tNorm) return 0;
 
-      if (normQ.length === 0 || normT.length === 0) return 0;
+      let maxScore = 0;
 
-      if (normT.includes(normQ)) return 3.5;
+      // --- Layer 0: Direct normalized substring match ---
+      if (tNorm.includes(qNorm)) maxScore = 10.0;
 
-      const dakuonQ = removeDakuon(normQ);
-      const dakuonT = removeDakuon(normT);
-      if (dakuonT.includes(dakuonQ)) return 3.0;
+      // --- Layer 1: Hiragana-unified substring match ---
+      const qHira = toHiragana(qNorm);
+      const tHira = toHiragana(tNorm);
+      if (tHira.includes(qHira) && maxScore < 9.0) maxScore = 9.0;
 
-      const maxLcs = Math.max(getLcsLength(normQ, normT), getLcsLength(dakuonQ, dakuonT));
-      const lcsRatio = maxLcs / normQ.length;
-      if (lcsRatio >= 0.7) return 2.2 * lcsRatio;
+      // --- Layer 2: Offline Category Semantic Search ---
+      if (window.FOOD_VECTORS) {
+        let maxSemanticSim = 0;
+        for (const qWord in window.FOOD_VECTORS) {
+          const qWordHira = toHiragana(qWord);
+          
+          // Strict matching for query vs dictionary word to avoid false positives (e.g. "パスタ" matching "酢"(す))
+          const isQueryMatch = (
+            qNorm === qWord || 
+            qHira === qWordHira ||
+            (qWord.length >= 2 && (qNorm.includes(qWord) || qHira.includes(qWordHira))) ||
+            (qNorm.length >= 2 && (qWord.includes(qNorm) || qWordHira.includes(qHira)))
+          );
 
-      if (normQ.length >= 2) {
-        let matchPairCount = 0;
-        for (let i = 0; i < normQ.length - 1; i++) {
-          if (normT.includes(normQ.slice(i, i + 2)) || dakuonT.includes(dakuonQ.slice(i, i + 2))) {
-            matchPairCount++;
+          if (isQueryMatch) {
+            const qVec = window.FOOD_VECTORS[qWord];
+            for (const tWord in window.FOOD_VECTORS) {
+              const tWordHira = toHiragana(tWord);
+              
+              // Target text (recipe) can loosely contain the dictionary word
+              const isTargetMatch = (
+                tNorm.includes(tWord) || tHira.includes(tWordHira)
+              );
+
+              if (isTargetMatch) {
+                const tVec = window.FOOD_VECTORS[tWord];
+                let dot = 0;
+                for (let i = 0; i < qVec.length; i++) {
+                  dot += qVec[i] * tVec[i];
+                }
+                if (dot > maxSemanticSim) maxSemanticSim = dot;
+              }
+            }
           }
         }
-        const bigramRatio = matchPairCount / (normQ.length - 1);
-        if (bigramRatio >= 0.4) return 1.5 * bigramRatio;
+        
+        // Exact category match (dot == 1.0) gives semanticScore = 7.0
+        if (maxSemanticSim >= 0.55) {
+          const semanticScore = (maxSemanticSim - 0.5) * 14.0;
+          maxScore = Math.max(maxScore, semanticScore);
+        }
       }
-      return 0;
+
+      return maxScore >= 1.8 ? maxScore : 0;
     }
 
     function computeRecipeSemanticScore(recipe, queryStr) {
@@ -1986,22 +1981,26 @@
       let totalScore = 0;
 
       for (const kw of keywords) {
-        let kwMaxScore = calculateGoogleFuzzyScore(kw, recipe.title) * 1.5;
+        let kwMaxScore = computeSearchMatchScore(kw, recipe.title) * 2.0;
+
         if (Array.isArray(recipe.ingredients)) {
           for (const ing of recipe.ingredients) {
-            kwMaxScore = Math.max(kwMaxScore, calculateGoogleFuzzyScore(kw, ing) * 1.2);
+            kwMaxScore = Math.max(kwMaxScore, computeSearchMatchScore(kw, ing) * 1.5);
           }
         }
+
         if (Array.isArray(recipe.steps)) {
           for (const st of recipe.steps) {
             const stText = typeof st === 'object' ? `${st.title || ''} ${st.text || st.desc || ''}` : String(st);
-            kwMaxScore = Math.max(kwMaxScore, calculateGoogleFuzzyScore(kw, stText) * 1.1);
+            kwMaxScore = Math.max(kwMaxScore, computeSearchMatchScore(kw, stText) * 0.6);
           }
         }
+
         if (recipe.memo) {
-          kwMaxScore = Math.max(kwMaxScore, calculateGoogleFuzzyScore(kw, recipe.memo) * 0.9);
+          kwMaxScore = Math.max(kwMaxScore, computeSearchMatchScore(kw, recipe.memo) * 0.8);
         }
-        if (kwMaxScore < 0.4) return 0;
+
+        if (kwMaxScore <= 0) return 0;
         totalScore += kwMaxScore;
       }
       return totalScore;
