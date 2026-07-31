@@ -19,6 +19,7 @@
       --primary-hover: #C84326;
       --primary-light: #FDF2F0;
       --accent: #F97316;
+      --star-color: #F59E0B;
       --bg: #FAFAF9;
       --surface: #FFFFFF;
       --border: #E7E5E4;
@@ -69,21 +70,76 @@
       align-items: center;
       gap: 8px;
       font-weight: 700;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       color: var(--primary);
       text-decoration: none;
     }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Google Auth Header UI */
+    .user-auth-wrapper {
+      display: flex;
+      align-items: center;
+    }
+    .btn-google-login {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+    .btn-google-login:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .user-profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary-light);
+      padding: 3px 8px 3px 3px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .user-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .user-name {
+      max-width: 90px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .icon-btn {
       background: none;
       border: 1px solid var(--border);
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: var(--text-muted);
       transition: all 0.2s ease;
     }
@@ -203,6 +259,16 @@
       color: white;
       border-color: var(--text);
     }
+    .pill.pill-fav {
+      border-color: #FCD34D;
+      color: #92400E;
+      background: #FEF3C7;
+    }
+    .pill.pill-fav.active {
+      background: #F59E0B;
+      color: white;
+      border-color: #F59E0B;
+    }
 
     /* Recipe Grid & Cards */
     .recipe-grid {
@@ -220,6 +286,7 @@
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
     .recipe-card:hover {
       transform: translateY(-3px);
@@ -259,6 +326,28 @@
       border-radius: 12px;
       backdrop-filter: blur(4px);
     }
+    .card-fav-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.88);
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transition: transform 0.2s ease, background 0.2s ease;
+      z-index: 6;
+    }
+    .card-fav-btn:hover {
+      transform: scale(1.1);
+      background: white;
+    }
     .card-photo-count-tag {
       position: absolute;
       bottom: 10px;
@@ -270,9 +359,6 @@
       padding: 2px 8px;
       border-radius: 10px;
       backdrop-filter: blur(4px);
-      display: flex;
-      align-items: center;
-      gap: 4px;
     }
     .card-content {
       padding: 1rem;
@@ -551,7 +637,7 @@
       overflow-y: auto;
     }
 
-    /* Detail Photo Gallery (Full aspect ratio, contain mode to prevent cropping) */
+    /* Detail Photo Gallery */
     .detail-gallery-container {
       width: 100%;
       background: #18181B;
@@ -575,7 +661,7 @@
       max-height: 420px;
       width: auto;
       height: auto;
-      object-fit: contain; /* 縦長画像も一切切れずに全表示 */
+      object-fit: contain;
       display: block;
     }
     .gallery-nav-btn {
@@ -749,9 +835,23 @@
         <span>🍳</span>
         <span>共有レシピ帳</span>
       </a>
-      <button id="btn-open-settings" class="icon-btn" title="Firebase設定">
-        ⚙️
-      </button>
+      <div class="header-actions">
+        <!-- Google Auth Profile / Login Button -->
+        <div class="user-auth-wrapper">
+          <button id="btn-google-login" class="btn-google-login">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+            <span>ログイン</span>
+          </button>
+          <div id="user-profile-badge" class="user-profile-badge" style="display: none;">
+            <img id="user-avatar" class="user-avatar" src="" alt="ユーザー">
+            <span id="user-name" class="user-name">ユーザー</span>
+            <button id="btn-logout" class="icon-btn" title="ログアウト" style="width: 26px; height: 26px; font-size: 0.75rem; border: none; margin-left: 2px;">🚪</button>
+          </div>
+        </div>
+        <button id="btn-open-settings" class="icon-btn" title="Firebase設定">
+          ⚙️
+        </button>
+      </div>
     </div>
   </header>
 
@@ -779,6 +879,7 @@
         </div>
         <div class="category-pills" id="category-pills">
           <button class="pill active" data-cat="all">全て</button>
+          <button class="pill pill-fav" data-cat="fav">⭐ お気に入り</button>
           <button class="pill" data-cat="主菜">主菜</button>
           <button class="pill" data-cat="副菜">副菜</button>
           <button class="pill" data-cat="汁物">汁物</button>
@@ -888,11 +989,13 @@
             <span id="detail-servings">👤 2人分</span>
           </div>
         </div>
+        <button id="btn-toggle-fav-detail" class="icon-btn" style="margin-right: 8px;" title="お気に入り">
+          <span id="detail-fav-star">☆</span>
+        </button>
         <button id="btn-close-detail" class="modal-close-btn">✕</button>
       </div>
 
       <div class="modal-body">
-        <!-- 多機能ギャラリー（縦長写真も切れない contain モード） -->
         <div id="detail-gallery-container" class="detail-gallery-container" style="display: none;">
           <div class="detail-main-img-wrapper">
             <button id="gallery-btn-prev" class="gallery-nav-btn prev" style="display: none;">❮</button>
@@ -979,13 +1082,24 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { 
+      getAuth, 
+      signInWithPopup, 
+      GoogleAuthProvider, 
+      onAuthStateChanged, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+    import { 
       getFirestore, 
       collection, 
       addDoc, 
       getDocs, 
       deleteDoc, 
       doc, 
-      updateDoc,
+      setDoc,
+      getDoc,
+      updateDoc, 
+      arrayUnion,
+      arrayRemove,
       orderBy, 
       query, 
       serverTimestamp 
@@ -994,13 +1108,124 @@
     // --- State Variables ---
     let app = null;
     let db = null;
+    let auth = null;
+    let currentUser = null;
+    let userFavorites = [];
     let recipesCache = [];
     let activeCategory = 'all';
     let searchQuery = '';
-    let selectedImagesBase64 = []; // 複数枚写真の配列
+    let selectedImagesBase64 = [];
     let currentDetailRecipe = null;
     let currentGalleryIndex = 0;
     let editingRecipeId = null;
+
+    const googleAuthProvider = new GoogleAuthProvider();
+
+    // --- Cloud Firebase Personal Favorites Logic ---
+    async function loadUserFavorites() {
+      if (!currentUser || !db) {
+        userFavorites = [];
+        renderRecipeList();
+        return;
+      }
+      try {
+        const userDocRef = doc(db, "users", currentUser.uid);
+        const snap = await getDoc(userDocRef);
+        if (snap.exists()) {
+          userFavorites = snap.data().favorites || [];
+        } else {
+          userFavorites = [];
+          await setDoc(userDocRef, { favorites: [], updatedAt: serverTimestamp() });
+        }
+      } catch (e) {
+        console.error("User favorites load error:", e);
+        userFavorites = [];
+      }
+      renderRecipeList();
+    }
+
+    function isFavorite(recipeId) {
+      return userFavorites.includes(recipeId);
+    }
+
+    async function toggleFavorite(recipeId) {
+      if (!currentUser) {
+        if (confirm("お気に入り機能を利用するにはGoogleログインが必要です。\nGoogleでログインしますか？")) {
+          loginWithGoogle();
+        }
+        return;
+      }
+
+      const userDocRef = doc(db, "users", currentUser.uid);
+      const isFav = userFavorites.includes(recipeId);
+
+      if (isFav) {
+        userFavorites = userFavorites.filter(id => id !== recipeId);
+        try {
+          await updateDoc(userDocRef, { favorites: arrayRemove(recipeId) });
+        } catch {
+          await setDoc(userDocRef, { favorites: userFavorites }, { merge: true });
+        }
+      } else {
+        userFavorites.push(recipeId);
+        try {
+          await updateDoc(userDocRef, { favorites: arrayUnion(recipeId) });
+        } catch {
+          await setDoc(userDocRef, { favorites: userFavorites }, { merge: true });
+        }
+      }
+
+      renderRecipeList();
+      if (currentDetailRecipe && currentDetailRecipe.id === recipeId) {
+        updateDetailFavStar();
+      }
+    }
+
+    // --- Google Auth Login & UI ---
+    async function loginWithGoogle() {
+      if (!app || !auth) {
+        modalSettings.classList.add('active');
+        return alert("先にFirebaseの接続情報を設定してください。");
+      }
+      try {
+        const result = await signInWithPopup(auth, googleAuthProvider);
+        currentUser = result.user;
+        updateUserHeaderUI();
+        await loadUserFavorites();
+      } catch (e) {
+        console.error("Google Auth error:", e);
+        alert("Googleログインに失敗しました: " + e.message);
+      }
+    }
+
+    async function logoutUser() {
+      if (auth) {
+        await signOut(auth);
+        currentUser = null;
+        updateUserHeaderUI();
+        loadUserFavorites();
+      }
+    }
+
+    function updateUserHeaderUI() {
+      const btnLogin = document.getElementById('btn-google-login');
+      const badge = document.getElementById('user-profile-badge');
+      const avatar = document.getElementById('user-avatar');
+      const name = document.getElementById('user-name');
+
+      if (currentUser) {
+        btnLogin.style.display = 'none';
+        badge.style.display = 'flex';
+        avatar.src = currentUser.photoURL || 'https://via.placeholder.com/28';
+        name.innerText = currentUser.displayName || 'ユーザー';
+      } else {
+        btnLogin.style.display = 'flex';
+        badge.style.display = 'none';
+      }
+    }
+
+    document.getElementById('btn-google-login').addEventListener('click', loginWithGoogle);
+    document.getElementById('btn-logout').addEventListener('click', logoutUser);
 
     // --- Page & Modal DOM Elements ---
     const pages = {
@@ -1061,7 +1286,6 @@
     });
 
     function renderFormPhotoPreviews() {
-      // Remove all thumbs except the add button
       const existingThumbs = photosPreviewGrid.querySelectorAll('.photo-thumb-wrapper');
       existingThumbs.forEach(t => t.remove());
 
@@ -1164,12 +1388,20 @@
       });
     }
 
-    // --- Firebase Initialization ---
+    // --- Firebase & Auth Initialization ---
     function initFirebase(configStr) {
       try {
         const config = JSON.parse(configStr);
         app = initializeApp(config);
         db = getFirestore(app);
+        auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+          currentUser = user;
+          updateUserHeaderUI();
+          loadUserFavorites();
+        });
+
         return true;
       } catch (e) {
         alert("Firebase設定JSONのフォーマットが正しくありません。");
@@ -1235,7 +1467,8 @@
           steps,
           memo,
           imageUrls: selectedImagesBase64,
-          imageUrl: selectedImagesBase64[0] || "" // 互換用
+          imageUrl: selectedImagesBase64[0] || "",
+          createdBy: currentUser ? currentUser.displayName || currentUser.email : "匿名"
         };
 
         if (editingRecipeId) {
@@ -1283,7 +1516,26 @@
       }
     }
 
-    // --- 汎用ファジーサーチアルゴリズム ---
+    // --- 超強力な Google風 漢字・音訓・形態音韻ファジーエンジン ---
+
+    const KANJI_READING_MAP = {
+      '合': 'アイ', '挽': 'ヒキ', '肉': 'ニク', '豚': 'ブタ', '牛': 'ギュウ',
+      '鶏': 'トリ', '鳥': 'トリ', '魚': 'サカナ', '鮭': 'サケ', '鮪': 'マグロ',
+      '鯖': 'サバ', '鯛': 'タイ', '蝦': 'エビ', '海老': 'エビ', '蟹': 'カニ',
+      '蛸': 'タコ', '烏': 'イカ', '玉': 'タマ', '葱': 'ネギ', '根': 'ネ',
+      '人': 'ニン', '参': 'ジン', '大': 'ダイ', '瓜': 'ウリ', '茄': 'ナス',
+      '子': 'コ', '芋': 'イモ', '茸': 'キノコ', '筍': 'タケノコ', '菜': 'サイ',
+      '葉': 'ハ', '花': 'ハナ', '実': 'ミ', '種': 'タネ', '油': 'アブラ',
+      '塩': 'シオ', '糖': 'トウ', '酢': 'ス', '酒': 'サケ', '汁': 'シル',
+      '湯': 'ユ', '出': 'ダシ', '米': 'コメ', '飯': 'ハン', '麦': 'ムギ',
+      '粉': 'コナ', '面': 'メン', '麺': 'メン', '餅': 'モチ', '乳': 'ニュウ',
+      '卵': 'タマゴ', '豆': 'マメ', '腐': 'フ', '芽': 'メ', '焼': 'ヤキ',
+      '炒': 'イタメ', '煮': 'ニ', '蒸': 'ムシ', '揚': 'アゲ', '切': 'キリ',
+      '盛': 'モリ', '生': 'ナマ', '干': 'ホシ', '漬': 'ツケ', '味': 'アジ',
+      '香': 'カオ', '辛': 'カラ', '甘': 'アマ', '酸': 'ス', '苦': 'ニガ',
+      '旨': 'ウマ', '濃': 'コイ', '薄': 'ウス', '風': 'フウ'
+    };
+
     function removeDakuon(str) {
       if (!str) return '';
       const dakuonMap = {
@@ -1301,14 +1553,19 @@
       return str.replace(/[ガ-ポが-ほヴ]/g, m => dakuonMap[m] || m);
     }
 
-    function superNormalize(str) {
+    function toPhoneticKatakana(str) {
       if (!str) return '';
       let s = String(str).toLowerCase();
       s = s.replace(/[\uFF01-\uFF5E]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xfee0));
       s = s.replace(/[\s\u3000・,\-_\/\\\(\)\u3001\u3002]/g, '');
-      s = s.replace(/[\u3041-\u3096]/g, match => String.fromCharCode(match.charCodeAt(0) + 0x60));
-      s = s.replace(/[ーッっ]/g, '');
-      return s;
+      
+      let res = '';
+      for (let ch of s) {
+        res += KANJI_READING_MAP[ch] || ch;
+      }
+      res = res.replace(/[\u3041-\u3096]/g, match => String.fromCharCode(match.charCodeAt(0) + 0x60));
+      res = res.replace(/[ーッっ]/g, '');
+      return res;
     }
 
     function getLcsLength(s1, s2) {
@@ -1328,21 +1585,23 @@
       return dp[m][n];
     }
 
-    function calculateGenericFuzzyScore(queryWord, targetText) {
+    function calculateGoogleFuzzyScore(queryWord, targetText) {
       if (!queryWord || !targetText) return 0;
-      const normQ = superNormalize(queryWord);
-      const normT = superNormalize(targetText);
+
+      const normQ = toPhoneticKatakana(queryWord);
+      const normT = toPhoneticKatakana(targetText);
 
       if (normQ.length === 0 || normT.length === 0) return 0;
-      if (normT.includes(normQ)) return 3.0;
+
+      if (normT.includes(normQ)) return 3.5;
 
       const dakuonQ = removeDakuon(normQ);
       const dakuonT = removeDakuon(normT);
-      if (dakuonT.includes(dakuonQ)) return 2.6;
+      if (dakuonT.includes(dakuonQ)) return 3.0;
 
       const maxLcs = Math.max(getLcsLength(normQ, normT), getLcsLength(dakuonQ, dakuonT));
       const lcsRatio = maxLcs / normQ.length;
-      if (lcsRatio >= 0.75) return 2.0 * lcsRatio;
+      if (lcsRatio >= 0.7) return 2.2 * lcsRatio;
 
       if (normQ.length >= 2) {
         let matchPairCount = 0;
@@ -1352,7 +1611,7 @@
           }
         }
         const bigramRatio = matchPairCount / (normQ.length - 1);
-        if (bigramRatio >= 0.5) return 1.4 * bigramRatio;
+        if (bigramRatio >= 0.4) return 1.5 * bigramRatio;
       }
       return 0;
     }
@@ -1363,16 +1622,16 @@
       let totalScore = 0;
 
       for (const kw of keywords) {
-        let kwMaxScore = calculateGenericFuzzyScore(kw, recipe.title) * 1.5;
+        let kwMaxScore = calculateGoogleFuzzyScore(kw, recipe.title) * 1.5;
         if (Array.isArray(recipe.ingredients)) {
           for (const ing of recipe.ingredients) {
-            kwMaxScore = Math.max(kwMaxScore, calculateGenericFuzzyScore(kw, ing) * 1.2);
+            kwMaxScore = Math.max(kwMaxScore, calculateGoogleFuzzyScore(kw, ing) * 1.2);
           }
         }
         if (recipe.memo) {
-          kwMaxScore = Math.max(kwMaxScore, calculateGenericFuzzyScore(kw, recipe.memo) * 0.9);
+          kwMaxScore = Math.max(kwMaxScore, calculateGoogleFuzzyScore(kw, recipe.memo) * 0.9);
         }
-        if (kwMaxScore < 0.5) return 0;
+        if (kwMaxScore < 0.4) return 0;
         totalScore += kwMaxScore;
       }
       return totalScore;
@@ -1383,7 +1642,15 @@
       const container = document.getElementById('recipe-list-container');
 
       const scoredRecipes = recipesCache.map(item => {
-        let categoryMatch = (activeCategory === 'all' || (item.category || 'その他') === activeCategory);
+        let categoryMatch = false;
+        if (activeCategory === 'all') {
+          categoryMatch = true;
+        } else if (activeCategory === 'fav') {
+          categoryMatch = isFavorite(item.id);
+        } else {
+          categoryMatch = ((item.category || 'その他') === activeCategory);
+        }
+
         let score = categoryMatch ? computeRecipeSemanticScore(item, searchQuery) : 0;
         return { item, score };
       }).filter(res => res.score > 0);
@@ -1393,10 +1660,13 @@
       const filtered = scoredRecipes.map(res => res.item);
 
       if (filtered.length === 0) {
+        const msg = activeCategory === 'fav' 
+          ? (currentUser ? 'お気に入りに登録されたレシピがありません。カードの ⭐ ボタンで追加できます。' : 'Googleログインするとお気に入り機能が利用できます。')
+          : '該当するレシピが見つかりません。';
         container.innerHTML = `
           <div class="empty-state">
             <div class="empty-icon">🍽️</div>
-            <p>該当するレシピが見つかりません。</p>
+            <p>${msg}</p>
           </div>`;
         return;
       }
@@ -1420,6 +1690,9 @@
         const servingsTag = item.servings ? `<span>👤 ${item.servings}</span>` : '';
         const photoCountBadge = photos.length > 1 ? `<div class="card-photo-count-tag">📷 ${photos.length}</div>` : '';
 
+        const faved = isFavorite(item.id);
+        const favBtnHtml = `<button class="card-fav-btn" title="お気に入り">${faved ? '⭐' : '☆'}</button>`;
+
         let ingredientsPreview = '';
         if (Array.isArray(item.ingredients) && item.ingredients.length > 0) {
           ingredientsPreview = `🛒 ${item.ingredients.slice(0, 3).join('・')}${item.ingredients.length > 3 ? '...' : ''}`;
@@ -1431,6 +1704,7 @@
           <div class="card-img-wrapper">
             ${imageHtml}
             ${categoryTag}
+            ${favBtnHtml}
             ${photoCountBadge}
           </div>
           <div class="card-content">
@@ -1442,6 +1716,11 @@
           </div>
         `;
 
+        card.querySelector('.card-fav-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleFavorite(item.id);
+        });
+
         grid.appendChild(card);
       });
 
@@ -1449,7 +1728,7 @@
       container.appendChild(grid);
     }
 
-    // Helper: Extract all photos for a recipe (handles legacy single imageUrl & array imageUrls)
+    // Helper: Extract all photos for a recipe
     function getRecipePhotos(recipe) {
       if (Array.isArray(recipe.imageUrls) && recipe.imageUrls.length > 0) {
         return recipe.imageUrls;
@@ -1468,6 +1747,8 @@
       document.getElementById('detail-title').innerText = recipe.title || '無題';
       document.getElementById('detail-category-badge').innerText = recipe.category || 'その他';
 
+      updateDetailFavStar();
+
       const servingsEl = document.getElementById('detail-servings');
       if (recipe.servings) {
         servingsEl.innerText = `👤 ${recipe.servings}`;
@@ -1479,7 +1760,6 @@
       // Render Photo Gallery
       const photos = getRecipePhotos(recipe);
       const galleryContainer = document.getElementById('detail-gallery-container');
-      const mainImg = document.getElementById('detail-main-img');
       const btnPrev = document.getElementById('gallery-btn-prev');
       const btnNext = document.getElementById('gallery-btn-next');
       const thumbsRow = document.getElementById('gallery-thumbs-row');
@@ -1566,6 +1846,23 @@
 
       modalDetail.classList.add('active');
     }
+
+    function updateDetailFavStar() {
+      const star = document.getElementById('detail-fav-star');
+      if (currentDetailRecipe && isFavorite(currentDetailRecipe.id)) {
+        star.innerText = '⭐';
+        star.style.color = 'var(--star-color)';
+      } else {
+        star.innerText = '☆';
+        star.style.color = 'var(--text-muted)';
+      }
+    }
+
+    document.getElementById('btn-toggle-fav-detail').addEventListener('click', () => {
+      if (currentDetailRecipe) {
+        toggleFavorite(currentDetailRecipe.id);
+      }
+    });
 
     function updateGalleryPhoto(photos) {
       const mainImg = document.getElementById('detail-main-img');
