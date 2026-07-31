@@ -1462,6 +1462,9 @@
         }
       } catch (e) {
         console.error("User favorites load error:", e);
+        if (e.code === 'permission-denied') {
+           console.warn("お気に入りの読み込みが権限エラーでブロックされました。Firebaseセキュリティルールを確認してください。");
+        }
         userFavorites = [];
       }
       renderRecipeList();
@@ -1513,7 +1516,22 @@
           await updateDoc(userDocRef, { favorites: arrayUnion(recipeId) });
         }
       } catch (err) {
-        await setDoc(userDocRef, { favorites: userFavorites, updatedAt: serverTimestamp() }, { merge: true });
+        try {
+          await setDoc(userDocRef, { favorites: userFavorites, updatedAt: serverTimestamp() }, { merge: true });
+        } catch (setErr) {
+          console.error("Fatal Error saving favorite:", setErr);
+          alert("クラウドへの保存に失敗しました。\nFirebaseの「Firestore Database」の「ルール (Rules)」タブにて、users コレクションへのアクセス権限（read, write）が許可されていない可能性があります。");
+          // Revert visual state
+          if (isFav) {
+            userFavorites.push(recipeId);
+          } else {
+            userFavorites = userFavorites.filter(id => id !== recipeId);
+          }
+          if (starBtnElement) {
+             const iconSpan = starBtnElement.querySelector('span') || starBtnElement;
+             iconSpan.innerText = isFav ? '⭐' : '☆';
+          }
+        }
       }
     }
 
