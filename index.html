@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <!-- Disable unwanted viewport scaling on mobile -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>もぐもぐレシピ帳 🍳✨</title>
+  <title>もぐもぐダイアリー 📓</title>
 
   <!-- iOS Safari PWA Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -493,7 +493,56 @@
       border: 2px dashed var(--border-dark);
       background: var(--bg);
       color: var(--text);
-      font-size: 0.92rem;
+      font-size: 0.95rem;
+    }
+
+    .mode-switcher-container {
+      display: flex;
+      position: relative;
+      margin: 16px auto 4px auto;
+      background: rgba(255, 148, 162, 0.08);
+      padding: 6px;
+      border-radius: 30px;
+      width: calc(100% - 32px);
+      max-width: 380px;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+    }
+    .mode-btn {
+      flex: 1;
+      padding: 10px 0;
+      border-radius: 24px;
+      border: none;
+      background: transparent;
+      color: #999;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .mode-btn:active {
+      transform: scale(0.96);
+    }
+    .mode-btn.active {
+      background: white;
+      color: #ff6b81;
+      box-shadow: 0 4px 12px rgba(255, 107, 129, 0.15), 0 1px 2px rgba(0,0,0,0.02);
+    }
+    .mode-btn .mode-icon {
+      font-size: 1.1rem;
+      filter: grayscale(100%) opacity(0.5);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .mode-btn.active .mode-icon {
+      filter: grayscale(0%) opacity(1);
+      transform: scale(1.15) rotate(-5deg);
+    }
+
+    nav {
       font-weight: 800;
       padding: 12px;
       cursor: pointer;
@@ -952,8 +1001,8 @@
   <header>
     <div class="header-inner">
       <a href="#" class="app-logo">
-        <span>🍳✨</span>
-        <span>もぐもぐレシピ帳</span>
+        <span>📓✨</span>
+        <span>もぐもぐダイアリー</span>
       </a>
       <div class="header-actions">
         <button id="btn-open-settings" class="icon-btn" title="データ同期設定">
@@ -963,10 +1012,20 @@
     </div>
   </header>
 
+  <!-- Mode Switcher -->
+  <div class="mode-switcher-container">
+    <button id="mode-recipe" class="mode-btn active" onclick="switchAppMode('recipe')">
+      <span class="mode-icon">🍳</span> レシピ
+    </button>
+    <button id="mode-food-record" class="mode-btn" onclick="switchAppMode('food_record')">
+      <span class="mode-icon">🍽️</span> ごはんメモ
+    </button>
+  </div>
+
   <!-- Navigation Tabs -->
   <nav>
     <button id="nav-list" class="nav-tab active">
-      <span>📋</span> レシピ一覧
+      <span>📋</span> <span id="nav-list-text">レシピ一覧</span>
     </button>
     <button id="nav-add" class="nav-tab">
       <span id="nav-add-icon">➕</span> <span id="nav-add-text">レシピ登録</span>
@@ -1043,7 +1102,7 @@
               <option value="その他">その他</option>
             </select>
           </div>
-          <div class="form-group">
+          <div class="form-group" id="form-group-servings">
             <label for="recipe-servings">人数 (分量)</label>
             <select id="recipe-servings">
               <option value="">指定なし</option>
@@ -1058,7 +1117,7 @@
         </div>
       </div>
 
-      <div class="form-card">
+      <div class="form-card" id="form-card-ingredients">
         <div class="form-section-title">🛒 材料</div>
         <div class="form-group">
           <div class="field-desc">※ 1行に1項目ずつ入力してください（例: 豚肉 200g）</div>
@@ -1067,7 +1126,7 @@
       </div>
 
       <!-- スマート自動解析付き 作り方入力フォーム -->
-      <div class="form-card">
+      <div class="form-card" id="form-card-steps">
         <div class="form-section-title">👩‍🍳 作り方</div>
         <div class="field-desc">※ 文章をそのままコピペすると、自動で「見出し」と「詳細」に分割されます！</div>
 
@@ -1091,7 +1150,7 @@
       </div>
 
       <div class="form-card">
-        <div class="form-section-title">💡 コツ・メモ</div>
+        <div class="form-section-title" id="form-section-title-memo">💡 コツ・メモ</div>
         <div class="form-group">
           <textarea id="recipe-memo" rows="3"></textarea>
         </div>
@@ -1127,6 +1186,7 @@
             <span id="detail-category-badge" class="pill" style="background: var(--primary-light); color: var(--primary); border: none;">主菜</span>
             <span id="detail-servings">👤 2人分</span>
           </div>
+          <div id="detail-date-info" style="font-size: 0.75rem; color: #999; margin-top: 4px;"></div>
         </div>
         <button id="btn-toggle-fav-detail" class="icon-btn" style="margin-right: 8px;" title="お気に入り">
           <span id="detail-fav-star">☆</span>
@@ -1136,7 +1196,7 @@
 
       <div class="modal-body">
         <!-- 作った回数カウンター -->
-        <div class="cooked-counter-box">
+        <div class="cooked-counter-box" id="detail-cooked-counter">
           <div>
             <div style="font-size: 0.82rem; color: var(--text-muted); font-weight: 700;">通算で作った回数</div>
             <div style="font-size: 1.3rem; font-weight: 800; color: var(--primary);">
@@ -1176,7 +1236,7 @@
 
         <!-- コツ・メモ -->
         <div id="section-memo" class="detail-section" style="display: none;">
-          <div class="detail-section-title">💡 コツ・メモ</div>
+          <div class="detail-section-title" id="detail-section-title-memo">💡 コツ・メモ</div>
           <div id="detail-memo-content" class="notes-box"></div>
         </div>
       </div>
@@ -1280,7 +1340,7 @@
     document.getElementById('apple-touch-icon-precomposed-link').href = cutePngUri;
 
     const manifest = {
-      "name": "もぐもぐレシピ帳",
+      "name": "もぐもぐダイアリー",
       "short_name": "もぐレシピ",
       "start_url": window.location.href,
       "display": "standalone",
@@ -1360,7 +1420,60 @@
     let currentGalleryIndex = 0;
     let editingRecipeId = null;
 
+    let currentAppMode = 'recipe';
+
     const googleAuthProvider = new GoogleAuthProvider();
+
+    // Date formatter helper
+    function formatDateString(ts) {
+      if (!ts) return '';
+      const date = ts.toDate ? ts.toDate() : new Date(ts);
+      if (isNaN(date.getTime())) return '';
+      return `${date.getFullYear()}/${String(date.getMonth()+1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
+    }
+
+    // --- Mode Switcher Logic ---
+    window.switchAppMode = function(mode) {
+      currentAppMode = mode;
+      
+      // Update Tab UI
+      document.getElementById('mode-recipe').classList.toggle('active', mode === 'recipe');
+      document.getElementById('mode-food-record').classList.toggle('active', mode === 'food_record');
+      
+      // Update Navigation Text
+      const isRecipe = mode === 'recipe';
+      document.getElementById('nav-list-text').innerText = isRecipe ? 'レシピ一覧' : 'メモ一覧';
+      document.getElementById('nav-add-text').innerText = isRecipe ? 'レシピ登録' : 'メモする';
+      document.getElementById('form-header-title').innerText = isRecipe ? '📌 基本情報' : '🍽️ メモ情報';
+      
+      // Filter list and Re-render
+      renderRecipeList();
+      
+      // If currently on Add Page, refresh form UI
+      if (document.getElementById('page-add').classList.contains('active')) {
+        updateFormModeUI();
+      }
+    };
+
+    function updateFormModeUI() {
+      const isRecipe = currentAppMode === 'recipe';
+      document.getElementById('form-group-servings').style.display = isRecipe ? 'block' : 'none';
+      document.getElementById('form-card-ingredients').style.display = isRecipe ? 'block' : 'none';
+      document.getElementById('form-card-steps').style.display = isRecipe ? 'block' : 'none';
+      
+      const isEdit = !!editingRecipeId;
+      const typeStr = isRecipe ? 'レシピ' : 'メモ';
+      document.getElementById('btn-save-content').innerHTML = `<span>💾</span> ${typeStr}を${isEdit ? '更新' : '保存'}する`;
+      document.getElementById('form-section-title-memo').innerText = isRecipe ? '💡 コツ・メモ' : '✏️ 感想・メモ';
+
+      // Clear optional fields if switching to record
+      if (!isRecipe) {
+        document.getElementById('recipe-servings').value = '';
+        document.getElementById('recipe-ingredients').value = '';
+        stepsFormContainer.innerHTML = '';
+        recipeStepsRaw.value = '';
+      }
+    }
 
     // --- Dynamic Smart Steps Builder Logic ---
     const stepsFormContainer = document.getElementById('steps-form-container');
@@ -1671,10 +1784,13 @@
       
       renderFormPhotoPreviews();
 
-      document.getElementById('form-header-title').innerText = '📌 基本情報';
+      const isRecipe = currentAppMode === 'recipe';
+      document.getElementById('form-header-title').innerText = isRecipe ? '📌 基本情報' : '🍽️ メモ情報';
       document.getElementById('nav-add-icon').innerText = '➕';
-      document.getElementById('nav-add-text').innerText = 'レシピ登録';
-      document.getElementById('btn-save-content').innerHTML = `<span>💾</span> レシピを保存する`;
+      document.getElementById('nav-add-text').innerText = isRecipe ? 'レシピ登録' : 'メモする';
+      document.getElementById('btn-save-content').innerHTML = `<span>💾</span> ${isRecipe ? 'レシピ' : 'メモ'}を保存する`;
+      
+      updateFormModeUI();
     }
 
     // --- Settings Modal Logic ---
@@ -1854,16 +1970,19 @@
           imageUrls: selectedImagesBase64,
           imageUrl: selectedImagesBase64[0] || "",
           cookedCount: editingRecipeId ? (recipesCache.find(r => r.id === editingRecipeId)?.cookedCount || 0) : 0,
-          createdBy: currentUser ? currentUser.displayName || currentUser.email : "匿名"
+          createdBy: currentUser ? currentUser.displayName || currentUser.email : "匿名",
+          recordType: currentAppMode
         };
 
         if (editingRecipeId) {
+          recipeData.updatedAt = serverTimestamp();
           await updateDoc(doc(db, "recipes", editingRecipeId), recipeData);
-          alert("レシピを更新しました！");
+          alert(currentAppMode === 'recipe' ? "レシピを更新しました！" : "メモを更新しました！");
         } else {
           recipeData.createdAt = serverTimestamp();
+          recipeData.updatedAt = serverTimestamp();
           await addDoc(collection(db, "recipes"), recipeData);
-          alert("レシピを保存しました！");
+          alert(currentAppMode === 'recipe' ? "レシピを保存しました！" : "メモを保存しました！");
         }
 
         resetForm();
@@ -1873,7 +1992,8 @@
         alert("エラーが発生しました: " + e.message);
       } finally {
         const isEdit = !!editingRecipeId;
-        btnSaveContent.innerHTML = `<span>💾</span> ${isEdit ? 'レシピを更新する' : 'レシピを保存する'}`;
+        const typeStr = currentAppMode === 'recipe' ? 'レシピ' : 'メモ';
+        btnSaveContent.innerHTML = `<span>💾</span> ${typeStr}を${isEdit ? '更新' : '保存'}する`;
         btnSave.disabled = false;
       }
     });
@@ -2160,6 +2280,11 @@
       const container = document.getElementById('recipe-list-container');
 
       const scoredRecipes = recipesCache.map(item => {
+        // Mode filtering
+        const isFoodRecord = item.recordType === 'food_record';
+        if (currentAppMode === 'recipe' && isFoodRecord) return { item, score: 0 };
+        if (currentAppMode === 'food_record' && !isFoodRecord) return { item, score: 0 };
+
         let categoryMatch = false;
         if (activeCategory === 'all') {
           categoryMatch = true;
@@ -2204,12 +2329,19 @@
       document.getElementById('recipe-count').innerText = filtered.length;
 
       if (filtered.length === 0) {
-        const msg = activeCategory === 'fav' 
-          ? (currentUser ? 'お気に入りに登録されたレシピがありません。カードの ⭐ ボタンで追加できます。' : 'データ同期設定（⚙️）からGoogleログインするとお気に入り機能が利用できます。')
-          : '該当するレシピが見つかりません。';
+        const isRecipe = currentAppMode === 'recipe';
+        const typeStr = isRecipe ? 'レシピ' : 'メモ';
+        let msg = `該当する${typeStr}が見つかりません。`;
+        
+        if (activeCategory === 'fav') {
+          msg = currentUser 
+            ? `お気に入りに登録された${typeStr}がありません。カードの ⭐ ボタンで追加できます。` 
+            : 'データ同期設定（⚙️）からGoogleログインするとお気に入り機能が利用できます。';
+        }
+        
         container.innerHTML = `
           <div class="empty-state">
-            <div class="empty-icon">🍳✨</div>
+            <div class="empty-icon">${isRecipe ? '🍳✨' : '🍽️✨'}</div>
             <p>${msg}</p>
           </div>`;
         return;
@@ -2232,7 +2364,7 @@
 
         const categoryTag = item.category ? `<div class="card-category-tag">${item.category}</div>` : '';
         const servingsTag = item.servings ? `<span>👤 ${item.servings}</span>` : '';
-        const cookedBadgeHtml = `<span class="cooked-badge">🍳 作った: ${item.cookedCount || 0}回</span>`;
+        const cookedBadgeHtml = (item.recordType === 'food_record') ? '' : `<span class="cooked-badge">🍳 作った: ${item.cookedCount || 0}回</span>`;
         const photoCountBadge = photos.length > 1 ? `<div class="card-photo-count-tag">📷 ${photos.length}</div>` : '';
 
         const faved = isFavorite(item.id);
@@ -2244,6 +2376,8 @@
         } else if (item.memo) {
           ingredientsPreview = item.memo;
         }
+
+        const dateHtml = `<div style="font-size: 0.75rem; color: #999; margin-top: 6px; text-align: right;">${formatDateString(item.updatedAt || item.createdAt)}</div>`;
 
         card.innerHTML = `
           <div class="card-img-wrapper">
@@ -2259,6 +2393,7 @@
               ${cookedBadgeHtml}
             </div>
             ${ingredientsPreview ? `<div class="card-ingredients-preview">${escapeHtml(ingredientsPreview)}</div>` : ''}
+            ${dateHtml}
           </div>
         `;
 
@@ -2308,6 +2443,26 @@
       } else {
         servingsEl.style.display = 'none';
       }
+
+      // Dates
+      const dateInfoEl = document.getElementById('detail-date-info');
+      const createdAtStr = formatDateString(recipe.createdAt);
+      const updatedAtStr = formatDateString(recipe.updatedAt || recipe.createdAt);
+      let dateHtml = `登録: ${createdAtStr}`;
+      if (updatedAtStr && updatedAtStr !== createdAtStr) {
+        dateHtml += ` (更新: ${updatedAtStr})`;
+      }
+      dateInfoEl.innerText = dateHtml;
+
+      // Handle Record Type Sections
+      const isRecord = recipe.recordType === 'food_record';
+      document.getElementById('section-ingredients').style.display = isRecord ? 'none' : 'block';
+      document.getElementById('section-steps').style.display = isRecord ? 'none' : 'block';
+      document.getElementById('detail-cooked-counter').style.display = isRecord ? 'none' : 'flex';
+      document.getElementById('detail-section-title-memo').innerText = isRecord ? '✏️ 感想・メモ' : '💡 コツ・メモ';
+      
+      const btnDeleteRecipe = document.getElementById('btn-delete-recipe');
+      btnDeleteRecipe.innerHTML = `<span>🗑️</span> ${isRecord ? 'メモ' : 'レシピ'}を削除`;
 
       // Render Photo Gallery
       const photos = getRecipePhotos(recipe);
@@ -2567,8 +2722,10 @@
       document.getElementById('form-header-title').innerText = '✏️ レシピを編集';
       document.getElementById('nav-add-icon').innerText = '✏️';
       document.getElementById('nav-add-text').innerText = 'レシピ編集';
-      document.getElementById('btn-save-content').innerHTML = `<span>💾</span> レシピを更新する`;
-
+      // update the mode internally
+      switchAppMode(currentDetailRecipe.recordType || 'recipe');
+      updateFormModeUI();
+      
       // Close modal and switch tab
       modalDetail.classList.remove('active');
       switchPage('add');
@@ -2578,7 +2735,10 @@
     document.getElementById('btn-delete-recipe').addEventListener('click', async () => {
       if (!currentDetailRecipe || !db) return;
 
-      if (!confirm("本当にこのレシピを削除しますか？\n削除すると元に戻せません。")) {
+      const isRecord = currentDetailRecipe.recordType === 'food_record';
+      const typeStr = isRecord ? 'メモ' : 'レシピ';
+
+      if (!confirm(`本当にこの${typeStr}を削除しますか？\n削除すると元に戻せません。`)) {
         return;
       }
 
@@ -2590,13 +2750,13 @@
         await deleteDoc(doc(db, "recipes", currentDetailRecipe.id));
         modalDetail.classList.remove('active');
         currentDetailRecipe = null;
-        alert("レシピを削除しました。");
+        alert(`${typeStr}を削除しました。`);
         fetchRecipes();
       } catch (e) {
         console.error(e);
         alert("削除に失敗しました: " + e.message);
       } finally {
-        btnDelete.innerHTML = `<span>🗑️</span> レシピを削除`;
+        btnDelete.innerHTML = `<span>🗑️</span> ${typeStr}を削除`;
         btnDelete.disabled = false;
       }
     });
