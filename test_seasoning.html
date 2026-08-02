@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="./food_vectors.js"></script>
+<script>
+    function dotProduct(v1, v2) {
+        if(!v1 || !v2) return 0;
+        let sum = 0;
+        for (let i = 0; i < 300; i++) sum += v1[i] * v2[i];
+        return sum;
+    }
+    const kw = "調味料";
+    const v1 = window.FOOD_VECTORS[kw] || window.QUERY_VECTORS[kw];
+    const targets = ["塩", "砂糖", "醤油", "酒", "みりん", "ごま油", "豚肉", "キャベツ", "卵"];
+    
+    targets.forEach(t => {
+        const v2 = window.FOOD_VECTORS[t] || window.QUERY_VECTORS[t];
+        console.log(t, dotProduct(v1, v2));
+    });
+</script>
+</body>
+</html>

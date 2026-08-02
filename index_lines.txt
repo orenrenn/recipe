@@ -1,0 +1,4111 @@
+0001: <!DOCTYPE html>
+0002: <html lang="ja">
+0003: 
+0004: <head>
+0005:   <meta charset="UTF-8">
+0006:   <!-- Disable unwanted viewport scaling on mobile -->
+0007:   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+0008:   <title>もぐもぐダイアリー 📓</title>
+0009: 
+0010:   <!-- iOS Safari PWA Meta Tags -->
+0011:   <meta name="apple-mobile-web-app-capable" content="yes">
+0012:   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+0013:   <meta name="apple-mobile-web-app-title" content="もぐダイアリー">
+0014: 
+0015:   <!-- Google Fonts -->
+0016:   <link rel="preconnect" href="https://fonts.googleapis.com">
+0017:   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+0018:   <link
+0019:     href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap"
+0020:     rel="stylesheet">
+0021: 
+0022:   <!-- Dynamic Favicon, Apple Touch Icon & PWA Manifest -->
+0023:   <link id="favicon-link" rel="icon" type="image/png" href="">
+0024:   <link id="apple-touch-icon-link" rel="apple-touch-icon" href="">
+0025:   <link id="apple-touch-icon-precomposed-link" rel="apple-touch-icon-precomposed" href="">
+0026:   <link id="manifest-link" rel="manifest" href="">
+0027: 
+0028:   <style>
+0029:     :root {
+0030:       --primary: #FF6B52;
+0031:       --primary-hover: #E8533A;
+0032:       --primary-light: #FFF0ED;
+0033:       --accent: #FFA048;
+0034:       --star-color: #F59E0B;
+0035:       --bg: #FFFDF9;
+0036:       --surface: #FFFFFF;
+0037:       --border: #F3ECE7;
+0038:       --border-dark: #E6D7CE;
+0039:       --text: #2D2725;
+0040:       --text-muted: #8C7F79;
+0041:       --text-light: #BDB3AD;
+0042:       --radius-sm: 10px;
+0043:       --radius-md: 16px;
+0044:       --radius-lg: 24px;
+0045:       --shadow-sm: 0 2px 6px rgba(232, 83, 58, 0.06);
+0046:       --shadow-md: 0 6px 16px rgba(232, 83, 58, 0.09);
+0047:       --shadow-lg: 0 12px 30px -5px rgba(232, 83, 58, 0.15);
+0048:     }
+0049: 
+0050:     * {
+0051:       box-sizing: border-box;
+0052:     }
+0053: 
+0054:     html,
+0055:     body {
+0056:       touch-action: pan-x pan-y;
+0057:       /* Prevent pinch zoom gestures via CSS */
+0058:       -webkit-text-size-adjust: 100%;
+0059:       overflow-x: hidden;
+0060:     }
+0061: 
+0062:     body {
+0063:       font-family: 'M PLUS Rounded 1c', 'Noto Sans JP', -apple-system, sans-serif;
+0064:       margin: 0;
+0065:       padding: 0;
+0066:       background-color: var(--bg);
+0067:       color: var(--text);
+0068:       line-height: 1.6;
+0069:       -webkit-tap-highlight-color: transparent;
+0070:     }
+0071: 
+0072:     /* Header */
+0073:     header {
+0074:       background: var(--surface);
+0075:       border-bottom: 1px solid var(--border);
+0076:       position: sticky;
+0077:       top: 0;
+0078:       z-index: 50;
+0079:       backdrop-filter: blur(10px);
+0080:       background-color: rgba(255, 255, 255, 0.94);
+0081:     }
+0082: 
+0083:     .header-inner {
+0084:       max-width: 680px;
+0085:       margin: 0 auto;
+0086:       padding: 0.8rem 1rem;
+0087:       display: flex;
+0088:       align-items: center;
+0089:       justify-content: space-between;
+0090:     }
+0091: 
+0092:     .app-logo {
+0093:       display: flex;
+0094:       align-items: center;
+0095:       gap: 6px;
+0096:       font-weight: 800;
+0097:       font-size: 1.25rem;
+0098:       color: var(--primary);
+0099:       text-decoration: none;
+0100:       letter-spacing: -0.02em;
+0101:     }
+0102: 
+0103:     .header-actions {
+0104:       display: flex;
+0105:       align-items: center;
+0106:       gap: 8px;
+0107:     }
+0108: 
+0109:     .icon-btn {
+0110:       background: none;
+0111:       border: 1px solid var(--border);
+0112:       width: 38px;
+0113:       height: 38px;
+0114:       border-radius: 50%;
+0115:       display: flex;
+0116:       align-items: center;
+0117:       justify-content: center;
+0118:       cursor: pointer;
+0119:       font-size: 1.05rem;
+0120:       color: var(--text-muted);
+0121:       transition: all 0.2s ease;
+0122:     }
+0123: 
+0124:     .icon-btn:hover {
+0125:       background: var(--primary-light);
+0126:       color: var(--primary);
+0127:       border-color: var(--primary);
+0128:     }
+0129: 
+0130:     /* Navigation Bar */
+0131:     nav {
+0132:       max-width: 680px;
+0133:       margin: 1rem auto 0;
+0134:       padding: 0 1rem;
+0135:       display: flex;
+0136:       gap: 10px;
+0137:     }
+0138: 
+0139:     .nav-tab {
+0140:       flex: 1;
+0141:       padding: 12px 16px;
+0142:       background: var(--surface);
+0143:       border: 1.5px solid var(--border);
+0144:       border-radius: var(--radius-md);
+0145:       font-size: 0.98rem;
+0146:       font-weight: 800;
+0147:       color: var(--text-muted);
+0148:       cursor: pointer;
+0149:       display: flex;
+0150:       align-items: center;
+0151:       justify-content: center;
+0152:       gap: 6px;
+0153:       transition: all 0.2s ease;
+0154:     }
+0155: 
+0156:     .nav-tab.active {
+0157:       background: var(--primary);
+0158:       color: white;
+0159:       border-color: var(--primary);
+0160:       box-shadow: 0 4px 12px rgba(255, 107, 82, 0.3);
+0161:     }
+0162: 
+0163:     /* Main Container */
+0164:     .container {
+0165:       max-width: 680px;
+0166:       margin: 0 auto;
+0167:       padding: 1rem;
+0168:     }
+0169: 
+0170:     .page {
+0171:       display: none;
+0172:     }
+0173: 
+0174:     .page.active {
+0175:       display: block;
+0176:       animation: fadeIn 0.25s ease;
+0177:     }
+0178: 
+0179:     @keyframes fadeIn {
+0180:       from {
+0181:         opacity: 0;
+0182:         transform: translateY(4px);
+0183:       }
+0184: 
+0185:       to {
+0186:         opacity: 1;
+0187:         transform: translateY(0);
+0188:       }
+0189:     }
+0190: 
+0191:     /* Controls (Search & Filter & Sort) */
+0192:     .search-filter-box {
+0193:       margin-bottom: 1.2rem;
+0194:       display: flex;
+0195:       flex-direction: column;
+0196:       gap: 10px;
+0197:     }
+0198: 
+0199:     .search-wrapper {
+0200:       position: relative;
+0201:       width: 100%;
+0202:       display: flex;
+0203:       align-items: center;
+0204:     }
+0205: 
+0206:     .search-input {
+0207:       width: 100%;
+0208:       padding: 12px 16px 12px 52px !important;
+0209:       border: 1.5px solid var(--border);
+0210:       border-radius: var(--radius-md);
+0211:       background: var(--surface);
+0212:       font-size: 16px !important;
+0213:       /* Prevent iOS safari input focus zoom */
+0214:       color: var(--text);
+0215:       outline: none;
+0216:       box-sizing: border-box;
+0217:       transition: border-color 0.2s ease, box-shadow 0.2s ease;
+0218:     }
+0219: 
+0220:     .search-input:focus {
+0221:       border-color: var(--primary);
+0222:       box-shadow: 0 0 0 3px rgba(255, 107, 82, 0.15);
+0223:     }
+0224: 
+0225:     .form-input {
+0226:       width: 100%;
+0227:       padding: 12px 16px !important;
+0228:       border: 1.5px solid var(--border);
+0229:       border-radius: var(--radius-md);
+0230:       background: var(--surface);
+0231:       font-size: 16px !important;
+0232:       color: var(--text);
+0233:       outline: none;
+0234:       box-sizing: border-box;
+0235:       transition: border-color 0.2s ease, box-shadow 0.2s ease;
+0236:     }
+0237: 
+0238:     .form-input:focus {
+0239:       border-color: var(--primary);
+0240:       box-shadow: 0 0 0 3px rgba(255, 107, 82, 0.15);
+0241:     }
+0242: 
+0243:     .search-icon {
+0244:       position: absolute;
+0245:       left: 18px;
+0246:       top: 50%;
+0247:       transform: translateY(-50%);
+0248:       font-size: 1.1rem;
+0249:       color: var(--text-light);
+0250:       pointer-events: none;
+0251:       z-index: 5;
+0252:     }
+0253: 
+0254:     /* Beautiful Multi-Line Wrapped Category Pills Grid */
+0255:     .category-pills {
+0256:       display: flex;
+0257:       flex-wrap: wrap;
+0258:       /* Wrap all tags so all categories are visible without horizontal scrolling */
+0259:       gap: 6px 8px;
+0260:       padding-bottom: 2px;
+0261:     }
+0262: 
+0263:     .pill {
+0264:       white-space: nowrap;
+0265:       padding: 6px 14px;
+0266:       border-radius: 20px;
+0267:       background: var(--surface);
+0268:       border: 1.5px solid var(--border);
+0269:       font-size: 0.85rem;
+0270:       font-weight: 700;
+0271:       color: var(--text-muted);
+0272:       cursor: pointer;
+0273:       transition: all 0.2s ease;
+0274:     }
+0275: 
+0276:     .pill.active {
+0277:       background: var(--text);
+0278:       color: white;
+0279:       border-color: var(--text);
+0280:     }
+0281: 
+0282:     .pill.pill-fav {
+0283:       border-color: #FCD34D;
+0284:       color: #92400E;
+0285:       background: #FEF3C7;
+0286:     }
+0287: 
+0288:     .pill.pill-fav.active {
+0289:       background: #F59E0B;
+0290:       color: white;
+0291:       border-color: #F59E0B;
+0292:     }
+0293: 
+0294:     .sort-bar {
+0295:       display: flex;
+0296:       align-items: center;
+0297:       justify-content: space-between;
+0298:       padding: 2px 4px;
+0299:       font-size: 0.82rem;
+0300:       color: var(--text-muted);
+0301:       font-weight: 700;
+0302:     }
+0303: 
+0304:     /* Standardized Star Pop Animation */
+0305:     @keyframes starPop {
+0306:       0% {
+0307:         transform: scale(1);
+0308:       }
+0309: 
+0310:       50% {
+0311:         transform: scale(1.45) rotate(15deg);
+0312:       }
+0313: 
+0314:       100% {
+0315:         transform: scale(1);
+0316:       }
+0317:     }
+0318: 
+0319:     .star-animating {
+0320:       display: inline-block !important;
+0321:       animation: starPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+0322:     }
+0323: 
+0324:     /* Recipe Grid & Cards */
+0325:     .recipe-grid {
+0326:       display: grid;
+0327:       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+0328:       gap: 1rem;
+0329:     }
+0330: 
+0331:     .recipe-card {
+0332:       background: var(--surface);
+0333:       border-radius: var(--radius-md);
+0334:       border: 1.5px solid var(--border);
+0335:       overflow: hidden;
+0336:       box-shadow: var(--shadow-sm);
+0337:       cursor: pointer;
+0338:       transition: transform 0.2s ease, box-shadow 0.2s ease;
+0339:       display: flex;
+0340:       flex-direction: column;
+0341:       position: relative;
+0342:     }
+0343: 
+0344:     .recipe-card:hover {
+0345:       transform: translateY(-3px);
+0346:       box-shadow: var(--shadow-md);
+0347:     }
+0348: 
+0349:     .card-img-wrapper {
+0350:       width: 100%;
+0351:       height: 160px;
+0352:       background: #FFF0ED;
+0353:       position: relative;
+0354:       overflow: hidden;
+0355:     }
+0356: 
+0357:     .card-img {
+0358:       width: 100%;
+0359:       height: 100%;
+0360:       object-fit: cover;
+0361:     }
+0362: 
+0363:     .card-placeholder {
+0364:       width: 100%;
+0365:       height: 100%;
+0366:       display: flex;
+0367:       align-items: center;
+0368:       justify-content: center;
+0369:       font-size: 3.5rem;
+0370:       background: linear-gradient(135deg, #FFE8E0, #FFF3E0);
+0371:     }
+0372: 
+0373:     .card-category-tag {
+0374:       position: absolute;
+0375:       top: 10px;
+0376:       left: 10px;
+0377:       background: rgba(0, 0, 0, 0.65);
+0378:       color: white;
+0379:       font-size: 0.75rem;
+0380:       font-weight: 700;
+0381:       padding: 3px 10px;
+0382:       border-radius: 12px;
+0383:       backdrop-filter: blur(4px);
+0384:     }
+0385: 
+0386:     .card-fav-btn {
+0387:       position: absolute;
+0388:       top: 10px;
+0389:       right: 10px;
+0390:       background: rgba(255, 255, 255, 0.92);
+0391:       border: none;
+0392:       width: 36px;
+0393:       height: 36px;
+0394:       border-radius: 50%;
+0395:       display: flex;
+0396:       align-items: center;
+0397:       justify-content: center;
+0398:       cursor: pointer;
+0399:       font-size: 1.25rem;
+0400:       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+0401:       transition: transform 0.15s ease, background 0.15s ease;
+0402:       z-index: 10;
+0403:     }
+0404: 
+0405:     .card-fav-btn:hover {
+0406:       transform: scale(1.1);
+0407:       background: white;
+0408:     }
+0409: 
+0410:     .card-photo-count-tag {
+0411:       position: absolute;
+0412:       bottom: 10px;
+0413:       right: 10px;
+0414:       background: rgba(0, 0, 0, 0.7);
+0415:       color: white;
+0416:       font-size: 0.75rem;
+0417:       font-weight: 700;
+0418:       padding: 2px 8px;
+0419:       border-radius: 10px;
+0420:       backdrop-filter: blur(4px);
+0421:     }
+0422: 
+0423:     .card-content {
+0424:       padding: 1rem;
+0425:       flex: 1;
+0426:       display: flex;
+0427:       flex-direction: column;
+0428:     }
+0429: 
+0430:     .card-title {
+0431:       font-size: 1.1rem;
+0432:       font-weight: 800;
+0433:       margin: 0 0 6px 0;
+0434:       color: var(--text);
+0435:       line-height: 1.4;
+0436:     }
+0437: 
+0438:     .card-meta {
+0439:       display: flex;
+0440:       align-items: center;
+0441:       gap: 10px;
+0442:       font-size: 0.82rem;
+0443:       color: var(--text-muted);
+0444:       margin-bottom: 8px;
+0445:       flex-wrap: wrap;
+0446:     }
+0447: 
+0448:     .cooked-badge {
+0449:       background: #FFF7F5;
+0450:       color: var(--primary);
+0451:       border: 1px solid #FFD6CE;
+0452:       padding: 1px 7px;
+0453:       border-radius: 10px;
+0454:       font-weight: 700;
+0455:     }
+0456: 
+0457:     .card-ingredients-preview {
+0458:       font-size: 0.85rem;
+0459:       color: var(--text-muted);
+0460:       display: -webkit-box;
+0461:       -webkit-line-clamp: 2;
+0462:       -webkit-box-orient: vertical;
+0463:       overflow: hidden;
+0464:       margin-top: auto;
+0465:       padding-top: 8px;
+0466:       border-top: 1px dashed var(--border);
+0467:     }
+0468: 
+0469:     /* Form Styles */
+0470:     .form-card {
+0471:       background: var(--surface);
+0472:       border: 1.5px solid var(--border);
+0473:       border-radius: var(--radius-md);
+0474:       padding: 1.2rem;
+0475:       box-shadow: var(--shadow-sm);
+0476:       margin-bottom: 1.5rem;
+0477:     }
+0478: 
+0479:     .form-section-title {
+0480:       font-size: 1.05rem;
+0481:       font-weight: 800;
+0482:       margin: 0 0 1rem 0;
+0483:       color: var(--text);
+0484:       display: flex;
+0485:       align-items: center;
+0486:       gap: 6px;
+0487:       padding-bottom: 6px;
+0488:       border-bottom: 2px solid var(--primary-light);
+0489:     }
+0490: 
+0491:     .form-group {
+0492:       margin-bottom: 1.1rem;
+0493:     }
+0494: 
+0495:     .form-group:last-child {
+0496:       margin-bottom: 0;
+0497:     }
+0498: 
+0499:     label {
+0500:       display: block;
+0501:       font-size: 0.88rem;
+0502:       font-weight: 700;
+0503:       color: var(--text);
+0504:       margin-bottom: 6px;
+0505:     }
+0506: 
+0507:     .field-desc {
+0508:       font-size: 0.78rem;
+0509:       color: var(--text-muted);
+0510:       margin-top: -4px;
+0511:       margin-bottom: 6px;
+0512:     }
+0513: 
+0514:     input[type="text"],
+0515:     select,
+0516:     textarea {
+0517:       width: 100%;
+0518:       padding: 10px 14px;
+0519:       border: 1.5px solid var(--border);
+0520:       border-radius: var(--radius-sm);
+0521:       font-size: 16px !important;
+0522:       /* 16px prevents iOS Safari automatic page zooming */
+0523:       font-family: inherit;
+0524:       color: var(--text);
+0525:       background: var(--surface);
+0526:       outline: none;
+0527:       transition: border-color 0.2s ease, box-shadow 0.2s ease;
+0528:     }
+0529: 
+0530:     input[type="text"]:focus,
+0531:     select:focus,
+0532:     textarea:focus {
+0533:       border-color: var(--primary);
+0534:       box-shadow: 0 0 0 3px rgba(255, 107, 82, 0.15);
+0535:     }
+0536: 
+0537:     .form-row {
+0538:       display: grid;
+0539:       grid-template-columns: 1fr 1fr;
+0540:       gap: 12px;
+0541:     }
+0542: 
+0543:     @media (max-width: 480px) {
+0544:       .form-row {
+0545:         grid-template-columns: 1fr;
+0546:       }
+0547:     }
+0548: 
+0549:     /* Structured Step Builder in Form */
+0550:     .step-form-row {
+0551:       background: #FFFDF9;
+0552:       border: 1.5px solid var(--border);
+0553:       border-radius: var(--radius-md);
+0554:       padding: 1rem;
+0555:       position: relative;
+0556:       display: flex;
+0557:       flex-direction: column;
+0558:       gap: 8px;
+0559:     }
+0560: 
+0561:     .step-form-header {
+0562:       display: flex;
+0563:       align-items: center;
+0564:       justify-content: space-between;
+0565:     }
+0566: 
+0567:     .step-form-num {
+0568:       background: var(--primary-light);
+0569:       color: var(--primary);
+0570:       font-weight: 800;
+0571:       font-size: 0.85rem;
+0572:       padding: 2px 10px;
+0573:       border-radius: 12px;
+0574:     }
+0575: 
+0576:     .btn-remove-step {
+0577:       background: none;
+0578:       border: none;
+0579:       color: #9CA3AF;
+0580:       font-size: 1.1rem;
+0581:       cursor: pointer;
+0582:       padding: 2px 6px;
+0583:       border-radius: 50%;
+0584:     }
+0585: 
+0586:     .btn-remove-step:hover {
+0587:       color: #EF4444;
+0588:       background: #FEE2E2;
+0589:     }
+0590: 
+0591:     .btn-add-step-bottom {
+0592:       width: 100%;
+0593:       border-radius: var(--radius-sm);
+0594:       border: 2px dashed var(--border-dark);
+0595:       background: var(--bg);
+0596:       color: var(--text);
+0597:       font-size: 0.95rem;
+0598:     }
+0599: 
+0600:     .mode-switcher-container {
+0601:       display: flex;
+0602:       position: relative;
+0603:       margin: 16px auto 4px auto;
+0604:       background: rgba(255, 148, 162, 0.08);
+0605:       padding: 6px;
+0606:       border-radius: 30px;
+0607:       width: calc(100% - 32px);
+0608:       max-width: 380px;
+0609:       box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.02);
+0610:     }
+0611: 
+0612:     .mode-btn {
+0613:       flex: 1;
+0614:       padding: 10px 0;
+0615:       border-radius: 24px;
+0616:       border: none;
+0617:       background: transparent;
+0618:       color: #999;
+0619:       font-size: 0.95rem;
+0620:       font-weight: 700;
+0621:       letter-spacing: 0.5px;
+0622:       cursor: pointer;
+0623:       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+0624:       display: flex;
+0625:       align-items: center;
+0626:       justify-content: center;
+0627:       gap: 6px;
+0628:     }
+0629: 
+0630:     .mode-btn:active {
+0631:       transform: scale(0.96);
+0632:     }
+0633: 
+0634:     .mode-btn.active {
+0635:       background: white;
+0636:       color: #ff6b81;
+0637:       box-shadow: 0 4px 12px rgba(255, 107, 129, 0.15), 0 1px 2px rgba(0, 0, 0, 0.02);
+0638:     }
+0639: 
+0640:     .mode-btn .mode-icon {
+0641:       font-size: 1.1rem;
+0642:       filter: grayscale(100%) opacity(0.5);
+0643:       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+0644:     }
+0645: 
+0646:     .mode-btn.active .mode-icon {
+0647:       filter: grayscale(0%) opacity(1);
+0648:       transform: scale(1.15) rotate(-5deg);
+0649:     }
+0650: 
+0651:     nav {
+0652:       font-weight: 800;
+0653:       padding: 12px;
+0654:       cursor: pointer;
+0655:       display: flex;
+0656:       align-items: center;
+0657:       justify-content: center;
+0658:       gap: 6px;
+0659:       transition: all 0.2s ease;
+0660:     }
+0661: 
+0662:     .btn-add-step-bottom:hover {
+0663:       border-color: var(--primary);
+0664:       background: var(--primary-light);
+0665:       color: var(--primary);
+0666:     }
+0667: 
+0668:     /* Multi Photo Picker Grid in Form */
+0669:     .photos-preview-grid {
+0670:       display: grid;
+0671:       grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+0672:       gap: 10px;
+0673:       margin-top: 6px;
+0674:     }
+0675: 
+0676:     .photo-thumb-wrapper {
+0677:       position: relative;
+0678:       width: 100%;
+0679:       padding-top: 100%;
+0680:       border-radius: var(--radius-sm);
+0681:       overflow: hidden;
+0682:       border: 1px solid var(--border);
+0683:       box-shadow: var(--shadow-sm);
+0684:     }
+0685: 
+0686:     .photo-thumb-img {
+0687:       position: absolute;
+0688:       top: 0;
+0689:       left: 0;
+0690:       width: 100%;
+0691:       height: 100%;
+0692:       object-fit: cover;
+0693:     }
+0694: 
+0695:     .btn-remove-thumb {
+0696:       position: absolute;
+0697:       top: 4px;
+0698:       right: 4px;
+0699:       background: rgba(0, 0, 0, 0.75);
+0700:       color: white;
+0701:       border: none;
+0702:       width: 22px;
+0703:       height: 22px;
+0704:       border-radius: 50%;
+0705:       cursor: pointer;
+0706:       display: flex;
+0707:       align-items: center;
+0708:       justify-content: center;
+0709:       font-size: 0.75rem;
+0710:       z-index: 2;
+0711:     }
+0712: 
+0713:     .btn-remove-thumb:hover {
+0714:       background: #EF4444;
+0715:     }
+0716: 
+0717:     .add-photo-box {
+0718:       border: 2px dashed var(--border-dark);
+0719:       border-radius: var(--radius-sm);
+0720:       min-height: 90px;
+0721:       display: flex;
+0722:       flex-direction: column;
+0723:       align-items: center;
+0724:       justify-content: center;
+0725:       background: var(--bg);
+0726:       cursor: pointer;
+0727:       transition: all 0.2s ease;
+0728:       color: var(--text-muted);
+0729:     }
+0730: 
+0731:     .add-photo-box:hover {
+0732:       border-color: var(--primary);
+0733:       background: var(--primary-light);
+0734:       color: var(--primary);
+0735:     }
+0736: 
+0737:     /* Buttons */
+0738:     .btn {
+0739:       width: 100%;
+0740:       padding: 14px;
+0741:       background: var(--primary);
+0742:       color: white;
+0743:       border: none;
+0744:       border-radius: var(--radius-md);
+0745:       font-size: 1rem;
+0746:       font-weight: 800;
+0747:       cursor: pointer;
+0748:       transition: all 0.2s ease;
+0749:       box-shadow: 0 4px 12px rgba(255, 107, 82, 0.25);
+0750:       display: flex;
+0751:       align-items: center;
+0752:       justify-content: center;
+0753:       gap: 8px;
+0754:     }
+0755: 
+0756:     .btn:hover {
+0757:       background: var(--primary-hover);
+0758:       box-shadow: 0 6px 16px rgba(255, 107, 82, 0.35);
+0759:     }
+0760: 
+0761:     .btn:disabled {
+0762:       background: var(--border-dark);
+0763:       cursor: not-allowed;
+0764:       box-shadow: none;
+0765:     }
+0766: 
+0767:     .btn-danger {
+0768:       background: #EF4444;
+0769:       box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25);
+0770:     }
+0771: 
+0772:     .btn-danger:hover {
+0773:       background: #DC2626;
+0774:       box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+0775:     }
+0776: 
+0777:     .btn-secondary {
+0778:       background: #F3F4F6;
+0779:       color: var(--text);
+0780:       box-shadow: none;
+0781:       border: 1px solid var(--border);
+0782:     }
+0783: 
+0784:     .btn-secondary:hover {
+0785:       background: #E5E7EB;
+0786:     }
+0787: 
+0788:     /* Cooked Counter Component & Stepper Controls */
+0789:     .cooked-counter-box {
+0790:       background: #FFF7F5;
+0791:       border: 1.5px solid #FFD6CE;
+0792:       border-radius: var(--radius-md);
+0793:       padding: 0.9rem 1.1rem;
+0794:       display: flex;
+0795:       align-items: center;
+0796:       justify-content: space-between;
+0797:       margin-bottom: 1.2rem;
+0798:     }
+0799: 
+0800:     .cooked-btn-group {
+0801:       display: flex;
+0802:       align-items: center;
+0803:       gap: 8px;
+0804:     }
+0805: 
+0806:     .btn-cooked-action {
+0807:       border: none;
+0808:       border-radius: 20px;
+0809:       padding: 8px 14px;
+0810:       font-size: 0.88rem;
+0811:       font-weight: 800;
+0812:       cursor: pointer;
+0813:       display: flex;
+0814:       align-items: center;
+0815:       gap: 4px;
+0816:       transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+0817:     }
+0818: 
+0819:     .btn-cooked-plus {
+0820:       background: var(--primary);
+0821:       color: white;
+0822:       box-shadow: 0 3px 8px rgba(255, 107, 82, 0.25);
+0823:     }
+0824: 
+0825:     .btn-cooked-plus:hover {
+0826:       background: var(--primary-hover);
+0827:       transform: scale(1.05);
+0828:     }
+0829: 
+0830:     .btn-cooked-minus {
+0831:       background: #F3F4F6;
+0832:       color: var(--text-muted);
+0833:       border: 1.5px solid var(--border);
+0834:     }
+0835: 
+0836:     .btn-cooked-minus:hover:not(:disabled) {
+0837:       background: #E5E7EB;
+0838:       color: var(--text);
+0839:       transform: scale(1.05);
+0840:     }
+0841: 
+0842:     .btn-cooked-minus:disabled {
+0843:       opacity: 0.45;
+0844:       cursor: not-allowed;
+0845:     }
+0846: 
+0847:     /* Modal Overlay & Dialog */
+0848:     .modal-backdrop {
+0849:       position: fixed;
+0850:       top: 0;
+0851:       left: 0;
+0852:       right: 0;
+0853:       bottom: 0;
+0854:       background: rgba(0, 0, 0, 0.55);
+0855:       backdrop-filter: blur(4px);
+0856:       z-index: 100;
+0857:       display: flex;
+0858:       align-items: center;
+0859:       justify-content: center;
+0860:       padding: 1rem;
+0861:       opacity: 0;
+0862:       visibility: hidden;
+0863:       transition: all 0.25s ease;
+0864:     }
+0865: 
+0866:     .modal-backdrop.active {
+0867:       opacity: 1;
+0868:       visibility: visible;
+0869:     }
+0870: 
+0871:     .modal-card {
+0872:       background: var(--surface);
+0873:       border-radius: var(--radius-lg);
+0874:       width: 100%;
+0875:       max-width: 580px;
+0876:       max-height: 90vh;
+0877:       overflow-y: auto;
+0878:       box-shadow: var(--shadow-lg);
+0879:       transform: scale(0.95);
+0880:       transition: transform 0.25s ease;
+0881:       display: flex;
+0882:       flex-direction: column;
+0883:     }
+0884: 
+0885:     .modal-backdrop.active .modal-card {
+0886:       transform: scale(1);
+0887:     }
+0888: 
+0889:     .modal-header {
+0890:       padding: 1.2rem;
+0891:       border-bottom: 1px solid var(--border);
+0892:       display: flex;
+0893:       align-items: flex-start;
+0894:       justify-content: space-between;
+0895:       position: sticky;
+0896:       top: 0;
+0897:       background: var(--surface);
+0898:       z-index: 10;
+0899:     }
+0900: 
+0901:     .modal-title-group {
+0902:       flex: 1;
+0903:       padding-right: 12px;
+0904:     }
+0905: 
+0906:     .modal-title {
+0907:       font-size: 1.3rem;
+0908:       font-weight: 800;
+0909:       margin: 0;
+0910:       color: var(--text);
+0911:     }
+0912: 
+0913:     .modal-meta {
+0914:       display: flex;
+0915:       align-items: center;
+0916:       gap: 10px;
+0917:       margin-top: 6px;
+0918:       font-size: 0.85rem;
+0919:       color: var(--text-muted);
+0920:     }
+0921: 
+0922:     .modal-close-btn {
+0923:       background: #F3F4F6;
+0924:       border: none;
+0925:       width: 34px;
+0926:       height: 34px;
+0927:       border-radius: 50%;
+0928:       display: flex;
+0929:       align-items: center;
+0930:       justify-content: center;
+0931:       cursor: pointer;
+0932:       font-size: 1.1rem;
+0933:       color: var(--text-muted);
+0934:     }
+0935: 
+0936:     .modal-close-btn:hover {
+0937:       background: #E5E7EB;
+0938:       color: var(--text);
+0939:     }
+0940: 
+0941:     .modal-body {
+0942:       padding: 1.2rem;
+0943:       overflow-y: auto;
+0944:     }
+0945: 
+0946:     /* Detail Photo Gallery */
+0947:     .detail-gallery-container {
+0948:       width: 100%;
+0949:       background: #18181B;
+0950:       border-radius: var(--radius-md);
+0951:       overflow: hidden;
+0952:       margin-bottom: 1.2rem;
+0953:       position: relative;
+0954:     }
+0955: 
+0956:     .detail-main-img-wrapper {
+0957:       width: 100%;
+0958:       min-height: 240px;
+0959:       max-height: 420px;
+0960:       display: flex;
+0961:       align-items: center;
+0962:       justify-content: center;
+0963:       position: relative;
+0964:       background: #09090B;
+0965:     }
+0966: 
+0967:     .detail-main-img {
+0968:       max-width: 100%;
+0969:       max-height: 420px;
+0970:       width: auto;
+0971:       height: auto;
+0972:       object-fit: contain;
+0973:       display: block;
+0974:     }
+0975: 
+0976:     .gallery-nav-btn {
+0977:       position: absolute;
+0978:       top: 50%;
+0979:       transform: translateY(-50%);
+0980:       background: rgba(0, 0, 0, 0.65);
+0981:       color: white;
+0982:       border: none;
+0983:       width: 38px;
+0984:       height: 38px;
+0985:       border-radius: 50%;
+0986:       display: flex;
+0987:       align-items: center;
+0988:       justify-content: center;
+0989:       cursor: pointer;
+0990:       font-size: 1.2rem;
+0991:       z-index: 5;
+0992:       transition: background 0.2s ease;
+0993:     }
+0994: 
+0995:     .gallery-nav-btn:hover {
+0996:       background: rgba(0, 0, 0, 0.9);
+0997:     }
+0998: 
+0999:     .gallery-nav-btn.prev {
+1000:       left: 10px;
+1001:     }
+1002: 
+1003:     .gallery-nav-btn.next {
+1004:       right: 10px;
+1005:     }
+1006: 
+1007:     .gallery-thumbs-row {
+1008:       display: flex;
+1009:       gap: 8px;
+1010:       padding: 8px 12px;
+1011:       background: #27272A;
+1012:       overflow-x: auto;
+1013:       scrollbar-width: none;
+1014:     }
+1015: 
+1016:     .gallery-thumbs-row::-webkit-scrollbar {
+1017:       display: none;
+1018:     }
+1019: 
+1020:     .gallery-thumb-item {
+1021:       width: 54px;
+1022:       height: 54px;
+1023:       border-radius: 6px;
+1024:       object-fit: cover;
+1025:       cursor: pointer;
+1026:       opacity: 0.5;
+1027:       border: 2px solid transparent;
+1028:       transition: all 0.2s ease;
+1029:       flex-shrink: 0;
+1030:     }
+1031: 
+1032:     .gallery-thumb-item.active {
+1033:       opacity: 1;
+1034:       border-color: var(--primary);
+1035:     }
+1036: 
+1037:     .detail-section {
+1038:       margin-bottom: 1.4rem;
+1039:     }
+1040: 
+1041:     .detail-section-title {
+1042:       font-size: 1rem;
+1043:       font-weight: 800;
+1044:       color: var(--primary);
+1045:       margin: 0 0 0.6rem 0;
+1046:       display: flex;
+1047:       align-items: center;
+1048:       gap: 6px;
+1049:     }
+1050: 
+1051:     /* Ingredient Checklist */
+1052:     .ingredient-list {
+1053:       display: flex;
+1054:       flex-direction: column;
+1055:       gap: 6px;
+1056:       background: var(--bg);
+1057:       padding: 0.8rem;
+1058:       border-radius: var(--radius-md);
+1059:       border: 1.5px solid var(--border);
+1060:     }
+1061: 
+1062:     .ingredient-item {
+1063:       display: flex;
+1064:       align-items: center;
+1065:       gap: 10px;
+1066:       font-size: 0.95rem;
+1067:       padding: 6px 8px;
+1068:       border-radius: var(--radius-sm);
+1069:       cursor: pointer;
+1070:       user-select: none;
+1071:       transition: background 0.15s ease;
+1072:     }
+1073: 
+1074:     .ingredient-item:hover {
+1075:       background: rgba(0, 0, 0, 0.03);
+1076:     }
+1077: 
+1078:     .ingredient-item input[type="checkbox"] {
+1079:       width: 18px;
+1080:       height: 18px;
+1081:       accent-color: var(--primary);
+1082:       cursor: pointer;
+1083:     }
+1084: 
+1085:     .ingredient-item.checked span {
+1086:       text-decoration: line-through;
+1087:       color: var(--text-light);
+1088:     }
+1089: 
+1090:     /* Structured Step List Display in Detail Modal */
+1091:     .step-list {
+1092:       display: flex;
+1093:       flex-direction: column;
+1094:       gap: 12px;
+1095:     }
+1096: 
+1097:     .step-item {
+1098:       display: flex;
+1099:       gap: 14px;
+1100:       background: var(--surface);
+1101:       padding: 1rem 1.1rem;
+1102:       border-radius: var(--radius-md);
+1103:       border: 1.5px solid var(--border);
+1104:       box-shadow: var(--shadow-sm);
+1105:     }
+1106: 
+1107:     .step-number {
+1108:       background: var(--primary-light);
+1109:       color: var(--primary);
+1110:       font-weight: 800;
+1111:       width: 32px;
+1112:       height: 32px;
+1113:       border-radius: 50%;
+1114:       display: flex;
+1115:       align-items: center;
+1116:       justify-content: center;
+1117:       font-size: 0.95rem;
+1118:       flex-shrink: 0;
+1119:     }
+1120: 
+1121:     .step-body {
+1122:       flex: 1;
+1123:       display: flex;
+1124:       flex-direction: column;
+1125:       gap: 4px;
+1126:     }
+1127: 
+1128:     .step-heading {
+1129:       font-weight: 800;
+1130:       font-size: 1rem;
+1131:       color: var(--text);
+1132:       line-height: 1.4;
+1133:     }
+1134: 
+1135:     .step-desc {
+1136:       font-size: 0.92rem;
+1137:       color: var(--text-muted);
+1138:       line-height: 1.5;
+1139:       white-space: pre-wrap;
+1140:     }
+1141: 
+1142:     .notes-box {
+1143:       background: #FFFBEB;
+1144:       border: 1.5px solid #FDE68A;
+1145:       padding: 0.9rem 1rem;
+1146:       border-radius: var(--radius-md);
+1147:       font-size: 0.92rem;
+1148:       color: #92400E;
+1149:       white-space: pre-wrap;
+1150:     }
+1151: 
+1152:     .modal-footer {
+1153:       padding: 1rem 1.2rem;
+1154:       border-top: 1px solid var(--border);
+1155:       display: flex;
+1156:       justify-content: space-between;
+1157:       gap: 10px;
+1158:       background: var(--surface);
+1159:       border-bottom-left-radius: var(--radius-lg);
+1160:       border-bottom-right-radius: var(--radius-lg);
+1161:     }
+1162: 
+1163:     /* Empty state */
+1164:     .empty-state {
+1165:       text-align: center;
+1166:       padding: 3rem 1rem;
+1167:       background: var(--surface);
+1168:       border-radius: var(--radius-md);
+1169:       border: 1.5px dashed var(--border-dark);
+1170:       color: var(--text-muted);
+1171:     }
+1172: 
+1173:     .empty-icon {
+1174:       font-size: 3.5rem;
+1175:       margin-bottom: 0.5rem;
+1176:     }
+1177:   </style>
+1178:   <script src="./food_vectors.js"></script>
+1179: </head>
+1180: 
+1181: <body>
+1182: 
+1183:   <!-- Header -->
+1184:   <header>
+1185:     <div class="header-inner">
+1186:       <a href="#" class="app-logo">
+1187:         <span>📓✨</span>
+1188:         <span>もぐもぐダイアリー</span>
+1189:       </a>
+1190:       <div class="header-actions">
+1191:         <button id="btn-open-settings" class="icon-btn" title="データ同期設定">
+1192:           ⚙️
+1193:         </button>
+1194:       </div>
+1195:     </div>
+1196:   </header>
+1197: 
+1198:   <!-- Mode Switcher -->
+1199:   <div class="mode-switcher-container">
+1200:     <button id="mode-recipe" class="mode-btn active" onclick="switchAppMode('recipe')">
+1201:       <span class="mode-icon">🍳</span> レシピ
+1202:     </button>
+1203:     <button id="mode-food-record" class="mode-btn" onclick="switchAppMode('food_record')">
+1204:       <span class="mode-icon">🍽️</span> ごはんメモ
+1205:     </button>
+1206:     <button id="mode-fridge" class="mode-btn" onclick="switchAppMode('fridge')">
+1207:       <span class="mode-icon">🧺</span> 食材ストック
+1208:     </button>
+1209:   </div>
+1210: 
+1211:   <!-- Navigation Tabs -->
+1212:   <nav>
+1213:     <button id="nav-list" class="nav-tab active">
+1214:       <span>📋</span> <span id="nav-list-text">レシピ一覧</span>
+1215:     </button>
+1216:     <button id="nav-add" class="nav-tab">
+1217:       <span id="nav-add-icon">➕</span> <span id="nav-add-text">レシピ登録</span>
+1218:     </button>
+1219:   </nav>
+1220: 
+1221:   <!-- Main Content Area -->
+1222:   <div class="container">
+1223: 
+1224:     <!-- PAGE 1: レシピ一覧 -->
+1225:     <div id="page-list" class="page active">
+1226: 
+1227:       <!-- 検索・フィルター・ソート -->
+1228:       <div class="search-filter-box">
+1229:         <div class="search-wrapper">
+1230:           <span class="search-icon">🔍</span>
+1231:           <input type="text" id="search-input" class="search-input" placeholder="料理名や材料名で検索...">
+1232:         </div>
+1233: 
+1234:         <div class="category-pills" id="category-pills">
+1235:           <button class="pill active" data-cat="all">全て</button>
+1236:           <button class="pill pill-fav" data-cat="fav">⭐ お気に入り</button>
+1237:           <button class="pill" data-cat="主菜">主菜</button>
+1238:           <button class="pill" data-cat="副菜">副菜</button>
+1239:           <button class="pill" data-cat="汁物">汁物</button>
+1240:           <button class="pill" data-cat="主食">主食</button>
+1241:           <button class="pill" data-cat="デザート">デザート</button>
+1242:           <button class="pill" data-cat="その他">その他</button>
+1243:         </div>
+1244: 
+1245:         <div class="sort-bar">
+1246:           <div>全 <span id="recipe-count">0</span> 件</div>
+1247:           <div style="display: flex; align-items: center; gap: 6px;">
+1248:             <span>並び替え:</span>
+1249:             <select id="sort-select"
+1250:               style="width: auto; padding: 4px 10px; font-size: 0.82rem; border-radius: 14px; border: 1.5px solid var(--border); font-weight: 700; color: var(--text);">
+1251:               <option value="newest">新着順 🆕</option>
+1252:               <option value="oldest">古い順 📜</option>
+1253:               <option value="cooked">作った回数が多い順 🍳</option>
+1254:               <option value="title">名前順 (あ→ん) 🔤</option>
+1255:               <option value="fav">お気に入り優先 ⭐</option>
+1256:             </select>
+1257:           </div>
+1258:         </div>
+1259:       </div>
+1260: 
+1261:       <!-- レシピカードグリッド -->
+1262:       <div id="recipe-list-container">
+1263:         <div class="empty-state">
+1264:           <div class="empty-icon">🍳✨</div>
+1265:           <p>設定画面でFirebase接続情報を登録すると自動で連携されます。</p>
+1266:         </div>
+1267:       </div>
+1268:     </div>
+1269: 
+1270:     <!-- PAGE 2: レシピ追加 / 編集 -->
+1271:     <div id="page-add" class="page">
+1272:       <div class="form-card">
+1273:         <div class="form-section-title" id="form-header-title">📌 基本情報</div>
+1274: 
+1275:         <div class="form-group">
+1276:           <label for="recipe-title">料理名 <span style="color: var(--primary);">*</span></label>
+1277:           <input type="text" id="recipe-title" required>
+1278:         </div>
+1279: 
+1280:         <div class="form-row">
+1281:           <div class="form-group">
+1282:             <label for="recipe-category">カテゴリ</label>
+1283:             <select id="recipe-category">
+1284:               <option value="主菜">主菜</option>
+1285:               <option value="副菜">副菜</option>
+1286:               <option value="汁物">汁物</option>
+1287:               <option value="主食">主食</option>
+1288:               <option value="デザート">デザート</option>
+1289:               <option value="その他">その他</option>
+1290:             </select>
+1291:           </div>
+1292:           <div class="form-group" id="form-group-servings">
+1293:             <label for="recipe-servings">人数 (分量)</label>
+1294:             <select id="recipe-servings">
+1295:               <option value="">指定なし</option>
+1296:               <option value="1人分">1人分</option>
+1297:               <option value="2人分">2人分</option>
+1298:               <option value="3人分">3人分</option>
+1299:               <option value="4人分">4人分</option>
+1300:               <option value="5人分以上">5人分以上</option>
+1301:               <option value="作りやすい分量">作りやすい分量</option>
+1302:             </select>
+1303:           </div>
+1304:         </div>
+1305:       </div>
+1306: 
+1307:       <div class="form-card" id="form-card-ingredients">
+1308:         <div class="form-section-title">🛒 材料</div>
+1309:         <div class="form-group">
+1310:           <div class="field-desc">※ 1行に1項目ずつ入力してください（例: 豚肉 200g）</div>
+1311:           <textarea id="recipe-ingredients" rows="5"></textarea>
+1312:         </div>
+1313:       </div>
+1314: 
+1315:       <!-- スマート自動解析付き 作り方入力フォーム -->
+1316:       <div class="form-card" id="form-card-steps">
+1317:         <div class="form-section-title">👩‍🍳 作り方</div>
+1318:         <div class="field-desc">※ 文章をそのままコピペすると、自動で「見出し」と「詳細」に分割されます！</div>
+1319: 
+1320:         <div class="form-group" style="margin-bottom: 14px;">
+1321:           <textarea id="recipe-steps-raw" rows="5"
+1322:             placeholder="ここに作り方の文章をまとめてコピペできます！&#10;&#10;例:&#10;予熱とパン粉の準備&#10;オーブンを200℃に予熱しておきます...&#10;&#10;具材をカットする&#10;レンコンの皮をむき..."></textarea>
+1323:         </div>
+1324: 
+1325:         <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary); margin-bottom: 10px;">
+1326:           <span>✨ 各ステップの見出し・詳細（個別で微調整が可能です）</span>
+1327:         </div>
+1328: 
+1329:         <!-- 各ステップカード一覧 -->
+1330:         <div id="steps-form-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
+1331: 
+1332:         <!-- 追加位置のすぐ下に分かりやすいボタンを配置 -->
+1333:         <div style="margin-top: 14px;">
+1334:           <button type="button" id="btn-add-step-item" class="btn-add-step-bottom">
+1335:             <span>➕ 新しいステップを追加する</span>
+1336:           </button>
+1337:         </div>
+1338:       </div>
+1339: 
+1340:       <div class="form-card">
+1341:         <div class="form-section-title" id="form-section-title-memo">💡 コツ・メモ</div>
+1342:         <div class="form-group">
+1343:           <textarea id="recipe-memo" rows="3"></textarea>
+1344:         </div>
+1345:       </div>
+1346: 
+1347:       <div class="form-card">
+1348:         <div class="form-section-title">📷 写真 (複数選択可能)</div>
+1349:         <div class="form-group">
+1350:           <input type="file" id="recipe-images-input" accept="image/*" multiple style="display: none;">
+1351:           <div class="photos-preview-grid" id="photos-preview-grid">
+1352:             <div class="add-photo-box" id="btn-add-photos">
+1353:               <span style="font-size: 1.6rem;">➕</span>
+1354:               <span style="font-size: 0.8rem; font-weight: 700;">写真を追加</span>
+1355:             </div>
+1356:           </div>
+1357:         </div>
+1358:       </div>
+1359: 
+1360:       <button class="btn" id="btn-save-recipe">
+1361:         <span id="btn-save-content"><span>💾</span> レシピを保存する</span>
+1362:       </button>
+1363:     </div>
+1364: 
+1365:     <!-- PAGE 3: 冷蔵庫管理 & レシピ提案 -->
+1366:     <div id="page-fridge" class="page">
+1367:       <div class="form-card" style="margin-bottom: 20px; text-align: center;">
+1368:         <h2 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--primary-dark);">🧺 みんなの食材ストック</h2>
+1369:         <div
+1370:           style="display: flex; flex-direction: column; gap: 8px; justify-content: center; margin-bottom: 16px; align-items: center; width: 100%;">
+1371:           <div style="display: flex; gap: 8px; width: 100%; max-width: 400px; box-sizing: border-box;">
+1372:             <input type="text" id="fridge-ingredient-input" placeholder="食材名 (必須・例:豚肉)" class="form-input"
+1373:               style="flex: 1; min-width: 0;">
+1374:           </div>
+1375:           <div style="display: flex; gap: 8px; width: 100%; max-width: 400px; box-sizing: border-box;">
+1376:             <select id="fridge-category-input" class="form-input"
+1377:               style="flex: 1; min-width: 0; padding: 10px 8px; color: #555;">
+1378:               <option value="">種類(任意)</option>
+1379:               <option value="野菜・きのこ">🥬 野菜・きのこ</option>
+1380:               <option value="肉類">🍖 肉類</option>
+1381:               <option value="魚介類">🐟 魚介類</option>
+1382:               <option value="卵・乳製品">🥚 卵・乳製品</option>
+1383:               <option value="穀物・麺類">🍚 穀物・麺類</option>
+1384:               <option value="調味料">🧂 調味料</option>
+1385:               <option value="加工品・その他">🥫 加工品・その他</option>
+1386:             </select>
+1387:             <select id="fridge-storage-input" class="form-input"
+1388:               style="flex: 1; min-width: 0; padding: 10px 8px; color: #555;">
+1389:               <option value="">場所(任意)</option>
+1390:               <option value="📦 常温">📦 常温</option>
+1391:               <option value="❄️ 冷蔵">❄️ 冷蔵</option>
+1392:               <option value="🧊 冷凍">🧊 冷凍</option>
+1393:             </select>
+1394:           </div>
+1395:           <div
+1396:             style="display: flex; gap: 8px; width: 100%; max-width: 400px; box-sizing: border-box; align-items: center;">
+1397:             <input type="text" id="fridge-amount-input" placeholder="分量 (例:200g)" class="form-input"
+1398:               style="flex: 1; min-width: 0;">
+1399:             <div
+1400:               style="flex: 1; display: flex; align-items: center; background: white; border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 0 12px; overflow: hidden;">
+1401:               <span style="font-size: 0.8rem; color: #64748B; white-space: nowrap; margin-right: 4px;">期限:</span>
+1402:               <input type="date" id="fridge-expiry-input"
+1403:                 style="flex: 1; border: none; background: transparent; outline: none; font-size: 0.95rem; color: #334155; padding: 12px 0; width: 100%;">
+1404:             </div>
+1405:           </div>
+1406:           <button id="btn-add-fridge-item" class="btn"
+1407:             style="width: 100%; max-width: 400px; padding: 10px 16px; border-radius: 12px; margin-top: 4px;">追加</button>
+1408:         </div>
+1409: 
+1410:         <div
+1411:           style="display: flex; gap: 8px; justify-content: space-between; align-items: center; width: 100%; max-width: 400px; margin: 16px auto 8px; padding-top: 16px; border-top: 1px dashed #E2E8F0;">
+1412:           <select id="fridge-group-select" class="form-input"
+1413:             style="flex: 1; padding: 8px; font-size: 0.85rem; color: #555;" onchange="renderFridgeUI()">
+1414:             <option value="category">種類でまとめる</option>
+1415:             <option value="storage">場所でまとめる</option>
+1416:           </select>
+1417:           <select id="fridge-sort-select" class="form-input"
+1418:             style="flex: 1; padding: 8px; font-size: 0.85rem; color: #555;" onchange="renderFridgeUI()">
+1419:             <option value="newest">新しい順</option>
+1420:             <option value="expiry">期限が近い順</option>
+1421:             <option value="name">名前順</option>
+1422:           </select>
+1423:         </div>
+1424: 
+1425:         <details id="fridge-master-accordion" open style="margin-bottom: 16px;">
+1426:           <summary
+1427:             style="font-weight: bold; color: var(--primary-dark); padding: 12px; background: #F8FAFC; border-radius: 8px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; border: 1px solid #E2E8F0;">
+1428:             <span>📋 すべての食材一覧を開く/閉じる</span>
+1429:             <span style="color: #94A3B8; font-size: 0.9rem;">▼</span>
+1430:             <style>
+1431:               #fridge-master-accordion>summary::-webkit-details-marker {
+1432:                 display: none;
+1433:               }
+1434:             </style>
+1435:           </summary>
+1436:           <div style="padding-top: 12px;">
+1437:             <div id="fridge-tags-container" class="ingredient-list"
+1438:               style="justify-content: center; gap: 12px; padding-bottom: 8px;">
+1439:               <!-- Tags go here -->
+1440:             </div>
+1441:           </div>
+1442:         </details>
+1443:       </div>
+1444: 
+1445:       <!-- サジェストセクション -->
+1446:       <div id="suggest-section" style="margin-top: 16px;">
+1447:         <div
+1448:           style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px solid var(--primary-light); padding-bottom: 4px;">
+1449:           <h3 style="font-size: 1.05rem; color: #555; margin: 0;">📖 自分のレシピから作れるもの</h3>
+1450:           <select id="suggest-tag-select" class="form-input"
+1451:             style="width: auto; padding: 4px 8px; font-size: 0.8rem; border-color: var(--primary-light);"
+1452:             onchange="suggestLocalRecipes()">
+1453:             <option value="">すべてのタグ</option>
+1454:           </select>
+1455:         </div>
+1456:         <div id="suggest-local-grid" class="recipe-grid" style="margin-bottom: 24px;"></div>
+1457: 
+1458:         <h3
+1459:           style="font-size: 1.05rem; color: #555; margin-bottom: 12px; border-bottom: 2px solid var(--primary-light); padding-bottom: 4px;">
+1460:           ✨ AIに新しいレシピを提案してもらう</h3>
+1461:         <div class="form-card" style="background: linear-gradient(135deg, #FFF0F2 0%, #FFFDF9 100%); text-align: left;">
+1462:           <p style="font-size: 0.85rem; color: #666; margin-bottom: 14px; text-align: center;">※
+1463:             ストックの食材と好みの条件に合わせて、AIがオリジナルレシピを考えます。</p>
+1464: 
+1465:           <!-- Group 1: ジャンル -->
+1466:           <div style="margin-bottom: 12px;">
+1467:             <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🍱 ジャンル
+1468:             </div>
+1469:             <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
+1470:               <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="おまかせ" checked> 🎲
+1471:                 おまかせ</label>
+1472:               <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="和食"> 🍱 和食</label>
+1473:               <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="洋食"> 🍝 洋食</label>
+1474:               <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="中華"> 🥟 中華</label>
+1475:               <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="エスニック"> 🌮 エスニック</label>
+1476:             </div>
+1477:           </div>
+1478: 
+1479:           <!-- Group 2: 気分・テーマ (既存項目保持) -->
+1480:           <div style="margin-bottom: 12px;">
+1481:             <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">✨ 気分・テーマ
+1482:             </div>
+1483:             <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
+1484:               <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="指定なし" checked> 🎲 指定なし</label>
+1485:               <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="おつまみ"> 🥂 おつまみ</label>
+1486:               <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="時短・ズボラ"> ⏱️ 時短・ズボラ</label>
+1487:               <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="がっつり"> 🍖 がっつり</label>
+1488:               <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="さっぱり・ヘルシー"> 🥗 さっぱり</label>
+1489:               <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="辛いもの"> 🌶️ 辛いもの</label>
+1490:               <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="子供が喜ぶ"> 👶 子供向け</label>
+1491:               <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="スイーツ・おやつ"> 🍰 スイーツ</label>
+1492:             </div>
+1493:           </div>
+1494: 
+1495:           <!-- Group 3: 調理スタイル -->
+1496:           <div style="margin-bottom: 12px;">
+1497:             <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🍳 調理スタイル
+1498:             </div>
+1499:             <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
+1500:               <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="指定なし" checked> 🎲
+1501:                 指定なし</label>
+1502:               <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="フライパン1つ"> 🍳 ワンパン</label>
+1503:               <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="電子レンジのみ"> ⚡ レンジのみ</label>
+1504:               <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="じっくり煮込み・本格"> 🍲 本格調理</label>
+1505:             </div>
+1506:           </div>
+1507: 
+1508:           <!-- Group 4: 提案数 -->
+1509:           <div style="margin-bottom: 16px;">
+1510:             <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🔢 提案数
+1511:             </div>
+1512:             <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
+1513:               <label class="pill ai-theme-label"><input type="radio" name="aiCount" value="3"> 3個 (高速)</label>
+1514:               <label class="pill ai-theme-label"><input type="radio" name="aiCount" value="5"> 5個</label>
+1515:               <label class="pill ai-theme-label"><input type="radio" name="aiCount" value="10" checked> 10個 (詳細)</label>
+1516:             </div>
+1517:           </div>
+1518: 
+1519:           <!-- Group 5: AIモデル -->
+1520:           <div style="margin-bottom: 16px;">
+1521:             <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🤖 AIモデル
+1522:             </div>
+1523:             <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
+1524:               <label class="pill ai-theme-label"><input type="radio" name="aiModelSelect" value="auto" checked> 🎲
+1525:                 自動最適化</label>
+1526:               <label class="pill ai-theme-label"><input type="radio" name="aiModelSelect" value="flash"> ⚡ Flash
+1527:                 (高速)</label>
+1528:               <label class="pill ai-theme-label"><input type="radio" name="aiModelSelect" value="pro"> 🧠 Pro
+1529:                 (高品質)</label>
+1530:             </div>
+1531:           </div>
+1532: 
+1533:           <button id="btn-generate-ai" class="btn" style="border-radius: 20px; font-size: 1rem; width: 100%;">✨
+1534:             レシピを提案する</button>
+1535:           <div id="ai-loading-spinner"
+1536:             style="display: none; text-align: center; margin-top: 16px; color: var(--primary);">
+1537:             <div style="font-size: 1.5rem; animation: spin 1s infinite linear; display: inline-block;">🍳</div>
+1538:             <p style="font-size: 0.9rem; font-weight: bold; margin-top: 8px;">レシピを考えています...</p>
+1539:           </div>
+1540:           <style>
+1541:             @keyframes spin {
+1542:               100% {
+1543:                 transform: rotate(360deg);
+1544:               }
+1545:             }
+1546: 
+1547:             .ai-theme-label {
+1548:               cursor: pointer;
+1549:               border: 1px solid transparent;
+1550:               font-size: 0.82rem;
+1551:               padding: 5px 10px;
+1552:             }
+1553: 
+1554:             .ai-theme-label:has(input:checked) {
+1555:               background: white !important;
+1556:               color: var(--primary) !important;
+1557:               border: 1px solid var(--primary-light);
+1558:               box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+1559:               font-weight: bold;
+1560:             }
+1561: 
+1562:             .ai-theme-label input {
+1563:               display: none;
+1564:             }
+1565:           </style>
+1566:         </div>
+1567:         <div id="suggest-ai-grid" class="recipe-grid" style="margin-top: 16px;"></div>
+1568:         <div id="suggest-ai-controls"
+1569:           style="display: none; text-align: center; margin-top: 24px; padding-bottom: 24px;">
+1570:           <button id="btn-generate-ai-another" class="btn"
+1571:             style="border-radius: 20px; font-size: 0.95rem; background: var(--secondary); color: white; padding: 12px 24px;">🔁
+1572:             別のレシピを提案する</button>
+1573:         </div>
+1574:       </div>
+1575:     </div>
+1576: 
+1577:   </div>
+1578: 
+1579:   <!-- レシピ詳細 モーダル -->
+1580:   <div id="modal-recipe-detail" class="modal-backdrop">
+1581:     <div class="modal-card">
+1582:       <div class="modal-header">
+1583:         <div class="modal-title-group">
+1584:           <h2 id="detail-title" class="modal-title">料理名</h2>
+1585:           <div class="modal-meta">
+1586:             <span id="detail-category-badge" class="pill"
+1587:               style="background: var(--primary-light); color: var(--primary); border: none;">主菜</span>
+1588:             <span id="detail-servings">👤 2人分</span>
+1589:           </div>
+1590:           <div id="detail-date-info" style="font-size: 0.75rem; color: #999; margin-top: 4px;"></div>
+1591:         </div>
+1592:         <button id="btn-toggle-fav-detail" class="icon-btn" style="margin-right: 8px;" title="お気に入り">
+1593:           <span id="detail-fav-star">☆</span>
+1594:         </button>
+1595:         <button id="btn-close-detail" class="modal-close-btn">✕</button>
+1596:       </div>
+1597: 
+1598:       <div class="modal-body">
+1599:         <!-- 作った回数カウンター -->
+1600:         <div class="cooked-counter-box" id="detail-cooked-counter">
+1601:           <div>
+1602:             <div style="font-size: 0.82rem; color: var(--text-muted); font-weight: 700;">通算で作った回数</div>
+1603:             <div style="font-size: 1.3rem; font-weight: 800; color: var(--primary);">
+1604:               🍳 <span id="detail-cooked-count">0</span> 回
+1605:             </div>
+1606:           </div>
+1607:           <div class="cooked-btn-group">
+1608:             <button id="btn-decrement-cooked" class="btn-cooked-action btn-cooked-minus" title="間違いを取り消し (-1)">
+1609:               <span>↩️ -1</span>
+1610:             </button>
+1611:             <button id="btn-increment-cooked" class="btn-cooked-action btn-cooked-plus" title="作った！ (+1)">
+1612:               <span>🍳 「作った！」 (+1)</span>
+1613:             </button>
+1614:           </div>
+1615:         </div>
+1616: 
+1617:         <div id="detail-gallery-container" class="detail-gallery-container" style="display: none;">
+1618:           <div class="detail-main-img-wrapper">
+1619:             <button id="gallery-btn-prev" class="gallery-nav-btn prev" style="display: none;">❮</button>
+1620:             <img id="detail-main-img" class="detail-main-img" src="" alt="料理写真">
+1621:             <button id="gallery-btn-next" class="gallery-nav-btn next" style="display: none;">❯</button>
+1622:           </div>
+1623:           <div id="gallery-thumbs-row" class="gallery-thumbs-row" style="display: none;"></div>
+1624:         </div>
+1625: 
+1626:         <!-- 材料 -->
+1627:         <div id="section-ingredients" class="detail-section" style="display: none;">
+1628:           <div class="detail-section-title">🛒 材料</div>
+1629:           <div id="detail-ingredients-list" class="ingredient-list"></div>
+1630:         </div>
+1631: 
+1632:         <!-- 作り方 (見出し＋詳細構造表示) -->
+1633:         <div id="section-steps" class="detail-section" style="display: none;">
+1634:           <div class="detail-section-title">👩‍🍳 作り方</div>
+1635:           <div id="detail-steps-list" class="step-list"></div>
+1636:         </div>
+1637: 
+1638:         <!-- コツ・メモ -->
+1639:         <div id="section-memo" class="detail-section" style="display: none;">
+1640:           <div class="detail-section-title" id="detail-section-title-memo">💡 コツ・メモ</div>
+1641:           <div id="detail-memo-content" class="notes-box"></div>
+1642:         </div>
+1643:       </div>
+1644: 
+1645:       <div class="modal-footer" id="modal-footer-default">
+1646:         <button id="btn-edit-recipe" class="btn btn-secondary" style="width: auto; padding: 10px 18px;">
+1647:           <span>✏️</span> 編集する
+1648:         </button>
+1649:         <button id="btn-delete-recipe" class="btn btn-danger" style="width: auto; padding: 10px 18px;">
+1650:           <span>🗑️</span> レシピを削除
+1651:         </button>
+1652:       </div>
+1653:       <div class="modal-footer" id="modal-footer-ai" style="display: none;">
+1654:         <button id="btn-save-ai-recipe" class="btn" style="width: 100%; padding: 12px 18px; border-radius: 14px;">
+1655:           <span>💾</span> このレシピをマイレシピに登録する
+1656:         </button>
+1657:       </div>
+1658:     </div>
+1659:   </div>
+1660: 
+1661:   <!-- データ同期設定 モーダル -->
+1662:   <div id="modal-settings" class="modal-backdrop">
+1663:     <div class="modal-card" style="max-width: 480px; padding: 1.5rem; border-radius: 24px;">
+1664:       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem;">
+1665:         <div style="display: flex; align-items: center; gap: 8px;">
+1666:           <span style="font-size: 1.6rem; color: #3B82F6;">☁️</span>
+1667:           <h2 style="font-size: 1.35rem; font-weight: 800; margin: 0; color: #1E293B;">データ同期設定</h2>
+1668:         </div>
+1669:         <button id="btn-close-settings" class="modal-close-btn">✕</button>
+1670:       </div>
+1671: 
+1672:       <!-- クラウド同期完了表示バナー -->
+1673:       <div id="sync-status-banner"
+1674:         style="display: none; background: #ECFDF5; border: 1.5px solid #A7F3D0; border-radius: 14px; padding: 12px 14px; margin-bottom: 1.2rem; font-size: 0.9rem; color: #065F46; font-weight: 700; align-items: center; justify-content: space-between;">
+1675:         <div style="display: flex; align-items: center; gap: 8px;">
+1676:           <span style="font-size: 1.3rem;">✅</span>
+1677:           <span>データはクラウドに同期されています</span>
+1678:         </div>
+1679:         <button id="btn-disconnect-sync"
+1680:           style="background: none; border: none; color: #EF4444; font-size: 0.82rem; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0;">解除</button>
+1681:       </div>
+1682: 
+1683:       <p id="sync-description"
+1684:         style="font-size: 0.88rem; color: #64748B; margin-top: 0; margin-bottom: 1.2rem; line-height: 1.5;">
+1685:         Firebaseの設定(JSON)を貼り付けると、Googleアカウントでのログイン画面が開き、データをクラウドに保存できます。
+1686:       </p>
+1687: 
+1688:       <div id="firebase-config-container" class="form-group" style="margin-bottom: 1.5rem;">
+1689:         <textarea id="firebase-config-json" rows="6"
+1690:           style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 14px; padding: 12px; font-size: 0.88rem; color: #334155; resize: vertical;"
+1691:           placeholder='{"apiKey": "AIzaSy...", "authDomain": "...", ...}'></textarea>
+1692:       </div>
+1693: 
+1694:       <div style="margin-bottom: 1.5rem; border-top: 1px solid #E2E8F0; padding-top: 1.5rem;">
+1695:         <h3 style="font-size: 1.05rem; font-weight: 800; color: #1E293B; margin-bottom: 0.6rem;">✨ AIレシピ提案機能の設定</h3>
+1696:         <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 0.8rem;">Gemini API
+1697:           キーを設定すると、冷蔵庫の食材からAIがレシピを自動提案します。</p>
+1698:         <div class="form-group" style="margin-bottom: 0;">
+1699:           <input type="password" id="gemini-api-key-input" placeholder="AIzaSy..." class="search-input"
+1700:             style="width: 100%; border-radius: 12px; font-family: monospace;">
+1701:         </div>
+1702:       </div>
+1703: 
+1704:       <button id="btn-sync-google" class="btn"
+1705:         style="background: linear-gradient(135deg, #818CF8, #6366F1); border-radius: 14px; padding: 14px; font-size: 1.05rem; font-weight: 800; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; border: none; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);">
+1706:         <svg width="22" height="22" viewBox="0 0 24 24" style="background: white; border-radius: 50%; padding: 2px;">
+1707:           <path fill="#4285F4"
+1708:             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+1709:           <path fill="#34A853"
+1710:             d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+1711:           <path fill="#FBBC05"
+1712:             d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+1713:           <path fill="#EA4335"
+1714:             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+1715:         </svg>
+1716:         <span>Googleでログインして同期</span>
+1717:       </button>
+1718:     </div>
+1719:   </div>
+1720: 
+1721:   <!-- Dynamic PNG Canvas Generator for iOS Safari Apple Touch Icon -->
+1722:   <script>
+1723:     function generateCutePngIcon(size = 192) {
+1724:       const canvas = document.createElement('canvas');
+1725:       canvas.width = size;
+1726:       canvas.height = size;
+1727:       const ctx = canvas.getContext('2d');
+1728: 
+1729:       // Rounded rectangle background (coral primary)
+1730:       const radius = size * 0.28;
+1731:       ctx.fillStyle = '#FF6B52';
+1732:       ctx.beginPath();
+1733:       ctx.moveTo(radius, 0);
+1734:       ctx.lineTo(size - radius, 0);
+1735:       ctx.quadraticCurveTo(size, 0, size, radius);
+1736:       ctx.lineTo(size, size - radius);
+1737:       ctx.quadraticCurveTo(size, size, size - radius, size);
+1738:       ctx.lineTo(radius, size);
+1739:       ctx.quadraticCurveTo(0, size, 0, size - radius);
+1740:       ctx.lineTo(0, radius);
+1741:       ctx.quadraticCurveTo(0, 0, radius, 0);
+1742:       ctx.closePath();
+1743:       ctx.fill();
+1744: 
+1745:       // White inner circle
+1746:       ctx.fillStyle = '#FFFFFF';
+1747:       ctx.beginPath();
+1748:       ctx.arc(size / 2, size / 2, size * 0.38, 0, Math.PI * 2);
+1749:       ctx.fill();
+1750: 
+1751:       // Fried egg emoji
+1752:       ctx.font = `${size * 0.48}px sans-serif, "Apple Color Emoji", "Segoe UI Emoji"`;
+1753:       ctx.textAlign = 'center';
+1754:       ctx.textBaseline = 'middle';
+1755:       ctx.fillText('🍳', size / 2, size / 2 + size * 0.04);
+1756: 
+1757:       return canvas.toDataURL('image/png');
+1758:     }
+1759: 
+1760:     const cutePngUri = generateCutePngIcon(192);
+1761:     document.getElementById('favicon-link').href = cutePngUri;
+1762:     document.getElementById('apple-touch-icon-link').href = cutePngUri;
+1763:     document.getElementById('apple-touch-icon-precomposed-link').href = cutePngUri;
+1764: 
+1765:     const manifest = {
+1766:       "name": "もぐもぐダイアリー",
+1767:       "short_name": "もぐダイアリー",
+1768:       "start_url": window.location.href,
+1769:       "display": "standalone",
+1770:       "background_color": "#FFFDF9",
+1771:       "theme_color": "#FF6B52",
+1772:       "icons": [
+1773:         {
+1774:           "src": cutePngUri,
+1775:           "sizes": "192x192",
+1776:           "type": "image/png"
+1777:         }
+1778:       ]
+1779:     };
+1780:     const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+1781:     document.getElementById('manifest-link').href = URL.createObjectURL(manifestBlob);
+1782: 
+1783:     // --- Complete Pinch-to-Zoom Gesture Prevention for iOS Safari ---
+1784:     document.addEventListener('gesturestart', function (e) {
+1785:       e.preventDefault();
+1786:     }, { passive: false });
+1787: 
+1788:     document.addEventListener('gesturechange', function (e) {
+1789:       e.preventDefault();
+1790:     }, { passive: false });
+1791: 
+1792:     document.addEventListener('gestureend', function (e) {
+1793:       e.preventDefault();
+1794:     }, { passive: false });
+1795: 
+1796:     document.addEventListener('touchmove', function (e) {
+1797:       if (e.touches.length > 1) {
+1798:         e.preventDefault();
+1799:       }
+1800:     }, { passive: false });
+1801:   </script>
+1802: 
+1803:   <!-- App Main JavaScript Logic -->
+1804:   <script type="module">
+1805:     import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai";
+1806:     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+1807:     import {
+1808:       getAuth,
+1809:       signInWithPopup,
+1810:       GoogleAuthProvider,
+1811:       onAuthStateChanged,
+1812:       signOut
+1813:     } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+1814:     import {
+1815:       getFirestore,
+1816:       collection,
+1817:       addDoc,
+1818:       getDocs,
+1819:       deleteDoc,
+1820:       doc,
+1821:       setDoc,
+1822:       getDoc,
+1823:       updateDoc,
+1824:       arrayUnion,
+1825:       arrayRemove,
+1826:       increment,
+1827:       orderBy,
+1828:       query,
+1829:       onSnapshot,
+1830:       serverTimestamp
+1831:     } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+1832: 
+1833:     // --- State Variables ---
+1834:     let app = null;
+1835:     let db = null;
+1836:     let auth = null;
+1837:     let currentUser = null;
+1838:     let userFavorites = [];
+1839:     let recipesCache = [];
+1840:     let activeCategory = 'all';
+1841:     let searchQuery = '';
+1842:     let sortBy = 'newest';
+1843:     let selectedImagesBase64 = [];
+1844:     let currentDetailRecipe = null;
+1845:     let currentGalleryIndex = 0;
+1846:     let editingRecipeId = null;
+1847: 
+1848:     let currentAppMode = 'recipe';
+1849:     let refrigeratorIngredients = [];
+1850:     let geminiApiKey = localStorage.getItem('geminiApiKey') || '';
+1851: 
+1852:     const googleAuthProvider = new GoogleAuthProvider();
+1853: 
+1854:     // Date formatter helper
+1855:     function formatDateString(ts) {
+1856:       if (!ts) return '';
+1857:       const date = ts.toDate ? ts.toDate() : new Date(ts);
+1858:       if (isNaN(date.getTime())) return '';
+1859:       return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
+1860:     }
+1861: 
+1862:     // --- Mode Switcher Logic ---
+1863:     window.switchAppMode = function (mode) {
+1864:       currentAppMode = mode;
+1865: 
+1866:       // Update Tab UI
+1867:       document.getElementById('mode-recipe').classList.toggle('active', mode === 'recipe');
+1868:       document.getElementById('mode-food-record').classList.toggle('active', mode === 'food_record');
+1869:       document.getElementById('mode-fridge').classList.toggle('active', mode === 'fridge');
+1870: 
+1871:       const isFridge = mode === 'fridge';
+1872: 
+1873:       if (isFridge) {
+1874:         document.querySelector('nav').style.display = 'none';
+1875:         switchPage('fridge');
+1876:         if (window.renderFridgeUI) window.renderFridgeUI();
+1877:       } else {
+1878:         document.querySelector('nav').style.display = 'flex';
+1879:         if (document.getElementById('page-fridge').classList.contains('active')) {
+1880:           switchPage('list');
+1881:         } else {
+1882:           renderRecipeList();
+1883:           if (document.getElementById('page-add').classList.contains('active')) {
+1884:             updateFormModeUI();
+1885:           }
+1886:         }
+1887:       }
+1888: 
+1889:       if (!isFridge) {
+1890:         const isRecipe = mode === 'recipe';
+1891:         document.getElementById('nav-list-text').innerText = isRecipe ? 'レシピ一覧' : 'メモ一覧';
+1892:         document.getElementById('nav-add-text').innerText = isRecipe ? 'レシピ登録' : 'メモする';
+1893:         document.getElementById('form-header-title').innerText = isRecipe ? '📌 基本情報' : '🍽️ メモ情報';
+1894:       }
+1895:     };
+1896: 
+1897:     function updateFormModeUI() {
+1898:       const isRecipe = currentAppMode === 'recipe';
+1899:       document.getElementById('form-group-servings').style.display = isRecipe ? 'block' : 'none';
+1900:       document.getElementById('form-card-ingredients').style.display = isRecipe ? 'block' : 'none';
+1901:       document.getElementById('form-card-steps').style.display = isRecipe ? 'block' : 'none';
+1902: 
+1903:       const isEdit = !!editingRecipeId;
+1904:       const typeStr = isRecipe ? 'レシピ' : 'メモ';
+1905:       document.getElementById('btn-save-content').innerHTML = `<span>💾</span> ${typeStr}を${isEdit ? '更新' : '保存'}する`;
+1906:       document.getElementById('form-section-title-memo').innerText = isRecipe ? '💡 コツ・メモ' : '✏️ 感想・メモ';
+1907: 
+1908:       // Clear optional fields if switching to record
+1909:       if (!isRecipe) {
+1910:         document.getElementById('recipe-servings').value = '';
+1911:         document.getElementById('recipe-ingredients').value = '';
+1912:         stepsFormContainer.innerHTML = '';
+1913:         recipeStepsRaw.value = '';
+1914:       }
+1915:     }
+1916: 
+1917:     // --- Dynamic Smart Steps Builder Logic ---
+1918:     const stepsFormContainer = document.getElementById('steps-form-container');
+1919:     const btnAddStepItem = document.getElementById('btn-add-step-item');
+1920:     const recipeStepsRaw = document.getElementById('recipe-steps-raw');
+1921: 
+1922:     function addStepInputRow(title = '', text = '') {
+1923:       const rowIdx = stepsFormContainer.children.length + 1;
+1924:       const row = document.createElement('div');
+1925:       row.className = 'step-form-row';
+1926:       row.innerHTML = `
+1927:         <div class="step-form-header">
+1928:           <span class="step-form-num">ステップ ${rowIdx}</span>
+1929:           <button type="button" class="btn-remove-step" title="削除">✕</button>
+1930:         </div>
+1931:         <div>
+1932:           <input type="text" class="step-title-input" placeholder="見出し (例: 予熱とパン粉の準備)" value="${escapeHtml(title)}">
+1933:         </div>
+1934:         <div>
+1935:           <textarea class="step-text-input" rows="2" placeholder="詳細 (例: オーブンを200℃〜220℃に予熱しておきます...)">${escapeHtml(text)}</textarea>
+1936:         </div>
+1937:       `;
+1938: 
+1939:       row.querySelector('.btn-remove-step').addEventListener('click', () => {
+1940:         row.remove();
+1941:         updateStepRowNumbers();
+1942:       });
+1943: 
+1944:       stepsFormContainer.appendChild(row);
+1945:     }
+1946: 
+1947:     function updateStepRowNumbers() {
+1948:       const rows = stepsFormContainer.querySelectorAll('.step-form-row');
+1949:       rows.forEach((r, idx) => {
+1950:         r.querySelector('.step-form-num').innerText = `ステップ ${idx + 1}`;
+1951:       });
+1952:     }
+1953: 
+1954:     btnAddStepItem.addEventListener('click', () => {
+1955:       addStepInputRow();
+1956:     });
+1957: 
+1958:     // --- Smart Auto-Parsing for Copied Raw Text ---
+1959:     function parsePastedStepsText(rawText) {
+1960:       if (!rawText || !rawText.trim()) return [];
+1961: 
+1962:       const blocks = rawText
+1963:         .split(/\n\s*\n+/)
+1964:         .map(b => b.trim())
+1965:         .filter(b => b.length > 0);
+1966: 
+1967:       const parsed = [];
+1968:       blocks.forEach(block => {
+1969:         const lines = block.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+1970:         if (lines.length >= 2) {
+1971:           const cleanTitle = lines[0].replace(/^[\d\.\s【】■◆①-⑨・\-]+/, '').trim() || lines[0];
+1972:           const text = lines.slice(1).join('\n');
+1973:           parsed.push({ title: cleanTitle, text });
+1974:         } else if (lines.length === 1) {
+1975:           const line = lines[0];
+1976:           const match = line.match(/^(.+?)[：:](.+)$/);
+1977:           if (match) {
+1978:             parsed.push({ title: match[1].trim(), text: match[2].trim() });
+1979:           } else {
+1980:             parsed.push({ title: '', text: line });
+1981:           }
+1982:         }
+1983:       });
+1984:       return parsed;
+1985:     }
+1986: 
+1987:     recipeStepsRaw.addEventListener('input', (e) => {
+1988:       const rawText = e.target.value;
+1989:       const parsedSteps = parsePastedStepsText(rawText);
+1990: 
+1991:       stepsFormContainer.innerHTML = '';
+1992:       if (parsedSteps.length > 0) {
+1993:         parsedSteps.forEach(st => addStepInputRow(st.title, st.text));
+1994:       } else {
+1995:         addStepInputRow();
+1996:       }
+1997:     });
+1998: 
+1999:     // --- Cloud Firebase Personal Favorites Logic ---
+2000:     async function loadUserFavorites() {
+2001:       if (!currentUser || !db) {
+2002:         userFavorites = [];
+2003:         renderRecipeList();
+2004:         return;
+2005:       }
+2006:       try {
+2007:         const userDocRef = doc(db, "users", currentUser.uid);
+2008:         const snap = await getDoc(userDocRef);
+2009:         if (snap.exists()) {
+2010:           userFavorites = snap.data().favorites || [];
+2011:         } else {
+2012:           userFavorites = [];
+2013:           await setDoc(userDocRef, { favorites: [], updatedAt: serverTimestamp() });
+2014:         }
+2015:       } catch (e) {
+2016:         console.error("User favorites load error:", e);
+2017:         if (e.code === 'permission-denied') {
+2018:           console.warn("お気に入りの読み込みが権限エラーでブロックされました。Firebaseセキュリティルールを確認してください。");
+2019:         }
+2020:         userFavorites = [];
+2021:       }
+2022:       renderRecipeList();
+2023:     }
+2024: 
+2025:     function isFavorite(recipeId) {
+2026:       return userFavorites.includes(recipeId);
+2027:     }
+2028: 
+2029:     // --- Standardized Latency-Free Toggle Favorite with Pop Animation ---
+2030:     async function toggleFavorite(recipeId, starBtnElement = null) {
+2031:       if (!currentUser || !db) {
+2032:         openSettingsModal();
+2033:         return alert("お気に入り機能を利用するには、設定画面(⚙️)から「Googleでログインして同期」してください。");
+2034:       }
+2035: 
+2036:       const userDocRef = doc(db, "users", currentUser.uid);
+2037:       const isFav = userFavorites.includes(recipeId);
+2038: 
+2039:       // 1. In-memory state update
+2040:       if (isFav) {
+2041:         userFavorites = userFavorites.filter(id => id !== recipeId);
+2042:       } else {
+2043:         userFavorites.push(recipeId);
+2044:       }
+2045: 
+2046:       // 2. Standardized instant visual animation on target element
+2047:       if (starBtnElement) {
+2048:         const iconSpan = starBtnElement.querySelector('span') || starBtnElement;
+2049:         iconSpan.innerText = userFavorites.includes(recipeId) ? '⭐' : '☆';
+2050:         starBtnElement.classList.remove('star-animating');
+2051:         iconSpan.classList.remove('star-animating');
+2052:         void starBtnElement.offsetWidth; // trigger reflow
+2053:         starBtnElement.classList.add('star-animating');
+2054:         iconSpan.classList.add('star-animating');
+2055:       }
+2056: 
+2057:       // 3. Update list UI & Detail Modal UI instantly
+2058:       renderRecipeList();
+2059:       if (currentDetailRecipe && currentDetailRecipe.id === recipeId) {
+2060:         updateDetailFavStar();
+2061:       }
+2062: 
+2063:       // 4. Pure Firestore Update in Background
+2064:       try {
+2065:         if (isFav) {
+2066:           await updateDoc(userDocRef, { favorites: arrayRemove(recipeId) });
+2067:         } else {
+2068:           await updateDoc(userDocRef, { favorites: arrayUnion(recipeId) });
+2069:         }
+2070:       } catch (err) {
+2071:         try {
+2072:           await setDoc(userDocRef, { favorites: userFavorites, updatedAt: serverTimestamp() }, { merge: true });
+2073:         } catch (setErr) {
+2074:           console.error("Fatal Error saving favorite:", setErr);
+2075:           alert("クラウドへの保存に失敗しました。\nFirebaseの「Firestore Database」の「ルール (Rules)」タブにて、users コレクションへのアクセス権限（read, write）が許可されていない可能性があります。");
+2076:           // Revert visual state
+2077:           if (isFav) {
+2078:             userFavorites.push(recipeId);
+2079:           } else {
+2080:             userFavorites = userFavorites.filter(id => id !== recipeId);
+2081:           }
+2082:           if (starBtnElement) {
+2083:             const iconSpan = starBtnElement.querySelector('span') || starBtnElement;
+2084:             iconSpan.innerText = isFav ? '⭐' : '☆';
+2085:           }
+2086:         }
+2087:       }
+2088:     }
+2089: 
+2090:     // --- Logout / Disconnect ---
+2091:     async function logoutUser() {
+2092:       if (auth) {
+2093:         await signOut(auth);
+2094:         currentUser = null;
+2095:         updateSyncModalUI();
+2096:         loadUserFavorites();
+2097:       }
+2098:     }
+2099: 
+2100:     document.getElementById('btn-disconnect-sync').addEventListener('click', async () => {
+2101:       if (confirm("同期を解除してログアウトしますか？")) {
+2102:         await logoutUser();
+2103:         alert("同期を解除しました。");
+2104:       }
+2105:     });
+2106: 
+2107:     function updateSyncModalUI() {
+2108:       const syncBanner = document.getElementById('sync-status-banner');
+2109:       const btnSyncGoogle = document.getElementById('btn-sync-google');
+2110:       const jsonArea = document.getElementById('firebase-config-json');
+2111:       const jsonContainer = document.getElementById('firebase-config-container');
+2112:       const syncDescription = document.getElementById('sync-description');
+2113: 
+2114:       if (currentUser) {
+2115:         syncBanner.style.display = 'flex';
+2116:         btnSyncGoogle.style.display = 'none';
+2117:         if (jsonContainer) jsonContainer.style.display = 'none';
+2118:         if (syncDescription) syncDescription.style.display = 'none';
+2119:       } else {
+2120:         syncBanner.style.display = 'none';
+2121:         btnSyncGoogle.style.display = 'flex';
+2122:         if (jsonContainer) jsonContainer.style.display = 'block';
+2123:         if (syncDescription) syncDescription.style.display = 'block';
+2124:       }
+2125:     }
+2126: 
+2127:     // --- Page & Modal DOM Elements ---
+2128:     const pages = {
+2129:       list: document.getElementById('page-list'),
+2130:       add: document.getElementById('page-add'),
+2131:       fridge: document.getElementById('page-fridge')
+2132:     };
+2133:     const navButtons = {
+2134:       list: document.getElementById('nav-list'),
+2135:       add: document.getElementById('nav-add')
+2136:     };
+2137:     const modalSettings = document.getElementById('modal-settings');
+2138:     const modalDetail = document.getElementById('modal-recipe-detail');
+2139: 
+2140:     function openSettingsModal() {
+2141:       updateSyncModalUI();
+2142:       modalSettings.classList.add('active');
+2143:     }
+2144: 
+2145:     // --- Navigation Logic ---
+2146:     function switchPage(pageName) {
+2147:       Object.values(pages).forEach(p => p.classList.remove('active'));
+2148:       Object.values(navButtons).forEach(b => b.classList.remove('active'));
+2149: 
+2150:       pages[pageName].classList.add('active');
+2151:       if (navButtons[pageName]) navButtons[pageName].classList.add('active');
+2152: 
+2153:       if (pageName === 'add' && !editingRecipeId) {
+2154:         resetForm();
+2155:       }
+2156: 
+2157:       if (pageName === 'list' && app) fetchRecipes();
+2158:     }
+2159: 
+2160:     navButtons.list.addEventListener('click', () => {
+2161:       editingRecipeId = null;
+2162:       switchPage('list');
+2163:     });
+2164:     navButtons.add.addEventListener('click', () => {
+2165:       if (!editingRecipeId) resetForm();
+2166:       switchPage('add');
+2167:     });
+2168: 
+2169:     // --- Form Multiple Photo Picker UI Logic ---
+2170:     const fileInput = document.getElementById('recipe-images-input');
+2171:     const btnAddPhotos = document.getElementById('btn-add-photos');
+2172:     const photosPreviewGrid = document.getElementById('photos-preview-grid');
+2173: 
+2174:     btnAddPhotos.addEventListener('click', () => fileInput.click());
+2175: 
+2176:     fileInput.addEventListener('change', async (e) => {
+2177:       const files = Array.from(e.target.files);
+2178:       if (files.length === 0) return;
+2179: 
+2180:       for (const file of files) {
+2181:         try {
+2182:           const b64 = await compressImage(file);
+2183:           selectedImagesBase64.push(b64);
+2184:         } catch (err) {
+2185:           alert(err.message);
+2186:         }
+2187:       }
+2188:       fileInput.value = '';
+2189:       renderFormPhotoPreviews();
+2190:     });
+2191: 
+2192:     function renderFormPhotoPreviews() {
+2193:       const existingThumbs = photosPreviewGrid.querySelectorAll('.photo-thumb-wrapper');
+2194:       existingThumbs.forEach(t => t.remove());
+2195: 
+2196:       selectedImagesBase64.forEach((b64, idx) => {
+2197:         const wrap = document.createElement('div');
+2198:         wrap.className = 'photo-thumb-wrapper';
+2199:         wrap.innerHTML = `
+2200:           <img src="${b64}" class="photo-thumb-img" alt="写真">
+2201:           <button class="btn-remove-thumb" title="削除">✕</button>
+2202:         `;
+2203:         wrap.querySelector('.btn-remove-thumb').addEventListener('click', (e) => {
+2204:           e.stopPropagation();
+2205:           selectedImagesBase64.splice(idx, 1);
+2206:           renderFormPhotoPreviews();
+2207:         });
+2208:         photosPreviewGrid.insertBefore(wrap, btnAddPhotos);
+2209:       });
+2210:     }
+2211: 
+2212:     // Reset Form UI
+2213:     function resetForm() {
+2214:       editingRecipeId = null;
+2215:       selectedImagesBase64 = [];
+2216:       document.getElementById('recipe-title').value = '';
+2217:       document.getElementById('recipe-category').value = '主菜';
+2218:       document.getElementById('recipe-servings').value = '';
+2219:       document.getElementById('recipe-ingredients').value = '';
+2220:       document.getElementById('recipe-memo').value = '';
+2221: 
+2222:       recipeStepsRaw.value = '';
+2223:       stepsFormContainer.innerHTML = '';
+2224:       addStepInputRow(); // start with 1 step
+2225: 
+2226:       renderFormPhotoPreviews();
+2227: 
+2228:       const isRecipe = currentAppMode === 'recipe';
+2229:       document.getElementById('form-header-title').innerText = isRecipe ? '📌 基本情報' : '🍽️ メモ情報';
+2230:       document.getElementById('nav-add-icon').innerText = '➕';
+2231:       document.getElementById('nav-add-text').innerText = isRecipe ? 'レシピ登録' : 'メモする';
+2232:       document.getElementById('btn-save-content').innerHTML = `<span>💾</span> ${isRecipe ? 'レシピ' : 'メモ'}を保存する`;
+2233: 
+2234:       updateFormModeUI();
+2235:     }
+2236: 
+2237:     // --- Settings Modal Logic ---
+2238:     document.getElementById('btn-open-settings').addEventListener('click', openSettingsModal);
+2239:     document.getElementById('btn-close-settings').addEventListener('click', () => {
+2240:       modalSettings.classList.remove('active');
+2241:     });
+2242: 
+2243:     // --- Detail Modal Close ---
+2244:     document.getElementById('btn-close-detail').addEventListener('click', () => {
+2245:       modalDetail.classList.remove('active');
+2246:       currentDetailRecipe = null;
+2247:     });
+2248: 
+2249:     // Close modal when clicking backdrop
+2250:     [modalSettings, modalDetail].forEach(modal => {
+2251:       modal.addEventListener('click', (e) => {
+2252:         if (e.target === modal) {
+2253:           modal.classList.remove('active');
+2254:           currentDetailRecipe = null;
+2255:         }
+2256:       });
+2257:     });
+2258: 
+2259:     // --- Image Compression Logic ---
+2260:     function compressImage(file, maxWidth = 900, maxHeight = 900, quality = 0.75) {
+2261:       return new Promise((resolve, reject) => {
+2262:         const reader = new FileReader();
+2263:         reader.readAsDataURL(file);
+2264:         reader.onload = (event) => {
+2265:           const img = new Image();
+2266:           img.src = event.target.result;
+2267:           img.onload = () => {
+2268:             let width = img.width;
+2269:             let height = img.height;
+2270: 
+2271:             if (width > maxWidth || height > maxHeight) {
+2272:               if (width > height) {
+2273:                 height = Math.round(height * (maxWidth / width));
+2274:                 width = maxWidth;
+2275:               } else {
+2276:                 width = Math.round(width * (maxHeight / height));
+2277:                 height = maxHeight;
+2278:               }
+2279:             }
+2280: 
+2281:             const canvas = document.createElement('canvas');
+2282:             canvas.width = width;
+2283:             canvas.height = height;
+2284:             const ctx = canvas.getContext('2d');
+2285:             ctx.drawImage(img, 0, 0, width, height);
+2286: 
+2287:             const base64 = canvas.toDataURL('image/jpeg', quality);
+2288:             if (base64.length * 0.75 > 900000) {
+2289:               reject(new Error("画像サイズが大きすぎます。別の画像を選ぶか、解像度を下げてください。"));
+2290:             } else {
+2291:               resolve(base64);
+2292:             }
+2293:           };
+2294:           img.onerror = () => reject(new Error("画像の読込に失敗しました。"));
+2295:         };
+2296:         reader.onerror = () => reject(new Error("ファイルの読込に失敗しました。"));
+2297:       });
+2298:     }
+2299: 
+2300:     // --- Firebase & Auth Initialization ---
+2301:     function initFirebase(configStr) {
+2302:       try {
+2303:         const config = JSON.parse(configStr);
+2304:         app = initializeApp(config);
+2305:         db = getFirestore(app);
+2306:         auth = getAuth(app);
+2307: 
+2308:         onAuthStateChanged(auth, async (user) => {
+2309:           currentUser = user;
+2310:           updateSyncModalUI();
+2311:           if (currentUser) {
+2312:             modalSettings.classList.remove('active');
+2313:             await loadUserFavorites();
+2314:           } else {
+2315:             loadUserFavorites();
+2316:           }
+2317:           setupFridgeListener();
+2318:         });
+2319: 
+2320:         return true;
+2321:       } catch (e) {
+2322:         console.warn("Silent Firebase init note:", e);
+2323:         return false;
+2324:       }
+2325:     }
+2326: 
+2327:     const savedConfig = localStorage.getItem('fbConfig');
+2328:     if (savedConfig) {
+2329:       document.getElementById('firebase-config-json').value = savedConfig;
+2330:       if (initFirebase(savedConfig)) fetchRecipes();
+2331:     } else {
+2332:       openSettingsModal();
+2333:     }
+2334: 
+2335:     // --- Silent Google Sync / Auth Handling ---
+2336:     document.getElementById('btn-sync-google').addEventListener('click', async () => {
+2337:       const configStr = document.getElementById('firebase-config-json').value.trim();
+2338:       if (!configStr) {
+2339:         return alert("Firebase設定(JSON)を貼り付けてください。");
+2340:       }
+2341: 
+2342:       if (initFirebase(configStr)) {
+2343:         localStorage.setItem('fbConfig', configStr);
+2344:         fetchRecipes();
+2345: 
+2346:         try {
+2347:           const result = await signInWithPopup(auth, googleAuthProvider);
+2348:           currentUser = result.user;
+2349:           updateSyncModalUI();
+2350:           await loadUserFavorites();
+2351:           modalSettings.classList.remove('active');
+2352:         } catch (e) {
+2353:           console.warn("Silent login popup note:", e);
+2354:           if (auth && auth.currentUser) {
+2355:             currentUser = auth.currentUser;
+2356:             updateSyncModalUI();
+2357:             await loadUserFavorites();
+2358:             modalSettings.classList.remove('active');
+2359:           }
+2360:         }
+2361:       }
+2362:     });
+2363: 
+2364:     // --- Save / Update Recipe ---
+2365:     document.getElementById('btn-save-recipe').addEventListener('click', async () => {
+2366:       if (!app) {
+2367:         openSettingsModal();
+2368:         return alert("先にデータ同期設定画面でFirebase情報を入力してください。");
+2369:       }
+2370: 
+2371:       const title = document.getElementById('recipe-title').value.trim();
+2372:       const category = document.getElementById('recipe-category').value;
+2373:       const servings = document.getElementById('recipe-servings').value;
+2374:       const rawIngredients = document.getElementById('recipe-ingredients').value;
+2375:       const memo = document.getElementById('recipe-memo').value.trim();
+2376:       const btnSave = document.getElementById('btn-save-recipe');
+2377: 
+2378:       if (!title) return alert("料理名は必須項目です！");
+2379: 
+2380:       const ingredients = rawIngredients
+2381:         .split('\n')
+2382:         .map(line => line.trim())
+2383:         .filter(line => line.length > 0);
+2384: 
+2385:       // Collect structured steps (title + text)
+2386:       const stepRows = stepsFormContainer.querySelectorAll('.step-form-row');
+2387:       let steps = [];
+2388:       stepRows.forEach(row => {
+2389:         const stepTitle = row.querySelector('.step-title-input').value.trim();
+2390:         const stepText = row.querySelector('.step-text-input').value.trim();
+2391:         if (stepTitle || stepText) {
+2392:           steps.push({ title: stepTitle, text: stepText });
+2393:         }
+2394:       });
+2395: 
+2396:       if (steps.length === 0 && recipeStepsRaw.value.trim()) {
+2397:         steps = parsePastedStepsText(recipeStepsRaw.value);
+2398:       }
+2399: 
+2400:       const btnSaveContent = document.getElementById('btn-save-content');
+2401:       btnSaveContent.innerHTML = `<span>⏳</span> 保存中...`;
+2402:       btnSave.disabled = true;
+2403: 
+2404:       try {
+2405:         const recipeData = {
+2406:           title,
+2407:           category: category || "その他",
+2408:           servings: servings || "",
+2409:           ingredients,
+2410:           steps,
+2411:           memo,
+2412:           imageUrls: selectedImagesBase64,
+2413:           imageUrl: selectedImagesBase64[0] || "",
+2414:           cookedCount: editingRecipeId ? (recipesCache.find(r => r.id === editingRecipeId)?.cookedCount || 0) : 0,
+2415:           createdBy: currentUser ? currentUser.displayName || currentUser.email : "匿名",
+2416:           recordType: currentAppMode
+2417:         };
+2418: 
+2419:         if (editingRecipeId) {
+2420:           recipeData.updatedAt = serverTimestamp();
+2421:           await updateDoc(doc(db, "recipes", editingRecipeId), recipeData);
+2422:           alert(currentAppMode === 'recipe' ? "レシピを更新しました！" : "メモを更新しました！");
+2423:         } else {
+2424:           recipeData.createdAt = serverTimestamp();
+2425:           recipeData.updatedAt = serverTimestamp();
+2426:           await addDoc(collection(db, "recipes"), recipeData);
+2427:           alert(currentAppMode === 'recipe' ? "レシピを保存しました！" : "メモを保存しました！");
+2428:         }
+2429: 
+2430:         resetForm();
+2431:         switchPage('list');
+2432:       } catch (e) {
+2433:         console.error(e);
+2434:         alert("エラーが発生しました: " + e.message);
+2435:       } finally {
+2436:         const isEdit = !!editingRecipeId;
+2437:         const typeStr = currentAppMode === 'recipe' ? 'レシピ' : 'メモ';
+2438:         btnSaveContent.innerHTML = `<span>💾</span> ${typeStr}を${isEdit ? '更新' : '保存'}する`;
+2439:         btnSave.disabled = false;
+2440:       }
+2441:     });
+2442: 
+2443:     // --- Fetch Recipes & Render List ---
+2444:     async function fetchRecipes() {
+2445:       const container = document.getElementById('recipe-list-container');
+2446:       container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔄</div><p>レシピを読み込み中...</p></div>`;
+2447: 
+2448:       try {
+2449:         const q = query(collection(db, "recipes"), orderBy("createdAt", "desc"));
+2450:         const querySnapshot = await getDocs(q);
+2451: 
+2452:         recipesCache = [];
+2453:         querySnapshot.forEach((docSnap) => {
+2454:           recipesCache.push({
+2455:             id: docSnap.id,
+2456:             ...docSnap.data()
+2457:           });
+2458:         });
+2459: 
+2460:         updateFilterTagsUI();
+2461:         renderRecipeList();
+2462:       } catch (e) {
+2463:         console.error(e);
+2464:         container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>データの取得に失敗しました。設定情報を確認してください。</p></div>`;
+2465:       }
+2466:     }
+2467: 
+2468:     // --- Fully Generic Japanese Text Normalization & Search Engine ---
+2469: 
+2470:     // =====================================================================
+2471:     // Advanced Japanese Search Engine
+2472:     // - NFKC normalization
+2473:     // - Hiragana ↔ Katakana bidirectional matching
+2474:     // - Kanji → reading expansion (comprehensive dictionary)
+2475:     // - Rendaku (連濁) normalization (dakuten/handakuten stripping)
+2476:     // - Okurigana-aware consecutive duplicate collapsing
+2477:     // =====================================================================
+2478: 
+2479:     const COMMON_SYNONYMS = {
+2480:       "生米": "米",
+2481:       "白米": "米",
+2482:       "ご飯": "米",
+2483:       "ごはん": "米",
+2484:       "ライス": "米",
+2485:       "精白米": "米",
+2486:       "無洗米": "米",
+2487:       "豚肉": "豚",
+2488:       "豚バラ": "豚",
+2489:       "豚ロース": "豚",
+2490:       "豚こま": "豚",
+2491:       "豚ひき肉": "豚",
+2492:       "牛肉": "牛",
+2493:       "牛バラ": "牛",
+2494:       "牛ロース": "牛",
+2495:       "牛こま": "牛",
+2496:       "牛ひき肉": "牛",
+2497:       "鶏肉": "鶏",
+2498:       "鶏もも": "鶏",
+2499:       "鶏むね": "鶏",
+2500:       "鶏ささみ": "鶏",
+2501:       "鶏ひき肉": "鶏",
+2502:       "合びき肉": "ミンチ",
+2503:       "合いびき肉": "ミンチ",
+2504:       "ひき肉": "ミンチ",
+2505:       "挽き肉": "ミンチ",
+2506:       "玉子": "卵",
+2507:       "たまご": "卵",
+2508:       "長ねぎ": "ねぎ",
+2509:       "白ねぎ": "ねぎ",
+2510:       "青ねぎ": "ねぎ",
+2511:       "ネギ": "ねぎ",
+2512:       "玉ねぎ": "たまねぎ",
+2513:       "タマネギ": "たまねぎ",
+2514:       "人参": "にんじん",
+2515:       "大根": "だいこん",
+2516:       "ニンニク": "にんにく",
+2517:       "オクラ": "おくら",
+2518:       "長芋": "ながいも",
+2519:       "コショウ": "こしょう",
+2520:       "胡椒": "こしょう",
+2521:       "ジャガイモ": "じゃがいも",
+2522:       "キャベツ": "きゃべつ",
+2523:       "トマト": "とまと",
+2524:       "ピーマン": "ぴーまん",
+2525:       "レモン": "れもん",
+2526:       "ナス": "なす",
+2527:       "出汁": "だし",
+2528:       "出し": "だし",
+2529:       "ダシ": "だし",
+2530:       "顆粒": "かりゅう",
+2531:       "大豆": "豆",
+2532:       "小豆": "豆",
+2533:       "グリンピース": "豆",
+2534:       "グリーンピース": "豆",
+2535:       "ひよこ豆": "豆",
+2536:       "えんどう豆": "豆"
+2537:     };
+2538: 
+2539:     function normalizeJapaneseText(str) {
+2540:       if (!str) return '';
+2541:       let s = String(str).normalize('NFKC').toLowerCase();
+2542:       // Remove spaces, slashes, brackets, separators, Japanese punctuation, wave dashes, etc.
+2543:       s = s.replace(/[\s\u3000・,\-_\/\\\(\)\u3001\u3002\u300C\u300D\u3010\u3011「」【】〜~！？!\?\+\*＊&＆×ｘ;；]/g, '');
+2544: 
+2545:       for (const [key, val] of Object.entries(COMMON_SYNONYMS)) {
+2546:         if (s.includes(key)) {
+2547:           s = s.replace(new RegExp(key, 'g'), val);
+2548:         }
+2549:       }
+2550: 
+2551:       return s;
+2552:     }
+2553: 
+2554:     function toHiragana(str) {
+2555:       if (!str) return '';
+2556:       return String(str).replace(/[\u30a1-\u30f6\u30f4]/g, match => String.fromCharCode(match.charCodeAt(0) - 0x60));
+2557:     }
+2558: 
+2559:     function toKatakana(str) {
+2560:       if (!str) return '';
+2561:       return String(str).replace(/[\u3041-\u3096\u3094]/g, match => String.fromCharCode(match.charCodeAt(0) + 0x60));
+2562:     }
+2563: 
+2564:     // --- Shared ingredient matching utility ---
+2565:     // Single source of truth: checks if a recipe ingredient matches any fridge stock item.
+2566:     // Uses hiragana normalization + synonym replacement + bidirectional substring.
+2567:     // Also splits compound fridge names (e.g. "おくら&長芋") on separators.
+2568:     function isIngredientInStock(recipeIng, fridgeList, normFridgeListCache) {
+2569:       const normIng = toHiragana(normalizeJapaneseText(recipeIng));
+2570:       if (!normIng) return false;
+2571: 
+2572:       // Broaden match by removing common suffixes from recipe ingredient (e.g. "豆スープ" -> "豆")
+2573:       const broadenedIng = normIng.replace(/(すーぷ|のもと|の素|かん|缶|ぺーすと|ペースト)$/, '');
+2574: 
+2575:       const splitRe = /[&＆・、,\/\+×ｘ]/;
+2576: 
+2577:       for (let i = 0; i < fridgeList.length; i++) {
+2578:         const f = fridgeList[i];
+2579:         const normF = normFridgeListCache ? normFridgeListCache[i] : toHiragana(normalizeJapaneseText(f));
+2580: 
+2581:         // 1. Normalized hiragana substring match (bidirectional)
+2582:         if (normF.length > 0) {
+2583:           if (normIng.includes(normF) || normF.includes(normIng) || broadenedIng.includes(normF) || normF.includes(broadenedIng)) return true;
+2584:         }
+2585: 
+2586:         // 2. Raw text substring match (bidirectional)
+2587:         if (recipeIng.includes(f) || f.includes(recipeIng)) return true;
+2588: 
+2589:         // 3. Split compound fridge items on separators and check each part
+2590:         if (splitRe.test(f)) {
+2591:           const parts = f.split(splitRe).map(p => p.trim()).filter(p => p.length > 0);
+2592:           for (const part of parts) {
+2593:             const normPart = toHiragana(normalizeJapaneseText(part));
+2594:             if (normPart.length > 0 && (normIng.includes(normPart) || normPart.includes(normIng) || broadenedIng.includes(normPart) || normPart.includes(broadenedIng))) return true;
+2595:             if (recipeIng.includes(part) || part.includes(recipeIng)) return true;
+2596:           }
+2597:         }
+2598:       }
+2599:       return false;
+2600:     }
+2601: 
+2602:     // Ingredients that are trivially available (water etc.) - never shown as "missing"
+2603:     function isTriviallyAvailable(ing) {
+2604:       let cleanIng = String(ing).replace(/[(（].*?[)）]/g, '');
+2605:       cleanIng = normalizeJapaneseText(cleanIng);
+2606:       cleanIng = cleanIng.replace(/[0-9０-９]/g, '')
+2607:         .replace(/(ml|cc|g|kg|l|かっぷ|おおさじ|こさじ|しょうしょう|てきりょう|ひとつまみ|はい|ふん|くらい|おこのみ|お好み|やく|カップ|大さじ|小さじ|少々|適量|杯|分|約)/g, '');
+2608:       cleanIng = toHiragana(cleanIng);
+2609: 
+2610:       const ALWAYS_AVAILABLE = ["水", "お湯", "熱湯", "氷", "氷水", "ぬるま湯", "冷水"];
+2611:       return ALWAYS_AVAILABLE.includes(cleanIng) || ALWAYS_AVAILABLE.includes(cleanIng.replace(/くらい$/, ''));
+2612:     }
+2613: 
+2614:     function isSeasoningIngredient(ing) {
+2615:       if (isTriviallyAvailable(ing)) return true;
+2616:       const seasoningKeywords = ["塩", "砂糖", "醤油", "しょうゆ", "酒", "みりん", "油", "酢", "こしょう", "コショウ", "胡椒", "味噌", "みそ", "だしの素", "だし", "コンソメ", "ケチャップ", "マヨネーズ", "ソース", "バター", "マーガリン", "片栗粉", "小麦粉", "薄力粉", "パン粉", "めんつゆ", "ポン酢", "料理酒", "オリーブオイル", "ごま油", "サラダ油", "鶏がらスープ", "中華スープ", "ウスターソース", "オイスターソース", "ナンプラー", "豆板醤", "甜麺醤", "カレー粉", "カレールー", "七味", "一味", "わさび", "からし", "マスタード", "はちみつ", "ハチミツ", "蜂蜜", "練乳", "生クリーム", "牛乳", "チーズ", "粉チーズ"];
+2617:       const normIng = toHiragana(normalizeJapaneseText(ing));
+2618:       return seasoningKeywords.some(kw => {
+2619:         const normKw = toHiragana(normalizeJapaneseText(kw));
+2620:         return normIng.includes(normKw) || normKw.includes(normIng);
+2621:       });
+2622:     }
+2623: 
+2624:     // Comprehensive Kanji → Hiragana reading dictionary
+2625:     // Covers food, cooking, measurements, descriptors, and common daily kanji
+2626:     // Multiple readings per kanji are listed for combinatorial expansion
+2627: 
+2628:     function computeSearchMatchScore(queryWord, targetText) {
+2629:       if (!queryWord || !targetText) return 0;
+2630: 
+2631:       const qNorm = normalizeJapaneseText(queryWord);
+2632:       const tNorm = normalizeJapaneseText(targetText);
+2633:       if (!qNorm || !tNorm) return 0;
+2634: 
+2635:       const allQueryWords = { ...(window.FOOD_VECTORS || {}), ...(window.QUERY_VECTORS || {}) };
+2636:       const qHira = toHiragana(qNorm);
+2637:       const isSemanticQuery = (qNorm in allQueryWords) || (qHira in allQueryWords);
+2638: 
+2639:       // Prevent garbage results for short, non-semantic queries (e.g. "あ", "する", "ウニ" when not in dict)
+2640:       const isAllHiragana = /^[\u3040-\u309F]+$/.test(qNorm);
+2641:       const isAllKatakana = /^[\u30A0-\u30FF]+$/.test(qNorm);
+2642:       if (!isSemanticQuery && (isAllHiragana || isAllKatakana) && qNorm.length <= 2) {
+2643:         // Only allow Layer 0 strict substring match, completely skip Layer 1 Hiragana fuzzy match
+2644:         // because 1-2 character Hiragana/Katakana (like うに) falsely match grammar particles (ように).
+2645:         if (tNorm.includes(qNorm)) {
+2646:           return 2.5; // Exact Katakana/Hiragana match (e.g. recipe actually contains "ウニ")
+2647:         }
+2648:         return 0;
+2649:       }
+2650: 
+2651:       let maxScore = 0;
+2652:       // If query is in Semantic Dict, we TRUST Semantic Search (Layer 2) to give the main score (up to 7.0).
+2653:       // Layer 0/1 only gives a tiny boost (0.5) for exact matches to help sorting, but not enough to pass the 1.8 threshold alone.
+2654:       // If query is NOT in Semantic Dict (e.g. "簡単", "レンジ", "フライパン"), Layer 0/1 gives a passing score (2.5).
+2655:       let baseSubstringScore = isSemanticQuery ? 0.5 : 2.5;
+2656: 
+2657:       // --- Layer 0: Direct normalized substring match ---
+2658:       if (tNorm.includes(qNorm)) {
+2659:         maxScore = baseSubstringScore;
+2660:       } else {
+2661:         // --- Layer 1: Hiragana-unified substring match ---
+2662:         // (Only safe for semantic queries OR queries > 2 chars, to avoid false positive particle matches)
+2663:         const tHira = toHiragana(tNorm);
+2664:         if (tHira.includes(qHira) && maxScore < baseSubstringScore - 0.1) {
+2665:           maxScore = baseSubstringScore - 0.1;
+2666:         }
+2667:       }
+2668: 
+2669:       // --- Layer 2: Offline Category Semantic Search ---
+2670:       if (window.FOOD_VECTORS) {
+2671:         let maxSemanticSim = 0;
+2672: 
+2673:         // Strict matching for query vs dictionary word with Subsumption
+2674:         const matchedWords = [];
+2675:         for (const qWord in allQueryWords) {
+2676:           const qWordHira = toHiragana(qWord);
+2677: 
+2678:           let idx = -1;
+2679:           let matchLen = 0;
+2680:           if (qNorm === qWord || qHira === qWordHira) {
+2681:             idx = 0; matchLen = qNorm.length;
+2682:           } else if (qWord.length >= 2 && qNorm.includes(qWord)) {
+2683:             idx = qNorm.indexOf(qWord); matchLen = qWord.length;
+2684:           } else if (qWord.length >= 2 && qHira.includes(qWordHira)) {
+2685:             idx = qHira.indexOf(qWordHira); matchLen = qWordHira.length;
+2686:           }
+2687: 
+2688:           if (idx !== -1) {
+2689:             matchedWords.push({ word: qWord, start: idx, end: idx + matchLen });
+2690:           }
+2691:         }
+2692: 
+2693:         // Filter out matches that are strictly contained within another match
+2694:         // (e.g. "にく" inside "にんにく")
+2695:         const queryWordsToUse = [];
+2696:         for (let i = 0; i < matchedWords.length; i++) {
+2697:           let isSubsumed = false;
+2698:           for (let j = 0; j < matchedWords.length; j++) {
+2699:             if (i === j) continue;
+2700:             if (matchedWords[i].start >= matchedWords[j].start &&
+2701:               matchedWords[i].end <= matchedWords[j].end &&
+2702:               (matchedWords[j].end - matchedWords[j].start) > (matchedWords[i].end - matchedWords[i].start)) {
+2703:               isSubsumed = true;
+2704:               break;
+2705:             }
+2706:           }
+2707:           if (!isSubsumed) {
+2708:             queryWordsToUse.push(matchedWords[i].word);
+2709:           }
+2710:         }
+2711: 
+2712:         // === Target Word Subsumption ===
+2713:         // Pre-compute all valid dictionary words present in the target text
+2714:         // to prevent generic substrings (e.g. "ねぎ") from being extracted out of
+2715:         // specific compounds (e.g. "玉ねぎ") if they overlap in the exact same position.
+2716:         const matchedTargetWords = [];
+2717:         for (const tWord in window.FOOD_VECTORS) {
+2718:           let searchIdx = 0;
+2719:           while (true) {
+2720:             searchIdx = tNorm.indexOf(tWord, searchIdx);
+2721:             if (searchIdx === -1) break;
+2722: 
+2723:             let isValid = true;
+2724:             const isKatakanaWord = /^[\u30A0-\u30FF]+$/.test(tWord);
+2725:             if (isKatakanaWord) {
+2726:               const prevChar = searchIdx > 0 ? tNorm[searchIdx - 1] : '';
+2727:               const nextChar = searchIdx + tWord.length < tNorm.length ? tNorm[searchIdx + tWord.length] : '';
+2728:               const isPrevKatakana = /[\u30A0-\u30FF]/.test(prevChar);
+2729:               const isNextKatakana = /[\u30A0-\u30FF]/.test(nextChar);
+2730: 
+2731:               if (isPrevKatakana || isNextKatakana) {
+2732:                 isValid = false;
+2733:               }
+2734:             }
+2735: 
+2736:             // Critical Heuristic: Prevent short Hiragana words (e.g. "うに", "いか", "す") 
+2737:             // from being falsely extracted out of grammar or other words (e.g. "ように", "すいか", "します").
+2738:             const isHiraganaWord = /^[\u3040-\u309F]+$/.test(tWord);
+2739:             if (isHiraganaWord && tWord.length <= 2) {
+2740:               const prevChar = searchIdx > 0 ? tNorm[searchIdx - 1] : '';
+2741:               const isPrevHiragana = /[\u3040-\u309F]/.test(prevChar);
+2742:               if (isPrevHiragana) {
+2743:                 isValid = false;
+2744:               }
+2745:             }
+2746: 
+2747:             if (isValid) {
+2748:               matchedTargetWords.push({ word: tWord, start: searchIdx, end: searchIdx + tWord.length });
+2749:             }
+2750:             searchIdx += 1;
+2751:           }
+2752:         }
+2753: 
+2754:         const validTargetWords = new Set();
+2755:         for (let i = 0; i < matchedTargetWords.length; i++) {
+2756:           let isSubsumed = false;
+2757:           for (let j = 0; j < matchedTargetWords.length; j++) {
+2758:             if (i === j) continue;
+2759:             const wi = matchedTargetWords[i];
+2760:             const wj = matchedTargetWords[j];
+2761:             if (wi.start >= wj.start && wi.end <= wj.end && (wj.end - wj.start) > (wi.end - wi.start)) {
+2762:               isSubsumed = true;
+2763:               break;
+2764:             }
+2765:           }
+2766:           if (!isSubsumed) {
+2767:             validTargetWords.add(matchedTargetWords[i].word);
+2768:           }
+2769:         }
+2770: 
+2771:         // Compute max semantic similarity between any qWord and valid tWord
+2772:         for (const qWord of queryWordsToUse) {
+2773:           const qVec = allQueryWords[qWord];
+2774:           for (const tWord of validTargetWords) {
+2775:             const tVec = window.FOOD_VECTORS[tWord];
+2776:             let dot = 0;
+2777:             for (let i = 0; i < qVec.length; i++) {
+2778:               dot += qVec[i] * tVec[i];
+2779:             }
+2780:             // Prevent Dimensional Explosion by capping the dot product at 1.0
+2781:             if (dot > 1.0) dot = 1.0;
+2782: 
+2783:             if (dot > maxSemanticSim) maxSemanticSim = dot;
+2784:           }
+2785:         }
+2786: 
+2787:         // Exact category match (dot == 1.0) gives semanticScore = 7.0
+2788:         if (maxSemanticSim >= 0.55) {
+2789:           const semanticScore = (maxSemanticSim - 0.5) * 14.0;
+2790:           maxScore = Math.max(maxScore, semanticScore);
+2791:         }
+2792:       }
+2793: 
+2794:       return maxScore >= 1.8 ? maxScore : 0;
+2795:     }
+2796: 
+2797:     function computeRecipeSemanticScore(recipe, queryStr) {
+2798:       // 1. Convert common punctuation separators to spaces to prevent words from merging (e.g. "豚肉、玉ねぎ" -> "豚肉 玉ねぎ")
+2799:       let normalizedQuery = queryStr.replace(/[\u3000・,\/、。｜\|]/g, ' ');
+2800:       const rawKeywords = normalizedQuery.trim().split(/\s+/).filter(k => k.length > 0);
+2801:       if (rawKeywords.length === 0) return 1.0;
+2802: 
+2803:       // 2. Filter out short, non-semantic hiragana noise particles (e.g. "と", "で", "の")
+2804:       // because they would return score 0 and fail the entire AND-search.
+2805:       const keywords = [];
+2806:       const allQueryWords = { ...(window.FOOD_VECTORS || {}), ...(window.QUERY_VECTORS || {}) };
+2807:       for (const kw of rawKeywords) {
+2808:         const qNorm = normalizeJapaneseText(kw);
+2809:         const qHira = toHiragana(qNorm);
+2810:         const isSemantic = (qNorm in allQueryWords) || (qHira in allQueryWords);
+2811:         const isAllHira = /^[\u3040-\u309F]+$/.test(qNorm);
+2812: 
+2813:         if (!isSemantic && isAllHira && qNorm.length <= 2) continue;
+2814:         keywords.push(kw);
+2815:       }
+2816: 
+2817:       // If all keywords were noise particles, fallback to the raw keywords to prevent empty array
+2818:       const finalKeywords = keywords.length > 0 ? keywords : rawKeywords;
+2819: 
+2820:       let totalScore = 0;
+2821: 
+2822:       for (const kw of finalKeywords) {
+2823:         let kwMaxScore = computeSearchMatchScore(kw, recipe.title) * 2.0;
+2824: 
+2825:         if (Array.isArray(recipe.ingredients)) {
+2826:           for (const ing of recipe.ingredients) {
+2827:             kwMaxScore = Math.max(kwMaxScore, computeSearchMatchScore(kw, ing) * 1.5);
+2828:           }
+2829:         }
+2830: 
+2831:         if (Array.isArray(recipe.steps)) {
+2832:           for (const st of recipe.steps) {
+2833:             const stText = typeof st === 'object' ? `${st.title || ''} ${st.text || st.desc || ''}` : String(st);
+2834:             kwMaxScore = Math.max(kwMaxScore, computeSearchMatchScore(kw, stText) * 0.6);
+2835:           }
+2836:         }
+2837: 
+2838:         if (recipe.memo) {
+2839:           kwMaxScore = Math.max(kwMaxScore, computeSearchMatchScore(kw, recipe.memo) * 0.8);
+2840:         }
+2841: 
+2842:         if (kwMaxScore <= 0) return 0;
+2843:         totalScore += kwMaxScore;
+2844:       }
+2845:       return totalScore;
+2846:     }
+2847: 
+2848:     // Filter & Render List with Multi-Criteria Sorting
+2849:     function renderRecipeList() {
+2850:       const container = document.getElementById('recipe-list-container');
+2851:       const filterTagSelect = document.getElementById('filter-tag-select');
+2852:       const currentFilter = filterTagSelect ? filterTagSelect.value : '';
+2853: 
+2854:       const scoredRecipes = recipesCache.map(item => {
+2855:         // Mode filtering
+2856:         const isFoodRecord = item.recordType === 'food_record';
+2857:         if (currentAppMode === 'recipe' && isFoodRecord) return { item, score: 0 };
+2858:         if (currentAppMode === 'food_record' && !isFoodRecord) return { item, score: 0 };
+2859:         if (currentFilter && (!item.tags || !item.tags.includes(currentFilter))) return { item, score: 0 };
+2860: 
+2861:         let categoryMatch = false;
+2862:         if (activeCategory === 'all') {
+2863:           categoryMatch = true;
+2864:         } else if (activeCategory === 'fav') {
+2865:           categoryMatch = isFavorite(item.id);
+2866:         } else {
+2867:           categoryMatch = ((item.category || 'その他') === activeCategory);
+2868:         }
+2869: 
+2870:         let score = categoryMatch ? computeRecipeSemanticScore(item, searchQuery) : 0;
+2871:         return { item, score };
+2872:       }).filter(res => res.score > 0);
+2873: 
+2874:       // Multi-criteria sorting algorithm
+2875:       scoredRecipes.sort((a, b) => {
+2876:         if (searchQuery.trim().length > 0) {
+2877:           if (b.score !== a.score) return b.score - a.score;
+2878:         }
+2879: 
+2880:         if (sortBy === 'newest') {
+2881:           const timeA = a.item.createdAt?.toMillis ? a.item.createdAt.toMillis() : (a.item.createdAt || 0);
+2882:           const timeB = b.item.createdAt?.toMillis ? b.item.createdAt.toMillis() : (b.item.createdAt || 0);
+2883:           return timeB - timeA;
+2884:         } else if (sortBy === 'oldest') {
+2885:           const timeA = a.item.createdAt?.toMillis ? a.item.createdAt.toMillis() : (a.item.createdAt || 0);
+2886:           const timeB = b.item.createdAt?.toMillis ? b.item.createdAt.toMillis() : (b.item.createdAt || 0);
+2887:           return timeA - timeB;
+2888:         } else if (sortBy === 'cooked') {
+2889:           return (b.item.cookedCount || 0) - (a.item.cookedCount || 0);
+2890:         } else if (sortBy === 'title') {
+2891:           return (a.item.title || '').localeCompare(b.item.title || '', 'ja');
+2892:         } else if (sortBy === 'fav') {
+2893:           const isFavA = isFavorite(a.item.id) ? 1 : 0;
+2894:           const isFavB = isFavorite(b.item.id) ? 1 : 0;
+2895:           return isFavB - isFavA;
+2896:         }
+2897:         return 0;
+2898:       });
+2899: 
+2900:       const filtered = scoredRecipes.map(res => res.item);
+2901: 
+2902:       document.getElementById('recipe-count').innerText = filtered.length;
+2903: 
+2904:       if (filtered.length === 0) {
+2905:         const isRecipe = currentAppMode === 'recipe';
+2906:         const typeStr = isRecipe ? 'レシピ' : 'メモ';
+2907:         let msg = `該当する${typeStr}が見つかりません。`;
+2908: 
+2909:         if (activeCategory === 'fav') {
+2910:           msg = currentUser
+2911:             ? `お気に入りに登録された${typeStr}がありません。カードの ⭐ ボタンで追加できます。`
+2912:             : 'データ同期設定（⚙️）からGoogleログインするとお気に入り機能が利用できます。';
+2913:         }
+2914: 
+2915:         container.innerHTML = `
+2916:           <div class="empty-state">
+2917:             <div class="empty-icon">${isRecipe ? '🍳✨' : '🍽️✨'}</div>
+2918:             <p>${msg}</p>
+2919:           </div>`;
+2920:         return;
+2921:       }
+2922: 
+2923:       const grid = document.createElement('div');
+2924:       grid.className = 'recipe-grid';
+2925: 
+2926:       filtered.forEach(item => {
+2927:         const card = document.createElement('div');
+2928:         card.className = 'recipe-card';
+2929:         card.addEventListener('click', () => openRecipeDetail(item));
+2930: 
+2931:         const photos = getRecipePhotos(item);
+2932:         const coverPhoto = photos[0] || "";
+2933: 
+2934:         const imageHtml = coverPhoto
+2935:           ? `<img src="${coverPhoto}" alt="${item.title}" class="card-img">`
+2936:           : `<div class="card-placeholder">🍳</div>`;
+2937: 
+2938:         const categoryTag = item.category ? `<div class="card-category-tag">${item.category}</div>` : '';
+2939:         const servingsTag = item.servings ? `<span>👤 ${item.servings}</span>` : '';
+2940:         const cookedBadgeHtml = (item.recordType === 'food_record') ? '' : `<span class="cooked-badge">🍳 作った: ${item.cookedCount || 0}回</span>`;
+2941:         const photoCountBadge = photos.length > 1 ? `<div class="card-photo-count-tag">📷 ${photos.length}</div>` : '';
+2942: 
+2943:         const faved = isFavorite(item.id);
+2944:         const favBtnHtml = `<button class="card-fav-btn" title="お気に入り"><span>${faved ? '⭐' : '☆'}</span></button>`;
+2945: 
+2946:         let ingredientsPreview = '';
+2947:         if (Array.isArray(item.ingredients) && item.ingredients.length > 0) {
+2948:           ingredientsPreview = `🛒 ${item.ingredients.slice(0, 3).join('・')}${item.ingredients.length > 3 ? '...' : ''}`;
+2949:         } else if (item.memo) {
+2950:           ingredientsPreview = item.memo;
+2951:         }
+2952: 
+2953:         let badgesHtml = '';
+2954:         if (currentAppMode === 'recipe' && Array.isArray(item.ingredients) && refrigeratorIngredients.length > 0) {
+2955:           let missing = [];
+2956:           const normFCache = refrigeratorIngredients.map(f => toHiragana(normalizeJapaneseText(f)));
+2957: 
+2958:           item.ingredients.forEach(ing => {
+2959:             if (!isTriviallyAvailable(ing) && !isIngredientInStock(ing, refrigeratorIngredients, normFCache)) {
+2960:               missing.push(ing);
+2961:             }
+2962:           });
+2963: 
+2964:           if (missing.length > 0) {
+2965:             let missingStr = missing.slice(0, 3).join('・');
+2966:             if (missing.length > 3) missingStr += ` (他${missing.length - 3}件)`;
+2967:             badgesHtml = `<div style="background:#F59E0B; color:white; font-size:0.7rem; font-weight:bold; padding:2px 6px; border-radius:8px; box-shadow: 0 1px 2px rgba(0,0,0,0.2); width: fit-content; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">💡不足: ${escapeHtml(missingStr)}</div>`;
+2968:           } else if (item.ingredients.length > 0) {
+2969:             badgesHtml = `<div style="background:var(--primary); color:white; font-size:0.7rem; font-weight:bold; padding:2px 6px; border-radius:8px; box-shadow: 0 1px 2px rgba(0,0,0,0.2); width: fit-content; margin-bottom: 4px;">✅ 全て揃っています</div>`;
+2970:           }
+2971:         }
+2972: 
+2973:         const dateHtml = `<div style="font-size: 0.75rem; color: #999; margin-top: 6px; text-align: right;">${formatDateString(item.updatedAt || item.createdAt)}</div>`;
+2974: 
+2975:         card.innerHTML = `
+2976:           <div class="card-img-wrapper">
+2977:             ${imageHtml}
+2978:             ${categoryTag}
+2979:             ${favBtnHtml}
+2980:             ${photoCountBadge}
+2981:           </div>
+2982:           <div class="card-content">
+2983:             <h3 class="card-title">${escapeHtml(item.title)}</h3>
+2984:             <div class="card-meta">
+2985:               ${servingsTag}
+2986:               ${cookedBadgeHtml}
+2987:             </div>
+2988:             ${badgesHtml}
+2989:             ${ingredientsPreview ? `<div class="card-ingredients-preview">${escapeHtml(ingredientsPreview)}</div>` : ''}
+2990:             ${dateHtml}
+2991:           </div>
+2992:         `;
+2993: 
+2994:         // Bind pure Firestore instant favorite star click with uniform animation
+2995:         const favBtn = card.querySelector('.card-fav-btn');
+2996:         favBtn.addEventListener('click', (e) => {
+2997:           e.stopPropagation();
+2998:           toggleFavorite(item.id, favBtn);
+2999:         });
+3000: 
+3001:         grid.appendChild(card);
+3002:       });
+3003: 
+3004:       container.innerHTML = '';
+3005:       container.appendChild(grid);
+3006:     }
+3007: 
+3008:     function updateFilterTagsUI() {
+3009:       const filterTagSelect = document.getElementById('filter-tag-select');
+3010:       const suggestTagSelect = document.getElementById('suggest-tag-select');
+3011:       const currentFilter = filterTagSelect ? filterTagSelect.value : '';
+3012:       const currentSuggestFilter = suggestTagSelect ? suggestTagSelect.value : '';
+3013: 
+3014:       if (filterTagSelect) {
+3015:         filterTagSelect.innerHTML = '<option value="">すべてのタグ</option>';
+3016:       }
+3017:       if (suggestTagSelect) {
+3018:         suggestTagSelect.innerHTML = '<option value="">すべてのタグ</option>';
+3019:       }
+3020: 
+3021:       const allTags = new Set();
+3022:       recipesCache.forEach(r => {
+3023:         if (r.tags && Array.isArray(r.tags)) {
+3024:           r.tags.forEach(t => allTags.add(t));
+3025:         }
+3026:       });
+3027:       Array.from(allTags).sort().forEach(tag => {
+3028:         const safeTag = escapeHtml(tag);
+3029:         if (filterTagSelect) filterTagSelect.insertAdjacentHTML('beforeend', `<option value="${safeTag}">${safeTag}</option>`);
+3030:         if (suggestTagSelect) suggestTagSelect.insertAdjacentHTML('beforeend', `<option value="${safeTag}">${safeTag}</option>`);
+3031:       });
+3032:       if (filterTagSelect) filterTagSelect.value = currentFilter;
+3033:       if (suggestTagSelect) suggestTagSelect.value = currentSuggestFilter;
+3034:     }
+3035: 
+3036:     // Helper: Extract all photos for a recipe
+3037:     function getRecipePhotos(recipe) {
+3038:       if (Array.isArray(recipe.imageUrls) && recipe.imageUrls.length > 0) {
+3039:         return recipe.imageUrls;
+3040:       }
+3041:       if (recipe.imageUrl) {
+3042:         return [recipe.imageUrl];
+3043:       }
+3044:       return [];
+3045:     }
+3046: 
+3047:     // --- Open Detail Modal & Photo Gallery ---
+3048:     function openRecipeDetail(recipe) {
+3049:       currentDetailRecipe = recipe;
+3050:       currentGalleryIndex = 0;
+3051: 
+3052:       document.getElementById('detail-title').innerText = recipe.title || '無題';
+3053:       document.getElementById('detail-category-badge').innerText = recipe.category || 'その他';
+3054: 
+3055:       const count = recipe.cookedCount || 0;
+3056:       document.getElementById('detail-cooked-count').innerText = count;
+3057:       document.getElementById('btn-decrement-cooked').disabled = count <= 0;
+3058: 
+3059:       updateDetailFavStar();
+3060: 
+3061:       const servingsEl = document.getElementById('detail-servings');
+3062:       if (recipe.servings) {
+3063:         servingsEl.innerText = `👤 ${recipe.servings}`;
+3064:         servingsEl.style.display = 'inline';
+3065:       } else {
+3066:         servingsEl.style.display = 'none';
+3067:       }
+3068: 
+3069:       // Dates
+3070:       const dateInfoEl = document.getElementById('detail-date-info');
+3071:       const createdAtStr = formatDateString(recipe.createdAt);
+3072:       const updatedAtStr = formatDateString(recipe.updatedAt || recipe.createdAt);
+3073:       let dateHtml = `登録: ${createdAtStr}`;
+3074:       if (updatedAtStr && updatedAtStr !== createdAtStr) {
+3075:         dateHtml += ` (更新: ${updatedAtStr})`;
+3076:       }
+3077:       dateInfoEl.innerText = dateHtml;
+3078: 
+3079:       // Handle Record Type Sections
+3080:       const isRecord = recipe.recordType === 'food_record';
+3081:       document.getElementById('section-ingredients').style.display = isRecord ? 'none' : 'block';
+3082:       document.getElementById('section-steps').style.display = isRecord ? 'none' : 'block';
+3083:       document.getElementById('detail-cooked-counter').style.display = isRecord ? 'none' : 'flex';
+3084:       document.getElementById('detail-section-title-memo').innerText = isRecord ? '✏️ 感想・メモ' : '💡 コツ・メモ';
+3085: 
+3086:       const btnDeleteRecipe = document.getElementById('btn-delete-recipe');
+3087:       btnDeleteRecipe.innerHTML = `<span>🗑️</span> ${isRecord ? 'メモ' : 'レシピ'}を削除`;
+3088: 
+3089:       // Render Photo Gallery
+3090:       const photos = getRecipePhotos(recipe);
+3091:       const galleryContainer = document.getElementById('detail-gallery-container');
+3092:       const btnPrev = document.getElementById('gallery-btn-prev');
+3093:       const btnNext = document.getElementById('gallery-btn-next');
+3094:       const thumbsRow = document.getElementById('gallery-thumbs-row');
+3095: 
+3096:       if (photos.length > 0) {
+3097:         galleryContainer.style.display = 'block';
+3098:         updateGalleryPhoto(photos);
+3099: 
+3100:         if (photos.length > 1) {
+3101:           btnPrev.style.display = 'flex';
+3102:           btnNext.style.display = 'flex';
+3103:           thumbsRow.style.display = 'flex';
+3104:           thumbsRow.innerHTML = '';
+3105: 
+3106:           photos.forEach((p, idx) => {
+3107:             const thumb = document.createElement('img');
+3108:             thumb.className = `gallery-thumb-item ${idx === 0 ? 'active' : ''}`;
+3109:             thumb.src = p;
+3110:             thumb.addEventListener('click', () => {
+3111:               currentGalleryIndex = idx;
+3112:               updateGalleryPhoto(photos);
+3113:             });
+3114:             thumbsRow.appendChild(thumb);
+3115:           });
+3116:         } else {
+3117:           btnPrev.style.display = 'none';
+3118:           btnNext.style.display = 'none';
+3119:           thumbsRow.style.display = 'none';
+3120:         }
+3121:       } else {
+3122:         galleryContainer.style.display = 'none';
+3123:       }
+3124: 
+3125:       // Ingredients
+3126:       const secIngredients = document.getElementById('section-ingredients');
+3127:       const listIngredients = document.getElementById('detail-ingredients-list');
+3128:       listIngredients.innerHTML = '';
+3129: 
+3130:       if (Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0) {
+3131:         secIngredients.style.display = 'block';
+3132:         recipe.ingredients.forEach(ing => {
+3133:           let isMissing = false;
+3134: 
+3135:           // AI提案で明示的に不足とされているか、または手元のストックに含まれていないか判定
+3136:           if (recipe.missing_ingredients && Array.isArray(recipe.missing_ingredients) && recipe.missing_ingredients.length > 0) {
+3137:             isMissing = recipe.missing_ingredients.some(m => ing.includes(m) || m.includes(ing));
+3138:           } else if (refrigeratorIngredients && refrigeratorIngredients.length > 0) {
+3139:             isMissing = !isTriviallyAvailable(ing) && !isIngredientInStock(ing, refrigeratorIngredients);
+3140:           }
+3141: 
+3142:           const missingBadge = isMissing
+3143:             ? `<span style="margin-left: 8px; font-size: 0.65rem; background: #F59E0B; color: white; padding: 2px 6px; border-radius: 8px; font-weight: bold; vertical-align: middle;">💡不足</span>`
+3144:             : '';
+3145: 
+3146:           const label = document.createElement('label');
+3147:           label.className = 'ingredient-item';
+3148:           label.innerHTML = `<input type="checkbox"> <span>${escapeHtml(ing)}</span>${missingBadge}`;
+3149:           label.querySelector('input').addEventListener('change', (e) => {
+3150:             if (e.target.checked) label.classList.add('checked');
+3151:             else label.classList.remove('checked');
+3152:           });
+3153:           listIngredients.appendChild(label);
+3154:         });
+3155:       } else {
+3156:         secIngredients.style.display = 'none';
+3157:       }
+3158: 
+3159:       // Render Structured Steps (Title + Detail)
+3160:       const secSteps = document.getElementById('section-steps');
+3161:       const listSteps = document.getElementById('detail-steps-list');
+3162:       listSteps.innerHTML = '';
+3163: 
+3164:       if (Array.isArray(recipe.steps) && recipe.steps.length > 0) {
+3165:         secSteps.style.display = 'block';
+3166:         recipe.steps.forEach((step, idx) => {
+3167:           let stepTitle = '';
+3168:           let stepText = '';
+3169: 
+3170:           if (typeof step === 'object' && step !== null) {
+3171:             stepTitle = step.title || '';
+3172:             stepText = step.text || step.desc || '';
+3173:           } else if (typeof step === 'string') {
+3174:             const lines = step.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+3175:             if (lines.length >= 2) {
+3176:               stepTitle = lines[0];
+3177:               stepText = lines.slice(1).join('\n');
+3178:             } else {
+3179:               stepText = step;
+3180:             }
+3181:           }
+3182: 
+3183:           const item = document.createElement('div');
+3184:           item.className = 'step-item';
+3185:           item.innerHTML = `
+3186:             <div class="step-number">${idx + 1}</div>
+3187:             <div class="step-body">
+3188:               ${stepTitle ? `<div class="step-heading">${escapeHtml(stepTitle)}</div>` : ''}
+3189:               ${stepText ? `<div class="step-desc">${escapeHtml(stepText)}</div>` : ''}
+3190:             </div>
+3191:           `;
+3192:           listSteps.appendChild(item);
+3193:         });
+3194:       } else {
+3195:         secSteps.style.display = 'none';
+3196:       }
+3197: 
+3198:       // Memo
+3199:       const secMemo = document.getElementById('section-memo');
+3200:       const contentMemo = document.getElementById('detail-memo-content');
+3201:       if (recipe.memo) {
+3202:         secMemo.style.display = 'block';
+3203:         contentMemo.innerText = recipe.memo;
+3204:       } else {
+3205:         secMemo.style.display = 'none';
+3206:       }
+3207: 
+3208:       if (recipe.isAiGenerated) {
+3209:         document.getElementById('modal-footer-default').style.display = 'none';
+3210:         document.getElementById('modal-footer-ai').style.display = 'flex';
+3211:         document.getElementById('btn-toggle-fav-detail').style.display = 'none';
+3212:         document.getElementById('detail-cooked-counter').style.display = 'none';
+3213:       } else {
+3214:         document.getElementById('modal-footer-default').style.display = 'flex';
+3215:         document.getElementById('modal-footer-ai').style.display = 'none';
+3216:         document.getElementById('btn-toggle-fav-detail').style.display = 'block';
+3217:       }
+3218: 
+3219:       modalDetail.classList.add('active');
+3220:     }
+3221: 
+3222:     function updateDetailFavStar() {
+3223:       const starBtn = document.getElementById('btn-toggle-fav-detail');
+3224:       const starText = document.getElementById('detail-fav-star');
+3225:       if (currentDetailRecipe && isFavorite(currentDetailRecipe.id)) {
+3226:         starText.innerText = '⭐';
+3227:         starBtn.style.color = 'var(--star-color)';
+3228:       } else {
+3229:         starText.innerText = '☆';
+3230:         starBtn.style.color = 'var(--text-muted)';
+3231:       }
+3232:     }
+3233: 
+3234:     document.getElementById('btn-toggle-fav-detail').addEventListener('click', () => {
+3235:       if (currentDetailRecipe) {
+3236:         const starBtn = document.getElementById('btn-toggle-fav-detail');
+3237:         toggleFavorite(currentDetailRecipe.id, starBtn);
+3238:       }
+3239:     });
+3240: 
+3241:     // --- Increment Cooked Count Button Listener ---
+3242:     document.getElementById('btn-increment-cooked').addEventListener('click', async () => {
+3243:       if (!currentDetailRecipe || !db) return;
+3244: 
+3245:       currentDetailRecipe.cookedCount = (currentDetailRecipe.cookedCount || 0) + 1;
+3246:       document.getElementById('detail-cooked-count').innerText = currentDetailRecipe.cookedCount;
+3247:       document.getElementById('btn-decrement-cooked').disabled = currentDetailRecipe.cookedCount <= 0;
+3248: 
+3249:       const cacheItem = recipesCache.find(r => r.id === currentDetailRecipe.id);
+3250:       if (cacheItem) cacheItem.cookedCount = currentDetailRecipe.cookedCount;
+3251: 
+3252:       const btnInc = document.getElementById('btn-increment-cooked');
+3253:       btnInc.classList.remove('star-animating');
+3254:       void btnInc.offsetWidth;
+3255:       btnInc.classList.add('star-animating');
+3256: 
+3257:       renderRecipeList();
+3258: 
+3259:       try {
+3260:         await updateDoc(doc(db, "recipes", currentDetailRecipe.id), {
+3261:           cookedCount: increment(1)
+3262:         });
+3263:       } catch (e) {
+3264:         console.error("Cooked count increment failed:", e);
+3265:       }
+3266:     });
+3267: 
+3268:     // --- Decrement Cooked Count (Undo / -1) Button Listener ---
+3269:     document.getElementById('btn-decrement-cooked').addEventListener('click', async () => {
+3270:       if (!currentDetailRecipe || !db) return;
+3271:       if ((currentDetailRecipe.cookedCount || 0) <= 0) return;
+3272: 
+3273:       currentDetailRecipe.cookedCount -= 1;
+3274:       document.getElementById('detail-cooked-count').innerText = currentDetailRecipe.cookedCount;
+3275:       document.getElementById('btn-decrement-cooked').disabled = currentDetailRecipe.cookedCount <= 0;
+3276: 
+3277:       const cacheItem = recipesCache.find(r => r.id === currentDetailRecipe.id);
+3278:       if (cacheItem) cacheItem.cookedCount = currentDetailRecipe.cookedCount;
+3279: 
+3280:       renderRecipeList();
+3281: 
+3282:       try {
+3283:         await updateDoc(doc(db, "recipes", currentDetailRecipe.id), {
+3284:           cookedCount: increment(-1)
+3285:         });
+3286:       } catch (e) {
+3287:         console.error("Cooked count decrement failed:", e);
+3288:       }
+3289:     });
+3290: 
+3291:     function updateGalleryPhoto(photos) {
+3292:       const mainImg = document.getElementById('detail-main-img');
+3293:       const thumbsRow = document.getElementById('gallery-thumbs-row');
+3294: 
+3295:       mainImg.src = photos[currentGalleryIndex] || '';
+3296: 
+3297:       const thumbs = thumbsRow.querySelectorAll('.gallery-thumb-item');
+3298:       thumbs.forEach((i, iIdx) => {
+3299:         if (iIdx === currentGalleryIndex) i.classList.add('active');
+3300:         else i.classList.remove('active');
+3301:       });
+3302:     }
+3303: 
+3304:     document.getElementById('gallery-btn-prev').addEventListener('click', () => {
+3305:       if (!currentDetailRecipe) return;
+3306:       const photos = getRecipePhotos(currentDetailRecipe);
+3307:       if (photos.length <= 1) return;
+3308:       currentGalleryIndex = (currentGalleryIndex - 1 + photos.length) % photos.length;
+3309:       updateGalleryPhoto(photos);
+3310:     });
+3311: 
+3312:     document.getElementById('gallery-btn-next').addEventListener('click', () => {
+3313:       if (!currentDetailRecipe) return;
+3314:       const photos = getRecipePhotos(currentDetailRecipe);
+3315:       if (photos.length <= 1) return;
+3316:       currentGalleryIndex = (currentGalleryIndex + 1) % photos.length;
+3317:       updateGalleryPhoto(photos);
+3318:     });
+3319: 
+3320:     // --- Edit Recipe Click Handler ---
+3321:     document.getElementById('btn-edit-recipe').addEventListener('click', () => {
+3322:       if (!currentDetailRecipe) return;
+3323: 
+3324:       editingRecipeId = currentDetailRecipe.id;
+3325: 
+3326:       // Populate form basic info
+3327:       document.getElementById('recipe-title').value = currentDetailRecipe.title || '';
+3328:       document.getElementById('recipe-category').value = currentDetailRecipe.category || '主菜';
+3329:       document.getElementById('recipe-servings').value = currentDetailRecipe.servings || '';
+3330: 
+3331:       document.getElementById('recipe-ingredients').value = Array.isArray(currentDetailRecipe.ingredients)
+3332:         ? currentDetailRecipe.ingredients.join('\n')
+3333:         : '';
+3334: 
+3335:       // Populate structured steps & raw textarea
+3336:       stepsFormContainer.innerHTML = '';
+3337:       const rawLines = [];
+3338:       if (Array.isArray(currentDetailRecipe.steps) && currentDetailRecipe.steps.length > 0) {
+3339:         currentDetailRecipe.steps.forEach(st => {
+3340:           if (typeof st === 'object' && st !== null) {
+3341:             addStepInputRow(st.title || '', st.text || st.desc || '');
+3342:             if (st.title) rawLines.push(st.title);
+3343:             if (st.text || st.desc) rawLines.push(st.text || st.desc);
+3344:             rawLines.push('');
+3345:           } else if (typeof st === 'string') {
+3346:             const lines = st.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+3347:             if (lines.length >= 2) {
+3348:               addStepInputRow(lines[0], lines.slice(1).join('\n'));
+3349:             } else {
+3350:               addStepInputRow('', st);
+3351:             }
+3352:             rawLines.push(st);
+3353:             rawLines.push('');
+3354:           }
+3355:         });
+3356:       } else {
+3357:         addStepInputRow();
+3358:       }
+3359: 
+3360:       recipeStepsRaw.value = rawLines.join('\n').trim();
+3361: 
+3362:       document.getElementById('recipe-memo').value = currentDetailRecipe.memo || '';
+3363: 
+3364:       selectedImagesBase64 = getRecipePhotos(currentDetailRecipe).slice();
+3365:       renderFormPhotoPreviews();
+3366: 
+3367:       // Update Form Titles
+3368:       document.getElementById('form-header-title').innerText = '✏️ レシピを編集';
+3369:       document.getElementById('nav-add-icon').innerText = '✏️';
+3370:       document.getElementById('nav-add-text').innerText = 'レシピ編集';
+3371:       // update the mode internally
+3372:       switchAppMode(currentDetailRecipe.recordType || 'recipe');
+3373:       updateFormModeUI();
+3374: 
+3375:       // Close modal and switch tab
+3376:       modalDetail.classList.remove('active');
+3377:       switchPage('add');
+3378:     });
+3379: 
+3380:     // --- Delete Recipe ---
+3381:     document.getElementById('btn-delete-recipe').addEventListener('click', async () => {
+3382:       if (!currentDetailRecipe || !db) return;
+3383: 
+3384:       const isRecord = currentDetailRecipe.recordType === 'food_record';
+3385:       const typeStr = isRecord ? 'メモ' : 'レシピ';
+3386: 
+3387:       if (!confirm(`本当にこの${typeStr}を削除しますか？\n削除すると元に戻せません。`)) {
+3388:         return;
+3389:       }
+3390: 
+3391:       const btnDelete = document.getElementById('btn-delete-recipe');
+3392:       btnDelete.innerText = "削除中...";
+3393:       btnDelete.disabled = true;
+3394: 
+3395:       try {
+3396:         await deleteDoc(doc(db, "recipes", currentDetailRecipe.id));
+3397:         modalDetail.classList.remove('active');
+3398:         currentDetailRecipe = null;
+3399:         alert(`${typeStr}を削除しました。`);
+3400:         fetchRecipes();
+3401:       } catch (e) {
+3402:         console.error(e);
+3403:         alert("削除に失敗しました: " + e.message);
+3404:       } finally {
+3405:         btnDelete.innerHTML = `<span>🗑️</span> ${typeStr}を削除`;
+3406:         btnDelete.disabled = false;
+3407:       }
+3408:     });
+3409: 
+3410:     // --- Search & Filter Listeners ---
+3411:     document.getElementById('search-input').addEventListener('input', (e) => {
+3412:       searchQuery = e.target.value;
+3413:       renderRecipeList();
+3414:     });
+3415: 
+3416:     document.getElementById('category-pills').addEventListener('click', (e) => {
+3417:       if (e.target.classList.contains('pill')) {
+3418:         document.querySelectorAll('#category-pills .pill').forEach(p => p.classList.remove('active'));
+3419:         e.target.classList.add('active');
+3420:         activeCategory = e.target.dataset.cat;
+3421:         renderRecipeList();
+3422:       }
+3423:     });
+3424: 
+3425:     // Sort Listener
+3426:     document.getElementById('sort-select').addEventListener('change', (e) => {
+3427:       sortBy = e.target.value;
+3428:       renderRecipeList();
+3429:     });
+3430: 
+3431:     // Helper: HTML Escape
+3432:     function escapeHtml(str) {
+3433:       if (!str) return '';
+3434:       return String(str)
+3435:         .replace(/&/g, '&amp;')
+3436:         .replace(/</g, '&lt;')
+3437:         .replace(/>/g, '&gt;')
+3438:         .replace(/"/g, '&quot;')
+3439:         .replace(/'/g, '&#039;');
+3440:     }
+3441:     // =====================================================================
+3442:     // Refrigerator & AI Suggestion Logic
+3443:     // =====================================================================
+3444: 
+3445:     document.getElementById('gemini-api-key-input').value = geminiApiKey;
+3446:     document.getElementById('gemini-api-key-input').addEventListener('change', (e) => {
+3447:       geminiApiKey = e.target.value.trim();
+3448:       localStorage.setItem('geminiApiKey', geminiApiKey);
+3449:     });
+3450: 
+3451:     let unsubscribeFridge = null;
+3452:     let refrigeratorItems = [];
+3453: 
+3454:     function setupFridgeListener() {
+3455:       if (!db) return;
+3456:       if (unsubscribeFridge) unsubscribeFridge();
+3457: 
+3458:       const q = query(collection(db, "refrigerators"));
+3459:       unsubscribeFridge = onSnapshot(q, (snapshot) => {
+3460:         refrigeratorItems = [];
+3461: 
+3462:         snapshot.forEach((docSnap) => {
+3463:           const data = docSnap.data();
+3464:           if (data.name) {
+3465:             refrigeratorItems.push({ id: docSnap.id, ...data });
+3466:           }
+3467:         });
+3468: 
+3469:         refrigeratorItems.sort((a, b) => {
+3470:           const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt || 0);
+3471:           const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt || 0);
+3472:           return timeA - timeB;
+3473:         });
+3474: 
+3475:         refrigeratorIngredients = refrigeratorItems.map(item => item.name);
+3476: 
+3477:         if (currentAppMode === 'fridge') renderFridgeUI();
+3478:         // Re-render recipe list badges when fridge data changes
+3479:         if (currentAppMode === 'recipe' || currentAppMode === 'food_record') renderRecipeList();
+3480:       }, (error) => {
+3481:         console.error("Fridge listener error:", error);
+3482:       });
+3483:     }
+3484: 
+3485:     async function addFridgeItem(name, amount, expiry, storage, category) {
+3486:       if (!name || !db) return;
+3487:       const nameTrim = name.trim();
+3488:       if (!nameTrim) return;
+3489: 
+3490:       try {
+3491:         await addDoc(collection(db, "refrigerators"), {
+3492:           name: nameTrim,
+3493:           amount: amount.trim(),
+3494:           expiry: expiry,
+3495:           storage: storage,
+3496:           category: category || "",
+3497:           createdAt: serverTimestamp(),
+3498:           updatedAt: serverTimestamp()
+3499:         });
+3500:       } catch (e) {
+3501:         console.error("Failed to add fridge item:", e);
+3502:         alert("追加に失敗しました: " + e.message);
+3503:       }
+3504:     }
+3505: 
+3506:     async function removeFridgeItem(id) {
+3507:       if (!db) return;
+3508:       try {
+3509:         await deleteDoc(doc(db, "refrigerators", id));
+3510:       } catch (e) {
+3511:         console.error("Failed to remove fridge item:", e);
+3512:         alert("削除に失敗しました: " + e.message);
+3513:       }
+3514:     }
+3515: 
+3516:     let editingFridgeItemId = null;
+3517: 
+3518:     async function updateFridgeItem(id, name, amount, expiry, storage, category) {
+3519:       if (!name || !db) return;
+3520:       const nameTrim = name.trim();
+3521:       if (!nameTrim) return;
+3522: 
+3523:       try {
+3524:         await updateDoc(doc(db, "refrigerators", id), {
+3525:           name: nameTrim,
+3526:           amount: amount.trim(),
+3527:           expiry: expiry,
+3528:           storage: storage,
+3529:           category: category || "",
+3530:           updatedAt: serverTimestamp()
+3531:         });
+3532:       } catch (e) {
+3533:         console.error("Failed to update fridge item:", e);
+3534:         alert("更新に失敗しました: " + e.message);
+3535:       }
+3536:     }
+3537: 
+3538:     document.getElementById('btn-add-fridge-item').addEventListener('click', () => {
+3539:       const inputName = document.getElementById('fridge-ingredient-input');
+3540:       const inputAmount = document.getElementById('fridge-amount-input');
+3541:       const inputExpiry = document.getElementById('fridge-expiry-input');
+3542:       const inputStorage = document.getElementById('fridge-storage-input');
+3543:       const inputCategory = document.getElementById('fridge-category-input');
+3544:       const btn = document.getElementById('btn-add-fridge-item');
+3545: 
+3546:       if (editingFridgeItemId) {
+3547:         updateFridgeItem(editingFridgeItemId, inputName.value, inputAmount.value, inputExpiry.value, inputStorage.value, inputCategory.value);
+3548:         editingFridgeItemId = null;
+3549:         btn.innerText = '追加';
+3550:         btn.style.background = 'var(--primary)';
+3551:       } else {
+3552:         addFridgeItem(inputName.value, inputAmount.value, inputExpiry.value, inputStorage.value, inputCategory.value);
+3553:       }
+3554: 
+3555:       inputName.value = '';
+3556:       inputAmount.value = '';
+3557:       inputExpiry.value = '';
+3558:       inputStorage.value = '';
+3559:       inputCategory.value = '';
+3560:     });
+3561:     document.getElementById('fridge-ingredient-input').addEventListener('keypress', (e) => {
+3562:       if (e.key === 'Enter') {
+3563:         e.preventDefault();
+3564:         document.getElementById('btn-add-fridge-item').click();
+3565:       }
+3566:     });
+3567: 
+3568:     window.renderFridgeUI = function () {
+3569:       const container = document.getElementById('fridge-tags-container');
+3570:       container.innerHTML = '';
+3571:       if (refrigeratorItems.length === 0) {
+3572:         container.innerHTML = `<div style="font-size:0.9rem; color:#999; margin:10px 0;">食材が登録されていません</div>`;
+3573:         suggestLocalRecipes();
+3574:         return;
+3575:       }
+3576: 
+3577:       const groupMode = document.getElementById('fridge-group-select')?.value || 'category';
+3578:       const sortMode = document.getElementById('fridge-sort-select')?.value || 'newest';
+3579: 
+3580:       // 1. Sort
+3581:       let sortedItems = [...refrigeratorItems];
+3582:       if (sortMode === 'newest') {
+3583:         sortedItems.sort((a, b) => {
+3584:           const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt || 0);
+3585:           const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt || 0);
+3586:           return timeB - timeA;
+3587:         });
+3588:       } else if (sortMode === 'expiry') {
+3589:         sortedItems.sort((a, b) => {
+3590:           if (!a.expiry && !b.expiry) return 0;
+3591:           if (!a.expiry) return 1;
+3592:           if (!b.expiry) return -1;
+3593:           return a.expiry.localeCompare(b.expiry);
+3594:         });
+3595:       } else if (sortMode === 'name') {
+3596:         sortedItems.sort((a, b) => a.name.localeCompare(b.name));
+3597:       }
+3598: 
+3599:       // 2. Group
+3600:       const grouped = {};
+3601:       sortedItems.forEach(item => {
+3602:         const gKey = groupMode === 'category'
+3603:           ? (item.category || 'その他')
+3604:           : (item.storage || '指定なし');
+3605:         if (!grouped[gKey]) grouped[gKey] = [];
+3606:         grouped[gKey].push(item);
+3607:       });
+3608: 
+3609:       // 3. Order Groups
+3610:       let orderedKeys = Object.keys(grouped);
+3611:       if (groupMode === 'category') {
+3612:         const catOrder = ["野菜・きのこ", "肉類", "魚介類", "卵・乳製品", "穀物・麺類", "調味料", "加工品・その他", "その他"];
+3613:         orderedKeys.sort((a, b) => {
+3614:           let iA = catOrder.indexOf(a);
+3615:           let iB = catOrder.indexOf(b);
+3616:           if (iA === -1) iA = 999;
+3617:           if (iB === -1) iB = 999;
+3618:           return iA - iB;
+3619:         });
+3620:       } else {
+3621:         const storOrder = ["📦 常温", "❄️ 冷蔵", "🧊 冷凍", "指定なし"];
+3622:         orderedKeys.sort((a, b) => {
+3623:           let iA = storOrder.indexOf(a);
+3624:           let iB = storOrder.indexOf(b);
+3625:           if (iA === -1) iA = 999;
+3626:           if (iB === -1) iB = 999;
+3627:           return iA - iB;
+3628:         });
+3629:       }
+3630: 
+3631:       // 4. Render
+3632:       orderedKeys.forEach(key => {
+3633:         const items = grouped[key];
+3634:         const details = document.createElement('details');
+3635:         details.open = true;
+3636:         details.style.marginBottom = '12px';
+3637:         details.style.width = '100%';
+3638: 
+3639:         let displayTitle = key;
+3640:         if (groupMode === 'category') {
+3641:           const emojiMap = {
+3642:             "野菜・きのこ": "🥬 野菜・きのこ",
+3643:             "肉類": "🍖 肉類",
+3644:             "魚介類": "🐟 魚介類",
+3645:             "卵・乳製品": "🥚 卵・乳製品",
+3646:             "穀物・麺類": "🍚 穀物・麺類",
+3647:             "調味料": "🧂 調味料",
+3648:             "加工品・その他": "🥫 加工品・その他",
+3649:             "その他": "❓ その他"
+3650:           };
+3651:           displayTitle = emojiMap[key] || key;
+3652:         }
+3653: 
+3654:         const summary = document.createElement('summary');
+3655:         summary.style.fontWeight = 'bold';
+3656:         summary.style.color = 'var(--primary-dark)';
+3657:         summary.style.padding = '8px 12px';
+3658:         summary.style.backgroundColor = '#F8FAFC';
+3659:         summary.style.borderRadius = '8px';
+3660:         summary.style.cursor = 'pointer';
+3661:         summary.style.display = 'flex';
+3662:         summary.style.justifyContent = 'space-between';
+3663:         summary.innerHTML = `<span>${escapeHtml(displayTitle)} <span style="font-size:0.8rem; color:#888;">(${items.length})</span></span> <span style="color:#CBD5E1; font-size: 0.8rem;">▼</span>`;
+3664: 
+3665:         // Hide default arrow marker in webkit
+3666:         const style = document.createElement('style');
+3667:         style.innerHTML = `details > summary { list-style: none; } details > summary::-webkit-details-marker { display: none; }`;
+3668:         summary.appendChild(style);
+3669: 
+3670:         details.appendChild(summary);
+3671: 
+3672:         const listWrap = document.createElement('div');
+3673:         listWrap.style.display = 'flex';
+3674:         listWrap.style.flexWrap = 'wrap';
+3675:         listWrap.style.gap = '8px';
+3676:         listWrap.style.padding = '12px 4px';
+3677: 
+3678:         items.forEach(item => {
+3679:           const tag = document.createElement('div');
+3680:           tag.className = 'pill';
+3681:           tag.style.background = '#E0E7FF';
+3682:           tag.style.color = '#4338CA';
+3683:           tag.style.border = '1px solid #C7D2FE';
+3684:           tag.style.display = 'flex';
+3685:           tag.style.flexDirection = 'column';
+3686:           tag.style.alignItems = 'flex-start';
+3687:           tag.style.padding = '8px 12px';
+3688:           tag.style.position = 'relative';
+3689:           tag.style.minWidth = '120px';
+3690: 
+3691:           let detailsHtml = '';
+3692:           const extraTag = groupMode === 'category' ? item.storage : (item.category ? item.category : '');
+3693: 
+3694:           if (item.amount || item.expiry || extraTag) {
+3695:             detailsHtml = `<div style="font-size: 0.75rem; color: #6366F1; margin-top: 4px; font-weight: 500;">
+3696:               ${extraTag ? `<span>${escapeHtml(extraTag)}</span> &nbsp; ` : ''}
+3697:               ${item.amount ? `⚖️ ${escapeHtml(item.amount)}` : ''}
+3698:               ${item.amount && item.expiry ? ' &nbsp; ' : ''}
+3699:               ${item.expiry ? `📅 ${escapeHtml(item.expiry)}` : ''}
+3700:             </div>`;
+3701:           }
+3702: 
+3703:           tag.innerHTML = `
+3704:             <div style="font-weight: 600; font-size: 0.95rem; padding-right: 48px;">${escapeHtml(item.name)}</div>
+3705:             ${detailsHtml}
+3706:             <button class="btn-edit-ing" style="position: absolute; top: 6px; right: 30px; background:none;border:none;color:inherit;cursor:pointer;font-size:1.0rem;line-height:1; opacity: 0.6;">✏️</button>
+3707:             <button class="btn-remove-ing" style="position: absolute; top: 6px; right: 8px; background:none;border:none;color:inherit;cursor:pointer;font-size:1.2rem;line-height:1; opacity: 0.6;">&times;</button>
+3708:           `;
+3709: 
+3710:           tag.querySelector('.btn-edit-ing').addEventListener('click', () => {
+3711:             document.getElementById('fridge-ingredient-input').value = item.name || '';
+3712:             document.getElementById('fridge-amount-input').value = item.amount || '';
+3713:             document.getElementById('fridge-expiry-input').value = item.expiry || '';
+3714:             document.getElementById('fridge-storage-input').value = item.storage || '';
+3715:             document.getElementById('fridge-category-input').value = item.category || '';
+3716: 
+3717:             editingFridgeItemId = item.id;
+3718:             const btn = document.getElementById('btn-add-fridge-item');
+3719:             btn.innerText = '更新する';
+3720:             btn.style.background = '#10B981';
+3721: 
+3722:             document.getElementById('fridge-ingredient-input').focus();
+3723:             window.scrollTo({ top: document.getElementById('page-fridge').offsetTop, behavior: 'smooth' });
+3724:           });
+3725:           tag.querySelector('.btn-edit-ing').addEventListener('mouseenter', (e) => e.target.style.opacity = '1');
+3726:           tag.querySelector('.btn-edit-ing').addEventListener('mouseleave', (e) => e.target.style.opacity = '0.6');
+3727: 
+3728:           tag.querySelector('.btn-remove-ing').addEventListener('click', () => {
+3729:             if (confirm(`「${item.name}」を削除しますか？`)) {
+3730:               if (editingFridgeItemId === item.id) {
+3731:                 editingFridgeItemId = null;
+3732:                 const btn = document.getElementById('btn-add-fridge-item');
+3733:                 btn.innerText = '追加';
+3734:                 btn.style.background = 'var(--primary)';
+3735:               }
+3736:               removeFridgeItem(item.id);
+3737:             }
+3738:           });
+3739:           tag.querySelector('.btn-remove-ing').addEventListener('mouseenter', (e) => e.target.style.opacity = '1');
+3740:           tag.querySelector('.btn-remove-ing').addEventListener('mouseleave', (e) => e.target.style.opacity = '0.6');
+3741:           listWrap.appendChild(tag);
+3742:         });
+3743: 
+3744:         details.appendChild(listWrap);
+3745:         container.appendChild(details);
+3746:       });
+3747: 
+3748:       suggestLocalRecipes();
+3749:     };
+3750: 
+3751:     function createMiniRecipeCardDOM(item, badgesHtml = '', onClick) {
+3752:       const card = document.createElement('div');
+3753:       card.className = 'recipe-card';
+3754:       card.addEventListener('click', () => onClick(item));
+3755: 
+3756:       const photos = getRecipePhotos(item);
+3757:       const coverPhoto = photos[0] || "";
+3758:       const imageHtml = coverPhoto
+3759:         ? `<img src="${coverPhoto}" alt="${item.title}" class="card-img">`
+3760:         : `<div class="card-placeholder" style="font-size: 2.5rem;">${item.isAiGenerated ? '✨' : '🍳'}</div>`;
+3761: 
+3762:       const categoryTag = item.category ? `<div class="card-category-tag">${item.category}</div>` : '';
+3763: 
+3764:       let ingredientsPreview = '';
+3765:       if (Array.isArray(item.ingredients) && item.ingredients.length > 0) {
+3766:         ingredientsPreview = `🛒 ${item.ingredients.slice(0, 3).join('・')}${item.ingredients.length > 3 ? '...' : ''}`;
+3767:       }
+3768: 
+3769:       card.innerHTML = `
+3770:         <div class="card-img-wrapper">
+3771:           ${imageHtml}
+3772:           ${categoryTag}
+3773:           <div style="position:absolute; top:8px; left:8px; display:flex; flex-direction:column; gap:4px; z-index:10; max-width: 90%;">
+3774:             ${badgesHtml}
+3775:           </div>
+3776:         </div>
+3777:         <div class="card-content">
+3778:           <h3 class="card-title">${escapeHtml(item.title)}</h3>
+3779:           <div class="card-meta">
+3780:             ${ingredientsPreview}
+3781:           </div>
+3782:         </div>
+3783:       `;
+3784:       return card;
+3785:     }
+3786: 
+3787:     // === PAGE 3: Refrigerator / Suggest ===
+3788:     let currentSuggestPage = 1;
+3789:     const ITEMS_PER_SUGGEST_PAGE = 8;
+3790:     let currentScoredRecipes = [];
+3791:     let aiGeneratedTitles = [];
+3792: 
+3793: 
+3794:     function suggestLocalRecipes() {
+3795:       const grid = document.getElementById('suggest-local-grid');
+3796:       grid.innerHTML = '';
+3797:       if (refrigeratorIngredients.length === 0) {
+3798:         grid.innerHTML = '<p style="color:#999; font-size:0.9rem; text-align:center; width:100%; margin: 10px 0;">食材を追加すると、作れるレシピが表示されます。</p>';
+3799:         return;
+3800:       }
+3801: 
+3802:       const normFCache = refrigeratorIngredients.map(f => toHiragana(normalizeJapaneseText(f)));
+3803: 
+3804:       const suggestTagSelect = document.getElementById('suggest-tag-select');
+3805:       const selectedTag = suggestTagSelect ? suggestTagSelect.value : '';
+3806: 
+3807:       const scored = recipesCache.filter(r => {
+3808:         if (r.recordType === 'food_record') return false;
+3809:         if (selectedTag && (!r.tags || !r.tags.includes(selectedTag))) return false;
+3810:         return true;
+3811:       }).map(r => {
+3812:         let mainMatchCount = 0;
+3813:         let totalMainCount = 0;
+3814:         let missingAllList = [];
+3815:         let seasoningCount = 0;
+3816: 
+3817:         if (r.ingredients) {
+3818:           r.ingredients.forEach(ing => {
+3819:             if (isTriviallyAvailable(ing)) return; // skip water etc.
+3820:             const isSeasoning = isSeasoningIngredient(ing);
+3821:             if (!isSeasoning) totalMainCount++;
+3822: 
+3823:             const isMatch = isIngredientInStock(ing, refrigeratorIngredients, normFCache);
+3824: 
+3825:             if (isMatch) {
+3826:               if (!isSeasoning) mainMatchCount++;
+3827:             } else {
+3828:               missingAllList.push(ing);
+3829:               if (isSeasoning) seasoningCount++;
+3830:             }
+3831:           });
+3832:         }
+3833:         return { item: r, matchCount: mainMatchCount, totalMainCount: totalMainCount, missing: missingAllList, seasoningCount: seasoningCount };
+3834:       }).filter(res => {
+3835:         if (res.totalMainCount > 0 && res.matchCount === 0) return false;
+3836:         const missingMainCount = res.missing.length - res.seasoningCount;
+3837:         // 提案条件: メイン食材の不足が1つ以下ならOK、またはマッチ数がメイン不足数以上
+3838:         return missingMainCount <= 0 || missingMainCount <= 1 || res.matchCount >= missingMainCount;
+3839:       });
+3840: 
+3841:       scored.sort((a, b) => {
+3842:         const aMissing = a.missing.length - a.seasoningCount;
+3843:         const bMissing = b.missing.length - b.seasoningCount;
+3844:         if (aMissing !== bMissing) return aMissing - bMissing; // 少ない順（全部足りているものが上に来る）
+3845:         if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount; // 次にマッチ数が多い順
+3846:         return a.missing.length - b.missing.length;
+3847:       });
+3848: 
+3849:       currentScoredRecipes = scored;
+3850:       renderSuggestPage(1);
+3851:     }
+3852: 
+3853:     function renderSuggestPage(page) {
+3854:       currentSuggestPage = page;
+3855:       const grid = document.getElementById('suggest-local-grid');
+3856:       grid.innerHTML = '';
+3857: 
+3858:       if (currentScoredRecipes.length === 0) {
+3859:         grid.innerHTML = '<p style="color:#999; font-size:0.9rem; text-align:center; width:100%; margin: 10px 0;">作れる登録済みレシピは見つかりませんでした。</p>';
+3860:         return;
+3861:       }
+3862: 
+3863:       const totalPages = Math.ceil(currentScoredRecipes.length / ITEMS_PER_SUGGEST_PAGE);
+3864:       const startIdx = (page - 1) * ITEMS_PER_SUGGEST_PAGE;
+3865:       const pageData = currentScoredRecipes.slice(startIdx, startIdx + ITEMS_PER_SUGGEST_PAGE);
+3866: 
+3867:       pageData.forEach(res => {
+3868:         let badges = `<div style="background:var(--primary); color:white; font-size:0.75rem; font-weight:bold; padding:4px 8px; border-radius:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); width: fit-content;">✅ 食材一致: ${res.matchCount}</div>`;
+3869:         if (res.missing.length > 0) {
+3870:           let missingStr = res.missing.slice(0, 3).join('・');
+3871:           if (res.missing.length > 3) missingStr += ` (他${res.missing.length - 3}件)`;
+3872:           badges += `<div style="background:#F59E0B; color:white; font-size:0.7rem; font-weight:bold; padding:4px 8px; border-radius:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); width: fit-content; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">💡不足: ${escapeHtml(missingStr)}</div>`;
+3873:         }
+3874:         const card = createMiniRecipeCardDOM(res.item, badges, (item) => openRecipeDetail(item));
+3875:         grid.appendChild(card);
+3876:       });
+3877: 
+3878:       if (totalPages > 1) {
+3879:         const paginationContainer = document.createElement('div');
+3880:         paginationContainer.style.width = '100%';
+3881:         paginationContainer.style.display = 'flex';
+3882:         paginationContainer.style.justifyContent = 'center';
+3883:         paginationContainer.style.gap = '8px';
+3884:         paginationContainer.style.marginTop = '16px';
+3885:         paginationContainer.style.gridColumn = '1 / -1';
+3886:         paginationContainer.style.flexWrap = 'wrap';
+3887: 
+3888:         for (let i = 1; i <= totalPages; i++) {
+3889:           const btn = document.createElement('button');
+3890:           btn.textContent = i;
+3891:           btn.className = 'btn';
+3892:           btn.style.padding = '4px 12px';
+3893:           btn.style.minWidth = 'auto';
+3894:           btn.style.marginBottom = '8px';
+3895:           if (i === page) {
+3896:             btn.style.background = 'var(--primary-dark)';
+3897:             btn.style.cursor = 'default';
+3898:           } else {
+3899:             btn.style.background = 'var(--bg-card)';
+3900:             btn.style.color = 'var(--text-main)';
+3901:             btn.style.border = '1px solid var(--border-color)';
+3902:             btn.onclick = () => renderSuggestPage(i);
+3903:           }
+3904:           paginationContainer.appendChild(btn);
+3905:         }
+3906:         grid.appendChild(paginationContainer);
+3907:       }
+3908:     }
+3909: 
+3910:     // --- AI Generation Logic ---
+3911:     document.getElementById('btn-generate-ai').addEventListener('click', () => doGenerateAI(false));
+3912:     document.getElementById('btn-generate-ai-another').addEventListener('click', () => doGenerateAI(true));
+3913: 
+3914:     async function doGenerateAI(isAnother = false) {
+3915:       if (!geminiApiKey) {
+3916:         alert('AIを利用するには、データ同期設定（⚙️）から Gemini API キー を設定してください。');
+3917:         openSettingsModal();
+3918:         return;
+3919:       }
+3920:       if (refrigeratorIngredients.length === 0) {
+3921:         alert('ストックに食材を追加してから提案を実行してください。');
+3922:         return;
+3923:       }
+3924: 
+3925:       if (!isAnother) aiGeneratedTitles = [];
+3926: 
+3927:       const genreEl = document.querySelector('input[name="aiGenre"]:checked');
+3928:       const moodEl = document.querySelector('input[name="aiMood"]:checked');
+3929:       const styleEl = document.querySelector('input[name="aiStyle"]:checked');
+3930:       const countEl = document.querySelector('input[name="aiCount"]:checked');
+3931: 
+3932:       const genre = genreEl ? genreEl.value : "おまかせ";
+3933:       const mood = moodEl ? moodEl.value : "指定なし";
+3934:       const style = styleEl ? styleEl.value : "指定なし";
+3935:       const count = countEl ? countEl.value : "10";
+3936: 
+3937:       let conditions = [];
+3938:       if (genre !== 'おまかせ') conditions.push(`ジャンル: ${genre}`);
+3939:       if (mood !== '指定なし') conditions.push(`気分・テーマ: ${mood}`);
+3940:       if (style !== '指定なし') conditions.push(`調理スタイル: ${style}`);
+3941: 
+3942:       const conditionStr = conditions.length > 0 ? conditions.join('、') : "おすすめ";
+3943:       const ingredients = refrigeratorIngredients.join('、');
+3944: 
+3945:       const excludeStr = aiGeneratedTitles.length > 0 ? `なお、以下の料理はすでに提案済みのため絶対に避けて、別の新しい料理を提案してください: ${aiGeneratedTitles.join('、')}\n` : '';
+3946: 
+3947:       document.getElementById('btn-generate-ai').disabled = true;
+3948:       document.getElementById('btn-generate-ai-another').disabled = true;
+3949:       document.getElementById('ai-loading-spinner').style.display = 'block';
+3950:       if (!isAnother) document.getElementById('suggest-ai-grid').innerHTML = '';
+3951:       document.getElementById('suggest-ai-controls').style.display = 'none';
+3952: 
+3953:       try {
+3954:         const genAI = new GoogleGenerativeAI(geminiApiKey);
+3955:         const prompt = `あなたはプロの料理研究家です。手元にある以下の食材（${ingredients}）をなるべく活用し、【${conditionStr}】という条件に沿った美味しい料理のレシピを${count}個の異なるバリエーションで提案してください。不足している一般的な調味料や多少の追加食材は使って構いません。
+3956: ${excludeStr}出力は以下のJSON形式の配列のみを返してください。必ず有効なJSONにしてください。
+3957: [
+3958:   {
+3959:     "title": "料理名",
+3960:     "category": "主菜",
+3961:     "servings": 2,
+3962:     "ingredients": ["材料1", "材料2"], // ※使用するすべての材料・調味料（不足分も含む）を記載してください
+3963:     "missing_ingredients": ["買い足す必要がある材料1", "材料2"], // ※上記のうち、手元にない不足分の材料のみ記載してください
+3964:     "steps": ["手順1", "手順2"]
+3965:   }
+3966: ]`;
+3967: 
+3968:         // ユーザーのAPIキーで利用可能なモデルを動的に取得
+3969:         let targetModels = ["gemini-1.5-flash"];
+3970:         try {
+3971:           const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiApiKey}`);
+3972:           const data = await res.json();
+3973:           if (data.error) {
+3974:             throw new Error(`APIキーのエラー: ${data.error.message} (コード: ${data.error.code})`);
+3975:           }
+3976:           if (data.models && data.models.length > 0) {
+3977:             const validModels = data.models
+3978:               .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
+3979:               .map(m => m.name.replace("models/", ""));
+3980:             const selectedModelPref = document.querySelector('input[name="aiModelSelect"]:checked')?.value || 'auto';
+3981: 
+3982:             validModels.sort((a, b) => {
+3983:               if (selectedModelPref === 'flash') {
+3984:                 if (a.includes("flash") && !b.includes("flash")) return -1;
+3985:                 if (!a.includes("flash") && b.includes("flash")) return 1;
+3986:               } else if (selectedModelPref === 'pro') {
+3987:                 if (a.includes("pro") && !b.includes("pro")) return -1;
+3988:                 if (!a.includes("pro") && b.includes("pro")) return 1;
+3989:               } else {
+3990:                 // Auto: prioritize flash then pro
+3991:                 if (a.includes("flash") && !b.includes("flash")) return -1;
+3992:                 if (!a.includes("flash") && b.includes("flash")) return 1;
+3993:                 if (a.includes("pro") && !b.includes("pro")) return -1;
+3994:                 if (!a.includes("pro") && b.includes("pro")) return 1;
+3995:               }
+3996:               return 0;
+3997:             });
+3998:             if (validModels.length > 0) targetModels = validModels;
+3999:           }
+4000:         } catch (listErr) {
+4001:           if (listErr.message.startsWith("APIキーのエラー")) throw listErr;
+4002:           console.warn("モデル一覧の取得に失敗したためデフォルトモデルを使用します:", listErr);
+4003:         }
+4004: 
+4005:         let result = null;
+4006:         let lastError = null;
+4007:         let usedModel = "";
+4008:         const startTime = performance.now();
+4009: 
+4010:         for (const modelName of targetModels) {
+4011:           try {
+4012:             const model = genAI.getGenerativeModel({ model: modelName });
+4013:             result = await model.generateContent(prompt);
+4014:             if (result) {
+4015:               usedModel = modelName;
+4016:               break;
+4017:             }
+4018:           } catch (e) {
+4019:             console.warn(`モデル ${modelName} の呼び出しに失敗しました。次のモデルを試します...`, e);
+4020:             lastError = e;
+4021:           }
+4022:         }
+4023: 
+4024:         if (!result) throw lastError || new Error("利用可能なGeminiモデルが見つかりませんでした。");
+4025: 
+4026:         const endTime = performance.now();
+4027:         const durationSec = ((endTime - startTime) / 1000).toFixed(1);
+4028: 
+4029:         let text = result.response.text();
+4030:         text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+4031:         const recipes = JSON.parse(text);
+4032: 
+4033:         const grid = document.getElementById('suggest-ai-grid');
+4034: 
+4035:         const infoDiv = document.createElement('div');
+4036:         infoDiv.style.cssText = "width: 100%; text-align: right; font-size: 0.8rem; color: #888; margin-bottom: 12px; margin-top: -8px;";
+4037:         infoDiv.textContent = `⚡ 使用モデル: ${usedModel} / 処理時間: ${durationSec}秒`;
+4038:         grid.appendChild(infoDiv);
+4039: 
+4040:         if (isAnother) {
+4041:           const divider = document.createElement('div');
+4042:           divider.style.gridColumn = '1 / -1';
+4043:           divider.style.borderTop = '2px dashed var(--border-color)';
+4044:           divider.style.margin = '16px 0';
+4045:           divider.style.paddingTop = '16px';
+4046:           divider.style.textAlign = 'center';
+4047:           divider.style.color = '#999';
+4048:           divider.style.fontSize = '0.85rem';
+4049:           divider.textContent = '🔻 別の新しく提案されたレシピ 🔻';
+4050:           grid.appendChild(divider);
+4051:         }
+4052: 
+4053:         recipes.forEach(r => {
+4054:           if (r.title) aiGeneratedTitles.push(r.title);
+4055:           r.isAiGenerated = true;
+4056:           let badges = `<div style="background:var(--primary); color:white; font-size:0.75rem; font-weight:bold; padding:4px 8px; border-radius:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); width: fit-content;">✨ AI提案</div>`;
+4057:           if (r.missing_ingredients && r.missing_ingredients.length > 0) {
+4058:             const missingStr = r.missing_ingredients.join('・');
+4059:             badges += `<div style="background:#F59E0B; color:white; font-size:0.7rem; font-weight:bold; padding:4px 8px; border-radius:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); width: fit-content; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">💡不足: ${escapeHtml(missingStr)}</div>`;
+4060:           }
+4061:           const card = createMiniRecipeCardDOM(r, badges, (item) => openRecipeDetail(item));
+4062:           grid.appendChild(card);
+4063:         });
+4064: 
+4065:         document.getElementById('suggest-ai-controls').style.display = 'block';
+4066:       } catch (err) {
+4067:         console.error(err);
+4068:         alert('AIレシピの生成に失敗しました: ' + err.message);
+4069:       } finally {
+4070:         document.getElementById('btn-generate-ai').disabled = false;
+4071:         document.getElementById('btn-generate-ai-another').disabled = false;
+4072:         document.getElementById('ai-loading-spinner').style.display = 'none';
+4073:       }
+4074:     }
+4075: 
+4076:     // --- AI Save Logic ---
+4077:     document.getElementById('btn-save-ai-recipe').addEventListener('click', async () => {
+4078:       if (!currentDetailRecipe || !db) return;
+4079:       document.getElementById('btn-save-ai-recipe').disabled = true;
+4080:       document.getElementById('btn-save-ai-recipe').innerHTML = '保存中...';
+4081: 
+4082:       try {
+4083:         const newRecipe = {
+4084:           title: currentDetailRecipe.title || '',
+4085:           category: currentDetailRecipe.category || 'その他',
+4086:           servings: currentDetailRecipe.servings || 2,
+4087:           ingredients: currentDetailRecipe.ingredients || [],
+4088:           steps: currentDetailRecipe.steps || [],
+4089:           memo: 'AIによって提案されたレシピです。',
+4090:           recordType: 'recipe',
+4091:           createdAt: serverTimestamp(),
+4092:           updatedAt: serverTimestamp(),
+4093:           cookedCount: 0
+4094:         };
+4095:         await addDoc(collection(db, "recipes"), newRecipe);
+4096:         alert('マイレシピに保存しました！');
+4097:         modalDetail.classList.remove('active');
+4098:         fetchRecipes();
+4099:       } catch (err) {
+4100:         console.error(err);
+4101:         alert('保存に失敗しました: ' + err.message);
+4102:       } finally {
+4103:         document.getElementById('btn-save-ai-recipe').disabled = false;
+4104:         document.getElementById('btn-save-ai-recipe').innerHTML = '<span>💾</span> このレシピをマイレシピに登録する';
+4105:       }
+4106:     });
+4107: 
+4108:   </script>
+4109: </body>
+4110: 
+4111: </html>

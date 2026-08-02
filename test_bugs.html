@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body>
+<script>
+// Mock data and functions from index.html
+const COMMON_SYNONYMS = {
+      "生米": "米",
+      "白米": "米",
+      "ご飯": "米",
+      "ごはん": "米",
+      "ライス": "米",
+      "精白米": "米",
+      "無洗米": "米",
+      "豚肉": "豚",
+      "豚バラ": "豚",
+      "豚ロース": "豚",
+      "豚こま": "豚",
+      "豚ひき肉": "豚",
+      "牛肉": "牛",
+      "牛バラ": "牛",
+      "牛ロース": "牛",
+      "牛こま": "牛",
+      "牛ひき肉": "牛",
+      "鶏肉": "鶏",
+      "鶏もも": "鶏",
+      "鶏むね": "鶏",
+      "鶏ささみ": "鶏",
+      "鶏ひき肉": "鶏",
+      "合びき肉": "ミンチ",
+      "合いびき肉": "ミンチ",
+      "ひき肉": "ミンチ",
+      "挽き肉": "ミンチ",
+      "玉子": "卵",
+      "たまご": "卵",
+      "長ねぎ": "ねぎ",
+      "白ねぎ": "ねぎ",
+      "青ねぎ": "ねぎ",
+      "ネギ": "ねぎ",
+      "玉ねぎ": "たまねぎ",
+      "タマネギ": "たまねぎ",
+      "人参": "にんじん",
+      "大根": "だいこん",
+      "ニンニク": "にんにく",
+      "オクラ": "おくら",
+      "長芋": "ながいも",
+      "コショウ": "こしょう",
+      "胡椒": "こしょう",
+      "ジャガイモ": "じゃがいも",
+      "キャベツ": "きゃべつ",
+      "トマト": "とまと",
+      "ピーマン": "ぴーまん",
+      "レモン": "れもん",
+      "ナス": "なす",
+      "出汁": "だし",
+      "出し": "だし",
+      "ダシ": "だし",
+      "顆粒": "かりゅう"
+    };
+
+    function normalizeJapaneseText(str) {
+      if (!str) return '';
+      let s = String(str).normalize('NFKC').toLowerCase();
+      // Remove spaces, slashes, brackets, separators, Japanese punctuation, wave dashes, etc.
+      s = s.replace(/[\s\u3000・,\-_\/\\\(\)\u3001\u3002\u300C\u300D\u3010\u3011「」【】〜~！？!\?\+\*＊&＆×ｘ]/g, '');
+      
+      for (const [key, val] of Object.entries(COMMON_SYNONYMS)) {
+        if (s.includes(key)) {
+          s = s.replace(new RegExp(key, 'g'), val);
+        }
+      }
+      
+      return s;
+    }
+
+    function toHiragana(str) {
+      if (!str) return '';
+      return String(str).replace(/[\u30a1-\u30f6\u30f4]/g, match => String.fromCharCode(match.charCodeAt(0) - 0x60));
+    }
+
+    function isIngredientInStock(recipeIng, fridgeList, normFridgeListCache) {
+      const normIng = toHiragana(normalizeJapaneseText(recipeIng));
+      if (!normIng) return false;
+      
+      // Broaden match by removing common suffixes from recipe ingredient (e.g. "豆スープ" -> "豆")
+      const broadenedIng = normIng.replace(/(すーぷ|のもと|の素|かん|缶|ぺーすと|ペースト)$/, '');
+      
+      const splitRe = /[&＆・、,\/\+×ｘ]/;
+      
+      for (let i = 0; i < fridgeList.length; i++) {
+        const f = fridgeList[i];
+        const normF = normFridgeListCache ? normFridgeListCache[i] : toHiragana(normalizeJapaneseText(f));
+        
+        // 1. Normalized hiragana substring match (bidirectional)
+        if (normF.length > 0) {
+          if (normIng.includes(normF) || normF.includes(normIng) || broadenedIng.includes(normF) || normF.includes(broadenedIng)) return true;
+        }
+        
+        // 2. Raw text substring match (bidirectional)
+        if (recipeIng.includes(f) || f.includes(recipeIng)) return true;
+        
+        // 3. Split compound fridge items on separators and check each part
+        if (splitRe.test(f)) {
+          const parts = f.split(splitRe).map(p => p.trim()).filter(p => p.length > 0);
+          for (const part of parts) {
+            const normPart = toHiragana(normalizeJapaneseText(part));
+            if (normPart.length > 0 && (normIng.includes(normPart) || normPart.includes(normIng) || broadenedIng.includes(normPart) || normPart.includes(broadenedIng))) return true;
+            if (recipeIng.includes(part) || part.includes(recipeIng)) return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    // Ingredients that are trivially available (water etc.) - never shown as "missing"
+    const ALWAYS_AVAILABLE = ["水", "お湯", "熱湯", "氷", "氷水", "ぬるま湯", "冷水"];
+    function isTriviallyAvailable(ing) {
+      const normIng = toHiragana(normalizeJapaneseText(ing));
+      const cleanIng = normIng.replace(/[0-9０-９\s\u3000(（)）]/g, '')
+                              .replace(/(ml|cc|g|kg|l|カップ|大さじ|小さじ|少々|適量|ひとつまみ|杯|分|くらい|おこのみ|お好み|約|cc|ml)/g, '');
+      console.log(`isTriviallyAvailable check for "${ing}" -> normIng: "${normIng}", cleanIng: "${cleanIng}"`);
+      return ALWAYS_AVAILABLE.some(a => {
+        const normA = toHiragana(normalizeJapaneseText(a));
+        return cleanIng === normA || cleanIng === normA + 'くらい';
+      });
+    }
+
+    function isSeasoningIngredient(ing) {
+      if (isTriviallyAvailable(ing)) return true;
+      const seasoningKeywords = ["塩","砂糖","醤油","しょうゆ","酒","みりん","油","酢","こしょう","コショウ","胡椒","味噌","みそ","だしの素","だし","コンソメ","ケチャップ","マヨネーズ","ソース","バター","マーガリン","片栗粉","小麦粉","薄力粉","パン粉","めんつゆ","ポン酢","料理酒","オリーブオイル","ごま油","サラダ油","鶏がらスープ","中華スープ","ウスターソース","オイスターソース","ナンプラー","豆板醤","甜麺醤","カレー粉","カレールー","七味","一味","わさび","からし","マスタード","はちみつ","ハチミツ","蜂蜜","練乳","生クリーム","牛乳","チーズ","粉チーズ"];
+      const normIng = toHiragana(normalizeJapaneseText(ing));
+      return seasoningKeywords.some(kw => {
+        const normKw = toHiragana(normalizeJapaneseText(kw));
+        return normIng.includes(normKw) || normKw.includes(normIng);
+      });
+    }
+
+// Test cases
+console.log("=== Test 1: 水とか熱湯が不足になっちゃってる ===");
+console.log("水 200ml:", isTriviallyAvailable("水 200ml"));
+console.log("水(1カップ):", isTriviallyAvailable("水(1カップ)"));
+console.log("熱湯:", isTriviallyAvailable("熱湯"));
+console.log("水:", isTriviallyAvailable("水"));
+
+console.log("\n=== Test 2: 豆スープ vs グリンピース ===");
+console.log("グリンピース in stock, recipe wants 豆スープ:", isIngredientInStock("豆スープ", ["グリンピース", "コンソメ"], ["ぐりんぴーす", "こんそめ"]));
+
+console.log("\n=== Test 4: 全部足りてても出てこない事象 ===");
+const refrigeratorIngredients = ["豚肉", "玉ねぎ"];
+const normFCache = refrigeratorIngredients.map(f => toHiragana(normalizeJapaneseText(f)));
+const r = { recordType: 'recipe', ingredients: ["豚肉", "玉ねぎ"] };
+
+let mainMatchCount = 0;
+let totalMainCount = 0;
+let missingAllList = [];
+let seasoningCount = 0;
+
+if (r.ingredients) {
+  r.ingredients.forEach(ing => {
+    if (isTriviallyAvailable(ing)) return; // skip water etc.
+    const isSeasoning = isSeasoningIngredient(ing);
+    if (!isSeasoning) totalMainCount++;
+    
+    const isMatch = isIngredientInStock(ing, refrigeratorIngredients, normFCache);
+    
+    if (isMatch) {
+      if (!isSeasoning) mainMatchCount++;
+    } else {
+      missingAllList.push(ing);
+      if (isSeasoning) seasoningCount++;
+    }
+  });
+}
+const res = { item: r, matchCount: mainMatchCount, totalMainCount: totalMainCount, missing: missingAllList, seasoningCount: seasoningCount };
+
+let filtered = false;
+if (res.totalMainCount > 0 && res.matchCount === 0) filtered = true;
+const missingMainCount = res.missing.length - res.seasoningCount;
+const isSuggested = !filtered && (missingMainCount <= 0 || missingMainCount <= 1 || res.matchCount >= missingMainCount);
+console.log("res:", res);
+console.log("Filtered by matchCount===0?", filtered);
+console.log("isSuggested?", isSuggested);
+
+</script>
+</body>
+</html>
