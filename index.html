@@ -1454,14 +1454,16 @@
 
         <!-- サブパネル 1: マイレシピから提案 -->
         <div id="subpanel-suggest-local">
-          <div
-            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px solid var(--primary-light); padding-bottom: 4px;">
-            <h3 style="font-size: 1.05rem; color: #555; margin: 0;">📖 自分のレシピから作れるもの</h3>
-            <select id="suggest-tag-select" class="form-input"
-              style="width: auto; padding: 4px 8px; font-size: 0.8rem; border-color: var(--primary-light);"
-              onchange="suggestLocalRecipes()">
-              <option value="">すべてのタグ</option>
-            </select>
+          <div style="margin-bottom: 14px; border-bottom: 2px solid var(--primary-light); padding-bottom: 8px;">
+            <h3 style="font-size: 1.05rem; color: #555; margin: 0 0 8px 0;">📖 自分のレシピから作れるもの</h3>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+              <span style="font-size: 0.8rem; color: #777; font-weight: bold;">🏷️ タグ・カテゴリ絞り込み:</span>
+              <select id="suggest-tag-select" class="form-input"
+                style="width: auto; min-width: 140px; padding: 5px 10px; font-size: 0.82rem; border-color: var(--primary-light); border-radius: 8px;"
+                onchange="suggestLocalRecipes()">
+                <option value="">すべてのタグ</option>
+              </select>
+            </div>
           </div>
           <div id="suggest-local-grid" class="recipe-grid" style="margin-bottom: 24px;"></div>
         </div>
@@ -1477,13 +1479,12 @@
 
           <!-- 📌 使いたい食材・キーワード指定 -->
           <div style="margin-bottom: 16px; background: white; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
-            <div style="font-size: 0.82rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
-              <span>📌 使いたい食材・キーワード (任意)</span>
-              <span style="font-size: 0.7rem; font-weight: normal; color: #888;">タップでオン/オフ選択できます</span>
+            <div style="font-size: 0.82rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">
+              📌 使いたい食材・キーワード <span style="font-size: 0.72rem; font-weight: normal; color: #888;">(任意)</span>
             </div>
             <input type="text" id="ai-required-ingredients" class="form-input" placeholder="指定したい食材やテーマを入力..." style="width: 100%; font-size: 0.9rem; padding: 8px 12px;" oninput="renderAiStockChips()">
-            <div style="margin-top: 8px;">
-              <div style="font-size: 0.72rem; color: #888; margin-bottom: 4px;">ストック食材からワンタップ選択:</div>
+            <div style="margin-top: 10px;">
+              <div style="font-size: 0.72rem; color: #888; margin-bottom: 4px;">ストック食材からワンタップ選択 <span style="color: #aaa;">(タップでON/OFF)</span>:</div>
               <div id="ai-stock-chips-container" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
             </div>
           </div>
