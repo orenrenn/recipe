@@ -1422,7 +1422,7 @@
           </select>
         </div>
 
-        <details id="fridge-master-accordion" open style="margin-bottom: 16px;">
+        <details id="fridge-master-accordion" style="margin-bottom: 16px;">
           <summary
             style="font-weight: bold; color: var(--primary-dark); padding: 12px; background: #F8FAFC; border-radius: 8px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; border: 1px solid #E2E8F0;">
             <span>📋 すべての食材一覧を開く/閉じる</span>
@@ -1442,91 +1442,138 @@
         </details>
       </div>
 
-      <!-- サジェストセクション -->
-      <div id="suggest-section" style="margin-top: 16px;">
-        <div
-          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px solid var(--primary-light); padding-bottom: 4px;">
-          <h3 style="font-size: 1.05rem; color: #555; margin: 0;">📖 自分のレシピから作れるもの</h3>
-          <select id="suggest-tag-select" class="form-input"
-            style="width: auto; padding: 4px 8px; font-size: 0.8rem; border-color: var(--primary-light);"
-            onchange="suggestLocalRecipes()">
-            <option value="">すべてのタグ</option>
-          </select>
+      <!-- サジェストセクション (タブ切り替え化) -->
+      <div id="suggest-section" style="margin-top: 24px; border-top: 2px dashed var(--border); padding-top: 16px;">
+        <!-- サブタブヘッダー -->
+        <div style="display: flex; gap: 8px; margin-bottom: 16px; background: var(--border); padding: 4px; border-radius: 14px;">
+          <button id="subtab-suggest-local" onclick="switchSuggestSubTab('local')"
+            style="flex: 1; padding: 10px 12px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; border: none; background: var(--primary); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">📖 マイレシピから提案</button>
+          <button id="subtab-suggest-ai" onclick="switchSuggestSubTab('ai')"
+            style="flex: 1; padding: 10px 12px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; border: none; background: transparent; color: var(--text-muted);">✨ AI提案レシピ</button>
         </div>
-        <div id="suggest-local-grid" class="recipe-grid" style="margin-bottom: 24px;"></div>
 
-        <h3
-          style="font-size: 1.05rem; color: #555; margin-bottom: 12px; border-bottom: 2px solid var(--primary-light); padding-bottom: 4px;">
-          ✨ AIに新しいレシピを提案してもらう</h3>
+        <!-- サブパネル 1: マイレシピから提案 -->
+        <div id="subpanel-suggest-local">
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px solid var(--primary-light); padding-bottom: 4px;">
+            <h3 style="font-size: 1.05rem; color: #555; margin: 0;">📖 自分のレシピから作れるもの</h3>
+            <select id="suggest-tag-select" class="form-input"
+              style="width: auto; padding: 4px 8px; font-size: 0.8rem; border-color: var(--primary-light);"
+              onchange="suggestLocalRecipes()">
+              <option value="">すべてのタグ</option>
+            </select>
+          </div>
+          <div id="suggest-local-grid" class="recipe-grid" style="margin-bottom: 24px;"></div>
+        </div>
+
+        <!-- サブパネル 2: AI提案レシピ -->
+        <div id="subpanel-suggest-ai" style="display: none;">
+          <h3
+            style="font-size: 1.05rem; color: #555; margin-bottom: 12px; border-bottom: 2px solid var(--primary-light); padding-bottom: 4px;">
+            ✨ AIに新しいレシピを提案してもらう</h3>
         <div class="form-card" style="background: linear-gradient(135deg, #FFF0F2 0%, #FFFDF9 100%); text-align: left;">
           <p style="font-size: 0.85rem; color: #666; margin-bottom: 14px; text-align: center;">※
             ストックの食材と好みの条件に合わせて、AIがオリジナルレシピを考えます。</p>
 
-          <!-- Group 1: ジャンル -->
-          <div style="margin-bottom: 12px;">
-            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🍱 ジャンル
+          <!-- 📌 使いたい食材・キーワード指定 -->
+          <div style="margin-bottom: 16px; background: white; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+            <div style="font-size: 0.82rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+              <span>📌 使いたい食材・キーワード (任意)</span>
+              <span style="font-size: 0.7rem; font-weight: normal; color: #888;">例: パスタ、アボカド、豆腐 など</span>
             </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="おまかせ" checked> 🎲
-                おまかせ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="和食"> 🍱 和食</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="洋食"> 🍝 洋食</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="中華"> 🥟 中華</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="エスニック"> 🌮 エスニック</label>
+            <input type="text" id="ai-required-ingredients" class="form-input" placeholder="指定したい食材やテーマを入力..." style="width: 100%; font-size: 0.9rem; padding: 8px 12px;">
+            <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px;">
+              <span style="font-size: 0.72rem; color: #888; align-self: center; margin-right: 4px;">ワンタップ追加:</span>
+              <button type="button" class="pill" onclick="appendAiKeyword('パスタ')" style="font-size: 0.75rem; padding: 3px 8px; cursor: pointer; border: 1px solid #E2E8F0; background: #F8FAFC;">🍝 パスタ</button>
+              <button type="button" class="pill" onclick="appendAiKeyword('うどん')" style="font-size: 0.75rem; padding: 3px 8px; cursor: pointer; border: 1px solid #E2E8F0; background: #F8FAFC;">🍜 うどん</button>
+              <button type="button" class="pill" onclick="appendAiKeyword('食パン')" style="font-size: 0.75rem; padding: 3px 8px; cursor: pointer; border: 1px solid #E2E8F0; background: #F8FAFC;">🍞 食パン</button>
+              <button type="button" class="pill" onclick="appendAiKeyword('豆腐')" style="font-size: 0.75rem; padding: 3px 8px; cursor: pointer; border: 1px solid #E2E8F0; background: #F8FAFC;">⬜ 豆腐</button>
+              <button type="button" class="pill" onclick="appendAiKeyword('アボカド')" style="font-size: 0.75rem; padding: 3px 8px; cursor: pointer; border: 1px solid #E2E8F0; background: #F8FAFC;">🥑 アボカド</button>
+              <button type="button" class="pill" onclick="appendAiKeyword('トマト缶')" style="font-size: 0.75rem; padding: 3px 8px; cursor: pointer; border: 1px solid #E2E8F0; background: #F8FAFC;">🥫 トマト缶</button>
             </div>
           </div>
 
-          <!-- Group 2: 気分・テーマ (既存項目保持) -->
-          <div style="margin-bottom: 12px;">
-            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">✨ 気分・テーマ
+          <!-- Group 1: ジャンル -->
+          <div style="margin-bottom: 14px;">
+            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🍱 料理ジャンル</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
+              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="おまかせ" checked> 🎲 おまかせ</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="和食"> 🍱 和食</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="洋食"> 🍝 洋食</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="中華"> 🥟 中華</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="エスニック・アジアン"> 🌮 エスニック</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="イタリアン"> 🇮🇹 イタリアン</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="韓国料理"> 🇰🇷 韓国料理</label>
             </div>
+          </div>
+
+          <!-- Group 2: 気分・目的 -->
+          <div style="margin-bottom: 14px;">
+            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">✨ 気分・目的</div>
             <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
               <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="指定なし" checked> 🎲 指定なし</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="おつまみ"> 🥂 おつまみ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="時短・ズボラ"> ⏱️ 時短・ズボラ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="がっつり"> 🍖 がっつり</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="さっぱり・ヘルシー"> 🥗 さっぱり</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="辛いもの"> 🌶️ 辛いもの</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="子供が喜ぶ"> 👶 子供向け</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="時短・ズボラ (10分以内)"> ⏱️ 時短・ズボラ</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="おつまみ・家飲み"> 🥂 おつまみ</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="がっつりスタミナ"> 🍖 スタミナ</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="さっぱり・ヘルシー"> 🥗 ヘルシー</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="旨辛・スパイス"> 🌶️ 旨辛</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="子供が喜ぶ味付け"> 👶 子供向け</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="節約・コスパ"> 💰 節約・コスパ</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="お弁当のおかず"> 🍱 お弁当</label>
               <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="スイーツ・おやつ"> 🍰 スイーツ</label>
             </div>
           </div>
 
           <!-- Group 3: 調理スタイル -->
-          <div style="margin-bottom: 12px;">
-            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🍳 調理スタイル
-            </div>
+          <div style="margin-bottom: 14px;">
+            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🍳 調理スタイル・道具</div>
             <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
-              <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="指定なし" checked> 🎲
-                指定なし</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="フライパン1つ"> 🍳 ワンパン</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="指定なし" checked> 🎲 指定なし</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="フライパン1つ (ワンパン)"> 🍳 ワンパン</label>
               <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="電子レンジのみ"> ⚡ レンジのみ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="じっくり煮込み・本格"> 🍲 本格調理</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="包丁・火いらず"> 🫕 包丁・火いらず</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="火を使わない (和えるだけ)"> 🥗 火を使わない</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="じっくり煮込み・本格調理"> 🍲 本格煮込み</label>
             </div>
           </div>
 
-          <!-- Group 4: 提案数 -->
-          <div style="margin-bottom: 16px;">
-            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🔢 提案数
-            </div>
+          <!-- Group 4: 食材の買い足し方針 -->
+          <div style="margin-bottom: 14px;">
+            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🛒 食材の買い足し方針</div>
             <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
-              <label class="pill ai-theme-label"><input type="radio" name="aiCount" value="3"> 3個 (高速)</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiCount" value="5"> 5個</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiCount" value="10" checked> 10個 (詳細)</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="ストック優先 (不足食材最小限)" checked> 🟢 ストック重視</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="定番調味料・野菜の買い足しOK"> 🟡 定番品の買い足しOK</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="自由に追加食材OK"> 🔴 買い足し自由</label>
             </div>
           </div>
 
-          <!-- Group 5: AIモデル -->
-          <div style="margin-bottom: 16px;">
-            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🤖 AIモデル
-            </div>
+          <!-- Group 5: 人数 -->
+          <div style="margin-bottom: 14px;">
+            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">👥 人数</div>
             <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
-              <label class="pill ai-theme-label"><input type="radio" name="aiModelSelect" value="auto" checked> 🎲
-                自動最適化</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiModelSelect" value="flash"> ⚡ Flash
-                (高速)</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiModelSelect" value="pro"> 🧠 Pro
-                (高品質)</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiServings" value="1人分"> 👤 1人分</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiServings" value="2人分" checked> 👥 2人分</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiServings" value="3〜4人分"> 👨‍👩‍👧 3〜4人分</label>
+            </div>
+          </div>
+
+          <!-- Group 6: 提案数 -->
+          <div style="margin-bottom: 14px;">
+            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🔢 提案数</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
+              <label class="pill ai-theme-label"><input type="radio" name="aiCount" value="3"> ⚡ 3個 (高速)</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiCount" value="5" checked> 🍱 5個 (標準)</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiCount" value="10"> 📚 10個 (たっぷり)</label>
+            </div>
+          </div>
+
+          <!-- Group 7: AIモデル -->
+          <div style="margin-bottom: 16px;">
+            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🤖 AIモデル</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
+              <label class="pill ai-theme-label"><input type="radio" name="aiModelSelect" value="auto" checked> 🎲 自動最適化</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiModelSelect" value="flash"> ⚡ Flash (高速)</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiModelSelect" value="pro"> 🧠 Pro (高品質)</label>
             </div>
           </div>
 
@@ -1576,6 +1623,7 @@
             <p style="font-size: 0.9rem; font-weight: bold; margin-top: 8px;">別のレシピを考えています...</p>
           </div>
         </div>
+        </div> <!-- End subpanel-suggest-ai -->
       </div>
     </div>
 
@@ -3180,12 +3228,17 @@
             stepTitle = step.title || '';
             stepText = step.text || step.desc || '';
           } else if (typeof step === 'string') {
-            const lines = step.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-            if (lines.length >= 2) {
+            let s = step.replace(/^[0-9０-９]+[\.．\s]*/, '').trim();
+            if (s.includes('\n')) {
+              const lines = s.split('\n').map(l => l.trim()).filter(l => l.length > 0);
               stepTitle = lines[0];
               stepText = lines.slice(1).join('\n');
+            } else if (s.includes(':') || s.includes('：')) {
+              const parts = s.split(/[:：]/);
+              stepTitle = parts[0].trim();
+              stepText = parts.slice(1).join(':').trim();
             } else {
-              stepText = step;
+              stepText = s;
             }
           }
 
@@ -3800,7 +3853,51 @@
     let aiGeneratedTitles = [];
 
 
-    function suggestLocalRecipes() {
+    window.appendAiKeyword = function (keyword) {
+      const input = document.getElementById('ai-required-ingredients');
+      if (!input) return;
+      const current = input.value.trim();
+      if (!current) {
+        input.value = keyword;
+      } else if (!current.includes(keyword)) {
+        input.value = current + '、' + keyword;
+      }
+    };
+
+    window.switchSuggestSubTab = function (mode) {
+      const btnLocal = document.getElementById('subtab-suggest-local');
+      const btnAi = document.getElementById('subtab-suggest-ai');
+      const panelLocal = document.getElementById('subpanel-suggest-local');
+      const panelAi = document.getElementById('subpanel-suggest-ai');
+
+      if (!btnLocal || !btnAi || !panelLocal || !panelAi) return;
+
+      if (mode === 'local') {
+        btnLocal.style.background = 'var(--primary)';
+        btnLocal.style.color = 'white';
+        btnLocal.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+
+        btnAi.style.background = 'transparent';
+        btnAi.style.color = 'var(--text-muted)';
+        btnAi.style.boxShadow = 'none';
+
+        panelLocal.style.display = 'block';
+        panelAi.style.display = 'none';
+      } else {
+        btnAi.style.background = 'var(--primary)';
+        btnAi.style.color = 'white';
+        btnAi.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+
+        btnLocal.style.background = 'transparent';
+        btnLocal.style.color = 'var(--text-muted)';
+        btnLocal.style.boxShadow = 'none';
+
+        panelLocal.style.display = 'none';
+        panelAi.style.display = 'block';
+      }
+    };
+
+    window.suggestLocalRecipes = function suggestLocalRecipes() {
       const grid = document.getElementById('suggest-local-grid');
       grid.innerHTML = '';
       if (refrigeratorIngredients.length === 0) {
@@ -3811,11 +3908,15 @@
       const normFCache = refrigeratorIngredients.map(f => toHiragana(normalizeJapaneseText(f)));
 
       const suggestTagSelect = document.getElementById('suggest-tag-select');
-      const selectedTag = suggestTagSelect ? suggestTagSelect.value : '';
+      const selectedTag = suggestTagSelect ? suggestTagSelect.value.trim() : '';
 
       const scored = recipesCache.filter(r => {
         if (r.recordType === 'food_record') return false;
-        if (selectedTag && r.category !== selectedTag && (!r.tags || !r.tags.includes(selectedTag))) return false;
+        if (selectedTag) {
+          const cat = (r.category || '').trim();
+          const hasTag = Array.isArray(r.tags) && r.tags.some(t => String(t).trim() === selectedTag);
+          if (cat !== selectedTag && !hasTag) return false;
+        }
         return true;
       }).map(r => {
         let mainMatchCount = 0;
@@ -3841,10 +3942,11 @@
         }
         return { item: r, matchCount: mainMatchCount, totalMainCount: totalMainCount, missing: missingAllList, seasoningCount: seasoningCount };
       }).filter(res => {
-        if (res.totalMainCount > 0 && res.matchCount === 0) return false;
-        const missingMainCount = res.missing.length - res.seasoningCount;
         if (res.totalMainCount > 0) {
-          if (missingMainCount > 0) return false;
+          // 手持ちのメイン食材が1つ以上あり、かつ不足しているメイン食材が1つ以下（＝あと1つ買い足せば作れる）のレシピを提案
+          if (res.matchCount === 0) return false;
+          const missingMainCount = res.missing.length - res.seasoningCount;
+          if (missingMainCount > 1) return false;
         }
         return true;
       });
@@ -3947,20 +4049,30 @@
 
       if (!isAnother) aiGeneratedTitles = [];
 
+      const requiredIngEl = document.getElementById('ai-required-ingredients');
+      const requiredIng = requiredIngEl ? requiredIngEl.value.trim() : '';
+
       const genreEl = document.querySelector('input[name="aiGenre"]:checked');
       const moodEl = document.querySelector('input[name="aiMood"]:checked');
       const styleEl = document.querySelector('input[name="aiStyle"]:checked');
+      const strictnessEl = document.querySelector('input[name="aiStrictness"]:checked');
+      const servingsEl = document.querySelector('input[name="aiServings"]:checked');
       const countEl = document.querySelector('input[name="aiCount"]:checked');
 
       const genre = genreEl ? genreEl.value : "おまかせ";
       const mood = moodEl ? moodEl.value : "指定なし";
       const style = styleEl ? styleEl.value : "指定なし";
-      const count = countEl ? countEl.value : "10";
+      const strictness = strictnessEl ? strictnessEl.value : "ストック優先";
+      const servings = servingsEl ? servingsEl.value : "2人分";
+      const count = countEl ? countEl.value : "5";
 
       let conditions = [];
+      if (requiredIng) conditions.push(`【使いたい必須食材・テーマ】: ${requiredIng}`);
       if (genre !== 'おまかせ') conditions.push(`ジャンル: ${genre}`);
-      if (mood !== '指定なし') conditions.push(`気分・テーマ: ${mood}`);
+      if (mood !== '指定なし') conditions.push(`気分・目的: ${mood}`);
       if (style !== '指定なし') conditions.push(`調理スタイル: ${style}`);
+      conditions.push(`食材の買い足し方針: ${strictness}`);
+      conditions.push(`分量: ${servings}`);
 
       const conditionStr = conditions.length > 0 ? conditions.join('、') : "おすすめ";
       const ingredients = refrigeratorIngredients.join('、');
@@ -3981,7 +4093,13 @@
 
       try {
         const genAI = new GoogleGenerativeAI(geminiApiKey);
-        const prompt = `あなたはプロの料理研究家です。手元にある以下の食材（${ingredients}）をなるべく活用し、【${conditionStr}】という条件に沿った美味しい料理のレシピを${count}個の異なるバリエーションで提案してください。不足している一般的な調味料や多少の追加食材は使って構いません。
+        const requiredInstruction = requiredIng ? `・【最優先・必須食材】: 指定された食材「${requiredIng}」を必ず使用したレシピを提案してください。\n` : '';
+        const prompt = `あなたはプロの料理研究家です。手元にある以下の食材（${ingredients}）を優先的に活用し、【${conditionStr}】という条件に沿った美味しく実用的な料理レシピを${count}個の異なるバリエーションで提案してください。
+${requiredInstruction}
+
+【作り方（steps）に関する重要指示】
+・手順は大雑把にまとめず、初心者でもスムーズに調理できるよう「下ごしらえ」「火加減（弱火・中火・強火など）」「具体的な調理時間（例: 〇分ほど炒める）」「仕上がり目安（例: きつね色になるまで）」を明記して、丁寧かつ具体的にステップ分けして書いてください。
+
 ${excludeStr}出力は以下のJSON形式の配列のみを返してください。必ず有効なJSONにしてください。
 [
   {
@@ -3989,8 +4107,12 @@ ${excludeStr}出力は以下のJSON形式の配列のみを返してください
     "category": "主菜",
     "servings": 2,
     "ingredients": ["材料名1: 分量1", "材料名2: 分量2"], // ※使用するすべての材料・調味料（不足分も含む）を「食材名: 分量」の形式で記載してください。例：「豚肉: 200g」
-    "missing_ingredients": ["買い足す必要がある材料名1", "材料名2"], // ※上記のうち、手元にない不足分の材料名のみ記載してください
-    "steps": ["手順1", "手順2"]
+    "missing_ingredients": ["買い足す必要がある材料名1", "材料名2"], // ※上記のうち、手元にない不足分の材料のみ記載してください
+    "steps": [
+      { "title": "下ごしらえ", "text": "豚肉は一口大に切り、玉ねぎは5mm幅の薄切りにする。" },
+      { "title": "炒める", "text": "フライパンに油小さじ1を熱し、中火で豚肉を2分ほど炒める。" },
+      { "title": "煮立てる・仕上げ", "text": "玉ねぎと調味料を加え、弱火で蓋をして約5分煮込み、全体に味がなじんだら火を止める。" }
+    ]
   }
 ]`;
 
@@ -4082,6 +4204,17 @@ ${excludeStr}出力は以下のJSON形式の配列のみを返してください
         recipes.forEach(r => {
           if (r.title) aiGeneratedTitles.push(r.title);
           r.isAiGenerated = true;
+          if (Array.isArray(r.steps)) {
+            r.steps = r.steps.map(step => {
+              if (typeof step === 'object' && step !== null) return { title: step.title || '', text: step.text || step.desc || '' };
+              let s = String(step).replace(/^[0-9０-９]+[\\.．\s]*/, '').trim();
+              if (s.includes(':') || s.includes('：')) {
+                const parts = s.split(/[:：]/);
+                return { title: parts[0].trim(), text: parts.slice(1).join(':').trim() };
+              }
+              return { title: '', text: s };
+            });
+          }
           let badges = `<div style="background:var(--primary); color:white; font-size:0.75rem; font-weight:bold; padding:4px 8px; border-radius:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); width: fit-content;">✨ AI提案</div>`;
           if (r.missing_ingredients && r.missing_ingredients.length > 0) {
             const missingStr = r.missing_ingredients.join('・');
@@ -4116,7 +4249,17 @@ ${excludeStr}出力は以下のJSON形式の配列のみを返してください
           category: currentDetailRecipe.category || 'その他',
           servings: currentDetailRecipe.servings || 2,
           ingredients: currentDetailRecipe.ingredients || [],
-          steps: currentDetailRecipe.steps || [],
+          steps: (currentDetailRecipe.steps || []).map(step => {
+            if (typeof step === 'object' && step !== null) {
+              return { title: step.title || '', text: step.text || step.desc || '' };
+            }
+            let s = String(step).replace(/^[0-9０-９]+[\\.．\s]*/, '').trim();
+            if (s.includes(':') || s.includes('：')) {
+              const parts = s.split(/[:：]/);
+              return { title: parts[0].trim(), text: parts.slice(1).join(':').trim() };
+            }
+            return { title: '', text: s };
+          }),
           memo: 'AIによって提案されたレシピです。',
           recordType: 'recipe',
           createdAt: serverTimestamp(),
