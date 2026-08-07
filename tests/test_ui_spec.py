@@ -489,28 +489,28 @@ class TestSettingsModal:
 class TestAiSuggestSection:
     """AI提案セクションの構造が仕様通りであること"""
 
+    def _switch_to_ai_tab(self, page):
+        page.evaluate("switchSuggestSubTab('ai')")
+        page.wait_for_timeout(200)
+
     def test_ai_subtab_switch(self, page):
         """AI提案タブに切り替えるとサブパネルが表示されること"""
-        page.locator("#subtab-suggest-ai").click()
-        page.wait_for_timeout(200)
+        self._switch_to_ai_tab(page)
         expect(page.locator("#subpanel-suggest-ai")).to_be_visible()
 
     def test_ai_required_ingredients_input(self, page):
         """「使いたい食材・キーワード」入力欄が存在すること"""
-        page.locator("#subtab-suggest-ai").click()
-        page.wait_for_timeout(200)
+        self._switch_to_ai_tab(page)
         expect(page.locator("#ai-required-ingredients")).to_be_visible()
 
     def test_ai_filter_button_exists(self, page):
         """「詳細条件を絞り込む」ボタンが存在すること"""
-        page.locator("#subtab-suggest-ai").click()
-        page.wait_for_timeout(200)
+        self._switch_to_ai_tab(page)
         expect(page.locator("#btn-open-ai-filter-modal")).to_be_visible()
 
     def test_ai_servings_radios(self, page):
         """人数ラジオボタンが仕様通りであること"""
-        page.locator("#subtab-suggest-ai").click()
-        page.wait_for_timeout(200)
+        self._switch_to_ai_tab(page)
         radios = page.locator("input[name='aiServings']")
         values = [r.get_attribute("value") for r in radios.all()]
         expected = ["1人分", "2人分", "3〜4人分", "5人分以上 (作り置き・パーティ)"]
@@ -518,15 +518,13 @@ class TestAiSuggestSection:
 
     def test_ai_servings_default_2(self, page):
         """AI人数のデフォルトが2人分であること"""
-        page.locator("#subtab-suggest-ai").click()
-        page.wait_for_timeout(200)
+        self._switch_to_ai_tab(page)
         checked = page.locator("input[name='aiServings']:checked")
         assert checked.get_attribute("value") == "2人分"
 
     def test_ai_count_radios(self, page):
         """提案数ラジオボタンが仕様通りであること"""
-        page.locator("#subtab-suggest-ai").click()
-        page.wait_for_timeout(200)
+        self._switch_to_ai_tab(page)
         radios = page.locator("input[name='aiCount']")
         values = [r.get_attribute("value") for r in radios.all()]
         expected = ["3", "5", "10"]
@@ -534,15 +532,13 @@ class TestAiSuggestSection:
 
     def test_ai_count_default_5(self, page):
         """提案数のデフォルトが5個であること"""
-        page.locator("#subtab-suggest-ai").click()
-        page.wait_for_timeout(200)
+        self._switch_to_ai_tab(page)
         checked = page.locator("input[name='aiCount']:checked")
         assert checked.get_attribute("value") == "5"
 
     def test_generate_button_exists(self, page):
         """「レシピを提案する」ボタンが存在すること"""
-        page.locator("#subtab-suggest-ai").click()
-        page.wait_for_timeout(200)
+        self._switch_to_ai_tab(page)
         expect(page.locator("#btn-generate-ai")).to_be_visible()
 
 
