@@ -104,5 +104,6 @@ def page(browser, base_url):
     pg = ctx.new_page()
     pg.goto(f"{base_url}/index.html", wait_until="networkidle")
     yield pg
+    pg.evaluate("if (window.closeAllModals) window.closeAllModals()")
     pg.close()
     ctx.close()

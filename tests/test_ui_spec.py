@@ -577,7 +577,7 @@ class TestModalExclusion:
     def test_only_one_modal_open_at_time(self, page):
         """モーダルは1つしか同時に開けないこと"""
         # 設定モーダルを開く
-        page.locator("#btn-settings").click()
+        page.locator("#btn-open-settings").click()
         page.wait_for_timeout(300)
         expect(page.locator("#modal-settings")).to_have_class(re.compile(r"active"))
 
