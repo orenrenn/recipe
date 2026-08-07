@@ -2265,23 +2265,47 @@
       function setViewPagerState(mode, isDragging = false) {
         const sideList = document.getElementById('page-list-side');
         const sideFridge = document.getElementById('page-fridge-side');
-        const viewport = document.getElementById('mode-viewpager-viewport');
+        if (!sideList || !sideFridge) return;
+
+        // Both sides remain display: block PERMANENTLY (0% disappearing / 0% flickering risk)
+        sideList.style.display = 'block';
+        sideFridge.style.display = 'block';
 
         if (isDragging) {
-          // Show both sides during active touch drag
-          if (sideList) sideList.style.display = 'block';
-          if (sideFridge) sideFridge.style.display = 'block';
+          // During active horizontal drag, expand both sides to auto height and 100% visibility
+          sideList.style.height = 'auto';
+          sideList.style.overflow = 'visible';
+          sideList.style.visibility = 'visible';
+          sideList.style.opacity = '1';
+
+          sideFridge.style.height = 'auto';
+          sideFridge.style.overflow = 'visible';
+          sideFridge.style.visibility = 'visible';
+          sideFridge.style.opacity = '1';
         } else {
-          // Hide inactive side post-transition so document height matches active content 100% (0 empty scroll space)
+          // Collapse inactive side height to 0px so document layout height matches active side 100% (0 empty scroll space)
           if (mode === 'recipe') {
-            if (sideList) sideList.style.display = 'block';
-            if (sideFridge) sideFridge.style.display = 'none';
+            sideList.style.height = 'auto';
+            sideList.style.overflow = 'visible';
+            sideList.style.visibility = 'visible';
+            sideList.style.opacity = '1';
+
+            sideFridge.style.height = '0px';
+            sideFridge.style.overflow = 'hidden';
+            sideFridge.style.visibility = 'hidden';
+            sideFridge.style.opacity = '0';
           } else if (mode === 'fridge') {
-            if (sideList) sideList.style.display = 'none';
-            if (sideFridge) sideFridge.style.display = 'block';
+            sideList.style.height = '0px';
+            sideList.style.overflow = 'hidden';
+            sideList.style.visibility = 'hidden';
+            sideList.style.opacity = '0';
+
+            sideFridge.style.height = 'auto';
+            sideFridge.style.overflow = 'visible';
+            sideFridge.style.visibility = 'visible';
+            sideFridge.style.opacity = '1';
           }
         }
-        if (viewport) viewport.style.height = 'auto';
       }
 
       window.switchAppMode = function (mode) {
@@ -2290,8 +2314,8 @@
         }
         currentAppMode = mode;
 
-        // Ensure both sides are visible during track slide animation
-        setViewPagerState(mode, true);
+        // Ensure active side is immediately height: auto & visible, inactive is prepared
+        setViewPagerState(mode, false);
 
         // Update Tab UI
         document.getElementById('mode-recipe').classList.toggle('active', mode === 'recipe');
@@ -2323,11 +2347,6 @@
         // Restore saved scroll position for active mode
         const targetY = modeScrollPositions[mode] || 0;
         window.scrollTo({ top: targetY, behavior: 'instant' });
-
-        // Hide inactive side once transition completes to collapse document height
-        setTimeout(() => {
-          setViewPagerState(currentAppMode, false);
-        }, 330);
       };
 
       // --- Real-time 1:1 Side-by-Side Horizontal ViewPager Touch Drag ---
@@ -2362,7 +2381,7 @@
         if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
           touchMoveDistanceX = diffX;
 
-          // Reveal both sides when user drags horizontally
+          // Expand both side heights during horizontal drag
           setViewPagerState(currentAppMode, true);
 
           const track = document.getElementById('mode-viewpager-track');
@@ -2397,11 +2416,11 @@
             switchAppMode('recipe');
           } else if (track) {
             track.style.transform = (currentAppMode === 'fridge') ? 'translateX(-50%)' : 'translateX(0%)';
-            setTimeout(() => setViewPagerState(currentAppMode, false), 330);
+            setViewPagerState(currentAppMode, false);
           }
         } else if (track) {
           track.style.transform = (currentAppMode === 'fridge') ? 'translateX(-50%)' : 'translateX(0%)';
-          setTimeout(() => setViewPagerState(currentAppMode, false), 330);
+          setViewPagerState(currentAppMode, false);
         }
       }, { passive: true });
 
