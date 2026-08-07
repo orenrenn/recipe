@@ -1859,14 +1859,8 @@
                   onchange="updateAiConditionsPreview()"> 🍞 パン・サンド</label>
               <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="スープ・汁物・鍋"
                   onchange="updateAiConditionsPreview()"> 🍲 スープ・汁物・鍋</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="サラダ・マリネ"
-                  onchange="updateAiConditionsPreview()"> 🥬 サラダ・マリネ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="おつまみ・家飲み"
-                  onchange="updateAiConditionsPreview()"> 🥂 おつまみ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="お弁当のおかず (冷めても美味しい)"
-                  onchange="updateAiConditionsPreview()"> 🍱 お弁当おかず</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="作り置き・常備菜"
-                  onchange="updateAiConditionsPreview()"> 🫙 常備菜</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="サラダ・前菜"
+                  onchange="updateAiConditionsPreview()"> 🥬 サラダ・前菜</label>
               <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="スイーツ・デザート・おやつ"
                   onchange="updateAiConditionsPreview()"> 🍰 スイーツ</label>
               <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="ドリンク・スムージー"
@@ -1884,6 +1878,8 @@
                   onchange="updateAiConditionsPreview()"> 🍽️ 洋食</label>
               <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="イタリアン・パスタ"
                   onchange="updateAiConditionsPreview()"> 🍝 イタリアン</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="フレンチ・ビストロ風"
+                  onchange="updateAiConditionsPreview()"> 🇫🇷 フレンチ</label>
               <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="中華料理"
                   onchange="updateAiConditionsPreview()"> 🥟 中華</label>
               <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="韓国料理"
@@ -1894,10 +1890,6 @@
                   onchange="updateAiConditionsPreview()"> 🍛 カレー</label>
               <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="メキシカン・アメリカン"
                   onchange="updateAiConditionsPreview()"> 🌮 メキシカン</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="フレンチ・ビストロ風"
-                  onchange="updateAiConditionsPreview()"> 🇫🇷 フレンチ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="スペイン・バル風 (アヒージョ等)"
-                  onchange="updateAiConditionsPreview()"> 🇪🇸 バル風</label>
               <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="カフェ風・おしゃれワンプレート"
                   onchange="updateAiConditionsPreview()"> ☕ カフェ風</label>
               <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="無国籍・創作・フュージョン料理"
@@ -1918,9 +1910,9 @@
               <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="塩味・シンプル (素材の味を活かしたあっさり塩味)"
                   onchange="updateAiConditionsPreview()"> 🧂 塩味・シンプル</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste"
-                  value="味噌・発酵系 (味噌・塩麹・醤油麹などコク深い味わい)" onchange="updateAiConditionsPreview()"> 🫘 味味噌・発酵系</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste"
                   value="だし・和風 (かつお・昆布・白だしなど出汁がきいた優しい味)" onchange="updateAiConditionsPreview()"> 🐟 だし・和風</label>
+              <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste"
+                  value="味噌・発酵系 (味噌・塩麹・醤油麹などコク深い味わい)" onchange="updateAiConditionsPreview()"> 🫘 味噌・発酵</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste"
                   value="にんにく・ガーリック (ニンニクの効いたパンチのある味)" onchange="updateAiConditionsPreview()"> 🧄 ガーリック</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste"
@@ -1928,22 +1920,26 @@
               <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste"
                   value="ハーブ・香草 (バジル・パセリ・大葉などの豊かな香り)" onchange="updateAiConditionsPreview()"> 🌿 ハーブ・香草</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste"
-                  value="デミグラス・トマト系 (トマトソース・ケチャップ・デミグラスなど)" onchange="updateAiConditionsPreview()"> 🍅 トマト・デミ</label>
+                  value="トマト系 (トマトソース・ケチャップなど)" onchange="updateAiConditionsPreview()"> 🍅 トマト系</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste"
-                  value="クリーム・ホワイトソース系 (牛乳・生クリーム・チーズなど)" onchange="updateAiConditionsPreview()"> 🥛 クリームチーズ</label>
+                  value="チーズ・クリーム系 (牛乳・生クリーム・チーズなど)" onchange="updateAiConditionsPreview()"> 🥛 チーズ・クリーム</label>
             </div>
 
             <!-- Category 4: 目的・シーン -->
             <div id="ai-cat-panel-purpose" class="ai-cat-panel"
               style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
+              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="おつまみ・お酒のお供"
+                  onchange="updateAiConditionsPreview()"> 🍺 おつまみ</label>
+              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="弁当・作り置き (冷めても美味しい)"
+                  onchange="updateAiConditionsPreview()"> 🍱 弁当・作り置き</label>
+              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="朝ごはん・ブランチ"
+                  onchange="updateAiConditionsPreview()"> 🌅 朝ごはん</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="時短・爆速 (10〜15分以内で完成)"
                   onchange="updateAiConditionsPreview()"> ⏱️ 時短・爆速</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="がっつり・スタミナ・ボリューム満点"
                   onchange="updateAiConditionsPreview()"> 🍖 スタミナ</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="ヘルシー・低カロリー・ダイエット向け"
+              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="ヘルシー・ダイエット向け"
                   onchange="updateAiConditionsPreview()"> 🥗 ヘルシー</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="高タンパク・筋トレ・ボディメイク飯"
-                  onchange="updateAiConditionsPreview()"> 💪 高タンパク</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="野菜たっぷり・野菜メイン"
                   onchange="updateAiConditionsPreview()"> 🥦 野菜たっぷり</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="子供が喜ぶ・マイルドで食べやすい"
@@ -1952,18 +1948,12 @@
                   onchange="updateAiConditionsPreview()"> 💰 節約・コスパ</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="おもてなし・ホームパーティ向け・見栄えよく"
                   onchange="updateAiConditionsPreview()"> 🎉 おもてなし</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="夜食・軽め・胃に優しい"
-                  onchange="updateAiConditionsPreview()"> 🌙 夜食・軽め</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="朝ごはん・ブランチ"
-                  onchange="updateAiConditionsPreview()"> 🌅 朝ごはん</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="お酒に合う・ワインやビールのお供"
-                  onchange="updateAiConditionsPreview()"> 🍺 お酒のお供</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="疲労回復・栄養満点・体が温まる"
+              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="夜食・胃に優しい (消化重視)"
+                  onchange="updateAiConditionsPreview()"> 🌙 夜食・胃に優しい</label>
+              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="疲労回復・体が温まる"
                   onchange="updateAiConditionsPreview()"> 🔥 疲労回復</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="冷たい料理・暑い日にぴったり"
                   onchange="updateAiConditionsPreview()"> 🧊 冷たい・夏向き</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="映え・SNS映え・見た目重視"
-                  onchange="updateAiConditionsPreview()"> 📸 SNS映え</label>
             </div>
 
             <!-- Category 5: 調理スタイル・道具 -->
@@ -1976,9 +1966,11 @@
               <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="電子レンジのみ (レンジ調理)"
                   onchange="updateAiConditionsPreview()"> ⚡ レンジのみ</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="オーブン・トースター"
-                  onchange="updateAiConditionsPreview()"> 🔥 トースター</label>
+                  onchange="updateAiConditionsPreview()"> 🔥 トースター・オーブン</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="炊飯器調理 (炊飯器に入れるだけ)"
                   onchange="updateAiConditionsPreview()"> 🍚 炊飯器</label>
+              <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="ポリ袋・ジップロック調理 (洗い物ゼロ)"
+                  onchange="updateAiConditionsPreview()"> 🛍️ ポリ袋・洗い物ゼロ</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="包丁不要・手でちぎる・キッチンばさみ"
                   onchange="updateAiConditionsPreview()"> ✂️ 包丁不要</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="火を使わない (和える・混ぜるだけ)"
@@ -1991,8 +1983,6 @@
                   onchange="updateAiConditionsPreview()"> ♨️ 蒸し料理</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="じっくり煮込み・本格 (時間をかけて)"
                   onchange="updateAiConditionsPreview()"> 🍲 煮込み</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="漬ける・マリネ (放置するだけ)"
-                  onchange="updateAiConditionsPreview()"> 🫙 マリネ</label>
             </div>
 
             <!-- Category 6: 調理時間・難易度 -->
@@ -2008,6 +1998,8 @@
                   onchange="updateAiConditionsPreview()"> 🍳 20〜30分 (標準)</label>
               <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="40分以上のじっくり本格調理"
                   onchange="updateAiConditionsPreview()"> 🍲 40分以上 (本格)</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="煮込み・オーブンなど放置時間は含めない"
+                  onchange="updateAiConditionsPreview()"> 🔥 放置時間おまかせ</label>
               <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="料理初心者向け・失敗なしのカンタンレシピ"
                   onchange="updateAiConditionsPreview()"> 🔰 初心者向け</label>
               <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="本格プロ・シェフ級の本格派レシピ"
@@ -2017,18 +2009,26 @@
             <!-- Category 7: 栄養・健康 -->
             <div id="ai-cat-panel-nutrition" class="ai-cat-panel"
               style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
+              <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="高タンパク・筋トレ・ボディメイク"
+                  onchange="updateAiConditionsPreview()"> 💪 高タンパク</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="糖質オフ・ロカボ・糖質制限"
                   onchange="updateAiConditionsPreview()"> 🥦 糖質オフ</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="脂質控えめ・ローファット"
                   onchange="updateAiConditionsPreview()"> 📉 脂質控えめ</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="グルテンフリー・小麦粉不使用"
                   onchange="updateAiConditionsPreview()"> 🌾 グルテンフリー</label>
+              <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="無添加・オーガニック志向"
+                  onchange="updateAiConditionsPreview()"> 🌿 無添加志向</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="ベジタリアン・植物性メイン"
                   onchange="updateAiConditionsPreview()"> 🥬 ベジメイン</label>
+              <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="乳製品フリー・デイリーフリー"
+                  onchange="updateAiConditionsPreview()"> 🥛 乳製品フリー</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="減塩・塩分控えめ・優しめ"
                   onchange="updateAiConditionsPreview()"> 🫀 減塩・塩分控えめ</label>
               <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition"
                   value="腸活・食物繊維豊富 (きのこ・海藻・発酵食材)" onchange="updateAiConditionsPreview()"> 🫘 腸活・繊維豊富</label>
+              <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="鉄分・カルシウムたっぷり"
+                  onchange="updateAiConditionsPreview()"> 🦴 鉄分・カルシウム</label>
             </div>
 
             <!-- Category 8: 食材の買い足し方針 -->
@@ -2038,8 +2038,8 @@
                   checked onchange="updateAiConditionsPreview()"> 🟢 買い足しゼロ</label>
               <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="定番調味料・野菜の買い足しOK"
                   onchange="updateAiConditionsPreview()"> 🟡 定番品OK</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="自由に追加食材OK (本格味重視)"
-                  onchange="updateAiConditionsPreview()"> 🔴 買い足し自由</label>
+              <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="今から買い物に行く (買い足し自由)"
+                  onchange="updateAiConditionsPreview()"> 🛒 今から買い物 (自由)</label>
             </div>
           </div>
 
