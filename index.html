@@ -2342,7 +2342,8 @@
     window.openSettingsModal = function openSettingsModal() {
       updateSyncModalUI();
       closeAllModals();
-      modalSettings.classList.add('active');
+      const modal = document.getElementById('modal-settings') || modalSettings;
+      if (modal) modal.classList.add('active');
     };
 
     // --- Navigation Logic ---
@@ -2445,19 +2446,25 @@
     // --- Settings Modal Logic ---
     document.getElementById('btn-open-settings').addEventListener('click', openSettingsModal);
     document.getElementById('btn-close-settings').addEventListener('click', () => {
-      modalSettings.classList.remove('active');
-      modalSettings.removeAttribute('style');
+      const ms = document.getElementById('modal-settings') || modalSettings;
+      if (ms) {
+        ms.classList.remove('active');
+        ms.removeAttribute('style');
+      }
     });
 
     // --- Detail Modal Close ---
     document.getElementById('btn-close-detail').addEventListener('click', () => {
-      modalDetail.classList.remove('active');
-      modalDetail.removeAttribute('style');
+      const md = document.getElementById('modal-recipe-detail') || modalDetail;
+      if (md) {
+        md.classList.remove('active');
+        md.removeAttribute('style');
+      }
       currentDetailRecipe = null;
     });
 
     // Close modal when clicking backdrop
-    [modalSettings, modalDetail].forEach(modal => {
+    document.querySelectorAll('.modal-backdrop').forEach(modal => {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) {
           modal.classList.remove('active');
