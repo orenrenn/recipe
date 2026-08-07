@@ -445,6 +445,32 @@
       background: white;
     }
 
+    .card-want-btn {
+      position: absolute;
+      top: 10px;
+      right: 52px;
+      background: rgba(255, 255, 255, 0.92);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+      transition: transform 0.15s ease, background 0.15s ease;
+      z-index: 10;
+    }
+
+    .card-want-btn.active {
+      background: #FFF0F2;
+      border: 1.5px solid var(--primary);
+      box-shadow: 0 3px 8px rgba(255, 107, 82, 0.4);
+      transform: scale(1.08);
+    }
+
     .card-photo-count-tag {
       position: absolute;
       bottom: 10px;
@@ -1339,12 +1365,11 @@
     <!-- PAGE 1: レシピ一覧 -->
     <div id="page-list" class="page active">
 
-      <!-- Pull to Refresh Indicator -->
+      <!-- Ultra-Refined Glassmorphic Floating Pull to Refresh Indicator -->
       <div id="pull-to-refresh-indicator"
-        style="height: 0px; opacity: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.82rem; font-weight: bold; color: var(--primary-dark); background: var(--primary-light); transition: height 0.2s ease, opacity 0.2s ease; border-radius: 12px; margin-bottom: 8px;">
-        <span id="pull-refresh-icon"
-          style="font-size: 1.2rem; transition: transform 0.2s ease; display: inline-block;">🍳</span>
-        <span id="pull-refresh-text">下に引っ張って再同期...</span>
+        style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%) translateY(-140%) scale(0.9); z-index: 100; pointer-events: none; opacity: 0; display: flex; align-items: center; justify-content: center; gap: 9px; font-size: 0.82rem; font-weight: 800; color: var(--primary-dark); background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(12px); border: 1.5px solid rgba(255, 107, 82, 0.25); padding: 9px 20px; border-radius: 30px; box-shadow: 0 8px 24px rgba(255, 107, 82, 0.16), 0 2px 8px rgba(0,0,0,0.06); transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;">
+        <span id="pull-refresh-icon" style="font-size: 1.15rem; transition: transform 0.2s ease; display: inline-block; filter: drop-shadow(0 2px 4px rgba(255,107,82,0.3));">✨</span>
+        <span id="pull-refresh-text" style="letter-spacing: 0.02em;">引き下げてクラウド同期...</span>
       </div>
 
       <!-- 検索・フィルター・ソート -->
@@ -1360,7 +1385,7 @@
           <select id="category-select"
             style="flex: 1; padding: 7px 12px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer;">
             <option value="all">すべてのカテゴリ</option>
-            <option value="fav">⭐ お気に入り</option>
+            <option value="fav">😋 おいしかった</option>
             <option value="主菜">🍱 主菜</option>
             <option value="副菜">🥗 副菜</option>
             <option value="汁物">🍲 汁物</option>
@@ -1378,9 +1403,8 @@
               style="width: auto; padding: 4px 10px; font-size: 0.82rem; border-radius: 14px; border: 1.5px solid var(--border); font-weight: 700; color: var(--text);">
               <option value="newest">新着順 🆕</option>
               <option value="oldest">古い順 📜</option>
-              <option value="cooked">作った回数が多い順 🍳</option>
               <option value="title">名前順 (あ→ん) 🔤</option>
-              <option value="fav">お気に入り優先 ⭐</option>
+              <option value="fav">おいしかった順 😋</option>
             </select>
           </div>
         </div>
@@ -1609,7 +1633,7 @@
                 style="flex: 1; padding: 7px 12px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer;"
                 onchange="suggestLocalRecipes()">
                 <option value="all">すべてのカテゴリ</option>
-                <option value="fav">⭐ お気に入り</option>
+                <option value="fav">😋 おいしかった</option>
                 <option value="主菜">🍱 主菜</option>
                 <option value="副菜">🥗 副菜</option>
                 <option value="汁物">🍲 汁物</option>
@@ -1643,8 +1667,8 @@
               <div style="margin-top: 10px;">
                 <div style="font-size: 0.72rem; color: #888; margin-bottom: 6px;">ストック食材からワンタップ選択 <span
                     style="color: #aaa;">(タップでON/OFF)</span>:</div>
-                <div id="ai-stock-chips-container"
-                  style="display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start; height: 98px; max-height: 98px; overflow: hidden;">
+                 <div id="ai-stock-chips-container"
+                  style="display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start; height: 98px; max-height: 98px; min-height: 98px; overflow-y: auto; padding: 2px 0;">
                 </div>
                 <div id="ai-stock-chips-action"
                   style="display: flex; align-items: center; justify-content: flex-start; gap: 8px; margin-top: 8px; min-height: 28px;">
@@ -1961,30 +1985,13 @@
             </div>
             <div id="detail-date-info" style="font-size: 0.75rem; color: #999; margin-top: 4px;"></div>
           </div>
-          <button id="btn-toggle-fav-detail" class="icon-btn" style="margin-right: 8px;" title="お気に入り">
-            <span id="detail-fav-star">☆</span>
+          <button id="btn-toggle-fav-detail" class="icon-btn" style="margin-right: 8px;" title="おいしかった！">
+            <span id="detail-fav-star">😋</span>
           </button>
           <button id="btn-close-detail" class="modal-close-btn">✕</button>
         </div>
 
         <div class="modal-body">
-          <!-- 作った回数カウンター -->
-          <div class="cooked-counter-box" id="detail-cooked-counter">
-            <div>
-              <div style="font-size: 0.82rem; color: var(--text-muted); font-weight: 700;">通算で作った回数</div>
-              <div style="font-size: 1.3rem; font-weight: 800; color: var(--primary);">
-                🍳 <span id="detail-cooked-count">0</span> 回
-              </div>
-            </div>
-            <div class="cooked-btn-group">
-              <button id="btn-decrement-cooked" class="btn-cooked-action btn-cooked-minus" title="間違いを取り消し (-1)">
-                <span>↩️ -1</span>
-              </button>
-              <button id="btn-increment-cooked" class="btn-cooked-action btn-cooked-plus" title="作った！ (+1)">
-                <span>🍳 「作った！」 (+1)</span>
-              </button>
-            </div>
-          </div>
 
           <div id="detail-gallery-container" class="detail-gallery-container" style="display: none;">
             <div class="detail-main-img-wrapper">
@@ -2421,6 +2428,56 @@
         }
       });
 
+      // --- Want To Make (📌 作りたい) Logic ---
+      let userWantToMake = JSON.parse(localStorage.getItem('mogu_want_to_make') || '[]');
+
+      function isWantToMake(recipeId) {
+        return Array.isArray(userWantToMake) && userWantToMake.includes(recipeId);
+      }
+
+      function saveWantToMakeLocal() {
+        localStorage.setItem('mogu_want_to_make', JSON.stringify(userWantToMake));
+      }
+
+      async function toggleWantToMake(recipeId, wantBtnElement = null) {
+        const isWant = isWantToMake(recipeId);
+        if (isWant) {
+          userWantToMake = userWantToMake.filter(id => id !== recipeId);
+        } else {
+          userWantToMake.push(recipeId);
+        }
+        saveWantToMakeLocal();
+
+        if (wantBtnElement) {
+          wantBtnElement.classList.toggle('active', !isWant);
+          wantBtnElement.classList.remove('star-animating');
+          void wantBtnElement.offsetWidth;
+          wantBtnElement.classList.add('star-animating');
+        }
+
+        renderRecipeList();
+        if (currentDetailRecipe && currentDetailRecipe.id === recipeId) {
+          updateDetailWantBtn();
+        }
+
+        if (currentUser && db) {
+          const userDocRef = doc(db, "users", currentUser.uid);
+          try {
+            if (isWant) {
+              await updateDoc(userDocRef, { wantToMake: arrayRemove(recipeId) });
+            } else {
+              await updateDoc(userDocRef, { wantToMake: arrayUnion(recipeId) });
+            }
+          } catch (err) {
+            try {
+              await setDoc(userDocRef, { wantToMake: userWantToMake, updatedAt: serverTimestamp() }, { merge: true });
+            } catch (setErr) {
+              console.error("Error saving wantToMake:", setErr);
+            }
+          }
+        }
+      }
+
       // --- Cloud Firebase Personal Favorites Logic ---
       async function loadUserFavorites() {
         if (!currentUser || !db) {
@@ -2433,6 +2490,10 @@
           const snap = await getDoc(userDocRef);
           if (snap.exists()) {
             userFavorites = snap.data().favorites || [];
+            if (Array.isArray(snap.data().wantToMake)) {
+              userWantToMake = snap.data().wantToMake;
+              saveWantToMakeLocal();
+            }
           } else {
             userFavorites = [];
             await setDoc(userDocRef, { favorites: [], updatedAt: serverTimestamp() });
@@ -2455,7 +2516,7 @@
       async function toggleFavorite(recipeId, starBtnElement = null) {
         if (!currentUser || !db) {
           openSettingsModal();
-          return alert("お気に入り機能を利用するには、設定画面(⚙️)から「Googleでログインして同期」してください。");
+          return alert("「おいしかった！」機能を利用するには、設定画面(⚙️)から「Googleでログインして同期」してください。");
         }
 
         const userDocRef = doc(db, "users", currentUser.uid);
@@ -2471,7 +2532,7 @@
         // 2. Standardized instant visual animation on target element
         if (starBtnElement) {
           const iconSpan = starBtnElement.querySelector('span') || starBtnElement;
-          iconSpan.innerText = userFavorites.includes(recipeId) ? '⭐' : '☆';
+          iconSpan.innerText = userFavorites.includes(recipeId) ? '😋' : '🤍';
           starBtnElement.classList.remove('star-animating');
           iconSpan.classList.remove('star-animating');
           void starBtnElement.offsetWidth; // trigger reflow
@@ -3010,15 +3071,17 @@
           const text = document.getElementById('pull-refresh-text');
 
           if (indicator) {
-            indicator.style.height = `${pullDistance}px`;
+            indicator.style.transform = `translateX(-50%) translateY(${Math.min(pullDistance, 54)}px) scale(${0.9 + Math.min(pullDistance / PULL_THRESHOLD, 1) * 0.15})`;
             indicator.style.opacity = `${Math.min(pullDistance / PULL_THRESHOLD, 1)}`;
 
             if (pullDistance >= PULL_THRESHOLD) {
               icon.style.transform = 'rotate(180deg)';
-              text.innerText = '離して再同期...';
+              icon.innerText = '🔄';
+              text.innerText = '離して最新に更新...';
             } else {
               icon.style.transform = 'rotate(0deg)';
-              text.innerText = '下に引っ張って再同期...';
+              icon.innerText = '✨';
+              text.innerText = '引き下げてクラウド同期...';
             }
           }
         }
@@ -3034,28 +3097,29 @@
         if (pullDistance >= PULL_THRESHOLD && db) {
           isRefreshing = true;
           if (indicator) {
-            indicator.style.height = '42px';
+            indicator.style.transform = 'translateX(-50%) translateY(48px) scale(1)';
             indicator.style.opacity = '1';
             icon.style.transform = 'rotate(0deg)';
-            icon.style.animation = 'spin 0.8s linear infinite';
-            text.innerText = 'レシピを再同期中...';
+            icon.innerText = '🍳';
+            icon.style.animation = 'spin 0.7s cubic-bezier(0.4, 0, 0.2, 1) infinite';
+            text.innerText = 'データを同期中...';
           }
 
           await fetchRecipes(true);
 
           if (indicator) {
             icon.style.animation = 'none';
-            icon.innerText = '✨';
-            text.innerText = '最新のレシピに同期完了！';
+            icon.innerText = '🎉';
+            text.innerText = '最新データを同期完了！';
 
             setTimeout(() => {
-              indicator.style.height = '0px';
+              indicator.style.transform = 'translateX(-50%) translateY(-140%) scale(0.9)';
               indicator.style.opacity = '0';
               setTimeout(() => {
-                icon.innerText = '🍳';
+                icon.innerText = '✨';
                 isRefreshing = false;
               }, 200);
-            }, 600);
+            }, 650);
           } else {
             isRefreshing = false;
           }
@@ -3491,8 +3555,6 @@
             const timeA = getTimestampMs(a.item.createdAt || a.item.updatedAt);
             const timeB = getTimestampMs(b.item.createdAt || b.item.updatedAt);
             return timeA - timeB;
-          } else if (sortBy === 'cooked') {
-            return (b.item.cookedCount || 0) - (a.item.cookedCount || 0);
           } else if (sortBy === 'title') {
             return (a.item.title || '').localeCompare(b.item.title || '', 'ja');
           } else if (sortBy === 'fav') {
@@ -3512,8 +3574,8 @@
 
           if (activeCategory === 'fav') {
             msg = currentUser
-              ? 'お気に入りに登録されたレシピがありません。カードの ⭐ ボタンで追加できます。'
-              : 'データ同期設定（⚙️）からGoogleログインするとお気に入り機能が利用できます。';
+              ? '「おいしかった！」に登録されたレシピがありません。カードの 😋 ボタンで追加できます。'
+              : 'データ同期設定（⚙️）からGoogleログインすると「おいしかった！」機能が利用できます。';
           }
 
           container.innerHTML = `
@@ -3541,12 +3603,9 @@
             : `<div class="card-placeholder">🍳</div>`;
 
           const categoryTag = item.category ? `<div class="card-category-tag">${item.category}</div>` : '';
-          const servingsTag = item.servings ? `<span>👤 ${item.servings}</span>` : '';
-          const cookedBadgeHtml = `<span class="cooked-badge">🍳 作った: ${item.cookedCount || 0}回</span>`;
           const photoCountBadge = photos.length > 1 ? `<div class="card-photo-count-tag">📷 ${photos.length}</div>` : '';
-
           const faved = isFavorite(item.id);
-          const favBtnHtml = `<button class="card-fav-btn" title="お気に入り"><span>${faved ? '⭐' : '☆'}</span></button>`;
+          const favBtnHtml = `<button class="card-fav-btn" title="おいしかった！"><span>${faved ? '😋' : '🤍'}</span></button>`;
 
           let ingredientsPreview = '';
           if (Array.isArray(item.ingredients) && item.ingredients.length > 0) {
@@ -3586,10 +3645,6 @@
           </div>
           <div class="card-content">
             <h3 class="card-title">${escapeHtml(item.title)}</h3>
-            <div class="card-meta">
-              ${servingsTag}
-              ${cookedBadgeHtml}
-            </div>
             ${badgesHtml}
             ${ingredientsPreview ? `<div class="card-ingredients-preview">${escapeHtml(ingredientsPreview)}</div>` : ''}
             ${dateHtml}
@@ -3686,10 +3741,6 @@
           document.getElementById('detail-title').innerText = recipe.title || '無題';
           document.getElementById('detail-category-badge').innerText = recipe.category || 'その他';
 
-          const count = recipe.cookedCount || 0;
-          document.getElementById('detail-cooked-count').innerText = count;
-          document.getElementById('btn-decrement-cooked').disabled = count <= 0;
-
           updateDetailFavStar();
 
           const servingsEl = document.getElementById('detail-servings');
@@ -3712,7 +3763,6 @@
 
           document.getElementById('section-ingredients').style.display = 'block';
           document.getElementById('section-steps').style.display = 'block';
-          document.getElementById('detail-cooked-counter').style.display = 'flex';
           document.getElementById('detail-section-title-memo').innerText = '💡 コツ・メモ';
 
           const btnDeleteRecipe = document.getElementById('btn-delete-recipe');
@@ -3848,11 +3898,11 @@
             document.getElementById('modal-footer-default').style.display = 'none';
             document.getElementById('modal-footer-ai').style.display = 'flex';
             document.getElementById('btn-toggle-fav-detail').style.display = 'none';
-            document.getElementById('detail-cooked-counter').style.display = 'none';
           } else {
             document.getElementById('modal-footer-default').style.display = 'flex';
             document.getElementById('modal-footer-ai').style.display = 'none';
             document.getElementById('btn-toggle-fav-detail').style.display = 'block';
+            updateDetailFavStar();
           }
         } catch (err) {
           console.error('Error populating recipe detail modal:', err);
@@ -3863,11 +3913,9 @@
         const starBtn = document.getElementById('btn-toggle-fav-detail');
         const starText = document.getElementById('detail-fav-star');
         if (currentDetailRecipe && isFavorite(currentDetailRecipe.id)) {
-          starText.innerText = '⭐';
-          starBtn.style.color = 'var(--star-color)';
+          starText.innerText = '😋';
         } else {
-          starText.innerText = '☆';
-          starBtn.style.color = 'var(--text-muted)';
+          starText.innerText = '🤍';
         }
       }
 
@@ -3875,56 +3923,6 @@
         if (currentDetailRecipe) {
           const starBtn = document.getElementById('btn-toggle-fav-detail');
           toggleFavorite(currentDetailRecipe.id, starBtn);
-        }
-      });
-
-      // --- Increment Cooked Count Button Listener ---
-      document.getElementById('btn-increment-cooked').addEventListener('click', async () => {
-        if (!currentDetailRecipe || !db) return;
-
-        currentDetailRecipe.cookedCount = (currentDetailRecipe.cookedCount || 0) + 1;
-        document.getElementById('detail-cooked-count').innerText = currentDetailRecipe.cookedCount;
-        document.getElementById('btn-decrement-cooked').disabled = currentDetailRecipe.cookedCount <= 0;
-
-        const cacheItem = recipesCache.find(r => r.id === currentDetailRecipe.id);
-        if (cacheItem) cacheItem.cookedCount = currentDetailRecipe.cookedCount;
-
-        const btnInc = document.getElementById('btn-increment-cooked');
-        btnInc.classList.remove('star-animating');
-        void btnInc.offsetWidth;
-        btnInc.classList.add('star-animating');
-
-        renderRecipeList();
-
-        try {
-          await updateDoc(doc(db, "recipes", currentDetailRecipe.id), {
-            cookedCount: increment(1)
-          });
-        } catch (e) {
-          console.error("Cooked count increment failed:", e);
-        }
-      });
-
-      // --- Decrement Cooked Count (Undo / -1) Button Listener ---
-      document.getElementById('btn-decrement-cooked').addEventListener('click', async () => {
-        if (!currentDetailRecipe || !db) return;
-        if ((currentDetailRecipe.cookedCount || 0) <= 0) return;
-
-        currentDetailRecipe.cookedCount -= 1;
-        document.getElementById('detail-cooked-count').innerText = currentDetailRecipe.cookedCount;
-        document.getElementById('btn-decrement-cooked').disabled = currentDetailRecipe.cookedCount <= 0;
-
-        const cacheItem = recipesCache.find(r => r.id === currentDetailRecipe.id);
-        if (cacheItem) cacheItem.cookedCount = currentDetailRecipe.cookedCount;
-
-        renderRecipeList();
-
-        try {
-          await updateDoc(doc(db, "recipes", currentDetailRecipe.id), {
-            cookedCount: increment(-1)
-          });
-        } catch (e) {
-          console.error("Cooked count decrement failed:", e);
         }
       });
 
