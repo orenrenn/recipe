@@ -56,7 +56,6 @@
       touch-action: pan-x pan-y;
       /* Prevent pinch zoom gestures via CSS */
       -webkit-text-size-adjust: 100%;
-      overflow-x: hidden;
     }
 
     body {
@@ -289,6 +288,45 @@
       background: #F59E0B;
       color: white;
       border-color: #F59E0B;
+    }
+
+    .ai-tab-btn {
+      background: #EDF2F7;
+      border: 1px solid transparent;
+      border-radius: 16px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #4A5568;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .ai-tab-btn:hover {
+      background: #E2E8F0;
+    }
+
+    .ai-tab-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary-dark);
+      box-shadow: 0 2px 4px rgba(255, 107, 82, 0.25);
+    }
+
+    .tab-badge {
+      background: #FF6B51;
+      color: white;
+      font-size: 0.65rem;
+      padding: 1px 5px;
+      border-radius: 10px;
+      margin-left: 2px;
+    }
+
+    .ai-tab-btn.active .tab-badge {
+      background: white;
+      color: var(--primary-dark);
     }
 
     .sort-bar {
@@ -851,21 +889,23 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.55);
-      backdrop-filter: blur(4px);
-      z-index: 100;
+      background: rgba(0, 0, 0, 0.65);
+      z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 1rem;
+      overscroll-behavior: contain;
       opacity: 0;
       visibility: hidden;
-      transition: all 0.25s ease;
+      pointer-events: none;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
     }
 
     .modal-backdrop.active {
       opacity: 1;
       visibility: visible;
+      pointer-events: auto;
     }
 
     .modal-card {
@@ -880,6 +920,7 @@
       transition: transform 0.25s ease;
       display: flex;
       flex-direction: column;
+      overscroll-behavior: contain;
     }
 
     .modal-backdrop.active .modal-card {
@@ -1180,9 +1221,9 @@
 
 <body>
 
-  <!-- Header -->
-  <header>
-    <div class="header-inner">
+  <!-- Header (Sticky Container for Logo + Mode Switcher) -->
+  <header style="position: sticky; top: 0; z-index: 50; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.04); padding-bottom: 6px;">
+    <div class="header-inner" style="padding: 0.6rem 1rem 0.4rem 1rem;">
       <a href="#" class="app-logo">
         <span>🍳✨</span>
         <span>もぐもぐレシピ</span>
@@ -1193,17 +1234,17 @@
         </button>
       </div>
     </div>
-  </header>
 
-  <!-- Mode Switcher -->
-  <div class="mode-switcher-container">
-    <button id="mode-recipe" class="mode-btn active" onclick="switchAppMode('recipe')">
-      <span class="mode-icon">🍳</span> レシピ
-    </button>
-    <button id="mode-fridge" class="mode-btn" onclick="switchAppMode('fridge')">
-      <span class="mode-icon">🧺</span> 食材ストック
-    </button>
-  </div>
+    <!-- Mode Switcher (画面上部固定) -->
+    <div class="mode-switcher-container" style="margin: 0 auto 4px auto;">
+      <button id="mode-recipe" class="mode-btn active" onclick="switchAppMode('recipe')">
+        <span class="mode-icon">🍳</span> レシピ
+      </button>
+      <button id="mode-fridge" class="mode-btn" onclick="switchAppMode('fridge')">
+        <span class="mode-icon">🧺</span> 食材ストック
+      </button>
+    </div>
+  </header>
 
   <!-- Navigation Tabs -->
   <nav>
@@ -1470,148 +1511,260 @@
           <h3
             style="font-size: 1.05rem; color: #555; margin-bottom: 12px; border-bottom: 2px solid var(--primary-light); padding-bottom: 4px;">
             ✨ AIに新しいレシピを提案してもらう</h3>
-        <div class="form-card" style="background: linear-gradient(135deg, #FFF0F2 0%, #FFFDF9 100%); text-align: left;">
-          <p style="font-size: 0.85rem; color: #666; margin-bottom: 14px; text-align: center;">※
-            ストックの食材と好みの条件に合わせて、AIがオリジナルレシピを考えます。</p>
+          <div class="form-card" style="background: linear-gradient(135deg, #FFF0F2 0%, #FFFDF9 100%); text-align: left;">
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 14px; text-align: center;">※
+              ストックの食材と好みの条件に合わせて、AIがオリジナルレシピを考えます。</p>
 
-          <!-- 📌 使いたい食材・キーワード指定 -->
-          <div style="margin-bottom: 16px; background: white; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
-            <div style="font-size: 0.82rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">
-              📌 使いたい食材・キーワード <span style="font-size: 0.72rem; font-weight: normal; color: #888;">(任意)</span>
+            <!-- 📌 使いたい食材・キーワード指定 -->
+            <div style="margin-bottom: 16px; background: white; padding: 12px; border-radius: 12px; border: 1px solid var(--border);">
+              <div style="font-size: 0.82rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">
+                📌 使いたい食材・キーワード <span style="font-size: 0.72rem; font-weight: normal; color: #888;">(任意)</span>
+              </div>
+              <input type="text" id="ai-required-ingredients" class="form-input" placeholder="指定したい食材やテーマを入力..." style="width: 100%; font-size: 0.9rem; padding: 8px 12px;" oninput="renderAiStockChips()">
+              <div style="margin-top: 10px;">
+                <div style="font-size: 0.72rem; color: #888; margin-bottom: 4px;">ストック食材からワンタップ選択 <span style="color: #aaa;">(タップでON/OFF)</span>:</div>
+                <div id="ai-stock-chips-container" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+              </div>
             </div>
-            <input type="text" id="ai-required-ingredients" class="form-input" placeholder="指定したい食材やテーマを入力..." style="width: 100%; font-size: 0.9rem; padding: 8px 12px;" oninput="renderAiStockChips()">
-            <div style="margin-top: 10px;">
-              <div style="font-size: 0.72rem; color: #888; margin-bottom: 4px;">ストック食材からワンタップ選択 <span style="color: #aaa;">(タップでON/OFF)</span>:</div>
-              <div id="ai-stock-chips-container" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+
+            <!-- 🎛️ 詳細条件設定ボタン (モーダル起動) -->
+            <div id="btn-open-ai-filter-modal" onclick="openAiFilterModal()" style="margin-bottom: 16px; background: white; border-radius: 14px; border: 1.5px solid var(--primary-light); padding: 12px 14px; cursor: pointer; user-select: none; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.2s ease;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.88rem; font-weight: bold; color: var(--primary-dark); display: flex; align-items: center; gap: 6px;">
+                  <span>🎛️ 詳細条件を絞り込む</span>
+                  <span id="ai-filter-count-badge" class="badge" style="background: var(--primary); color: white; font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; display: none;">0</span>
+                </span>
+                <span style="font-size: 0.78rem; color: var(--primary); font-weight: bold; background: #FFF5F5; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--primary-light);">設定する ⚙️</span>
+              </div>
+              <!-- 選択中の条件サマリー表示 (リアルタイムバッジ風) -->
+              <div id="ai-active-conditions-preview" style="margin-top: 8px; font-size: 0.75rem; color: #718096; display: flex; flex-wrap: wrap; gap: 4px; align-items: center;">
+                <span style="color: #999;">おまかせ (タップでこだわり条件を設定)</span>
+              </div>
             </div>
-          </div>
 
-          <!-- Group 1: ジャンル -->
-          <div style="margin-bottom: 14px;">
-            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🍱 料理ジャンル</div>
-            <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="おまかせ" checked> 🎲 おまかせ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="和食"> 🍱 和食</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="洋食"> 🍝 洋食</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="中華"> 🥟 中華</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="エスニック・アジアン"> 🌮 エスニック</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="イタリアン"> 🇮🇹 イタリアン</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="韓国料理"> 🇰🇷 韓国料理</label>
+            <!-- 常時表示する基本設定 (人数・提案数) -->
+            <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; background: white; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border);">
+              <!-- Group 7: 人数 -->
+              <div style="flex: 1; min-width: 160px;">
+                <div style="font-size: 0.78rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 4px;">👥 人数</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 4px;" class="ai-group-chips">
+                  <label class="pill ai-theme-label" style="font-size: 0.78rem; padding: 4px 8px;"><input type="radio" name="aiServings" value="1人分"> 👤 1人分</label>
+                  <label class="pill ai-theme-label" style="font-size: 0.78rem; padding: 4px 8px;"><input type="radio" name="aiServings" value="2人分" checked> 👥 2人分</label>
+                  <label class="pill ai-theme-label" style="font-size: 0.78rem; padding: 4px 8px;"><input type="radio" name="aiServings" value="3〜4人分"> 👨‍👩‍👧 3〜4人分</label>
+                  <label class="pill ai-theme-label" style="font-size: 0.78rem; padding: 4px 8px;"><input type="radio" name="aiServings" value="5人分以上 (作り置き・パーティ)"> 👨‍👩‍👧‍👦 5人分〜</label>
+                </div>
+              </div>
+
+              <!-- Group 8: 提案数 -->
+              <div style="flex: 1; min-width: 140px;">
+                <div style="font-size: 0.78rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 4px;">🔢 提案数</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 4px;" class="ai-group-chips">
+                  <label class="pill ai-theme-label" style="font-size: 0.78rem; padding: 4px 8px;"><input type="radio" name="aiCount" value="3"> ⚡ 3個</label>
+                  <label class="pill ai-theme-label" style="font-size: 0.78rem; padding: 4px 8px;"><input type="radio" name="aiCount" value="5" checked> 🍱 5個</label>
+                  <label class="pill ai-theme-label" style="font-size: 0.78rem; padding: 4px 8px;"><input type="radio" name="aiCount" value="10"> 📚 10個</label>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <!-- Group 2: 気分・目的 -->
-          <div style="margin-bottom: 14px;">
-            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">✨ 気分・目的</div>
-            <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="指定なし" checked> 🎲 指定なし</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="時短・ズボラ (10分以内)"> ⏱️ 時短・ズボラ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="おつまみ・家飲み"> 🥂 おつまみ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="がっつりスタミナ"> 🍖 スタミナ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="さっぱり・ヘルシー"> 🥗 ヘルシー</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="旨辛・スパイス"> 🌶️ 旨辛</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="子供が喜ぶ味付け"> 👶 子供向け</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="節約・コスパ"> 💰 節約・コスパ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="お弁当のおかず"> 🍱 お弁当</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiMood" value="スイーツ・おやつ"> 🍰 スイーツ</label>
+            <button id="btn-generate-ai" class="btn" style="border-radius: 20px; font-size: 1rem; width: 100%;">✨ レシピを提案する</button>
+            <div id="ai-loading-spinner"
+              style="display: none; text-align: center; margin-top: 16px; color: var(--primary);">
+              <div style="font-size: 1.5rem; animation: spin 1s infinite linear; display: inline-block;">🍳</div>
+              <p style="font-size: 0.9rem; font-weight: bold; margin-top: 8px;">レシピを考えています...</p>
             </div>
-          </div>
-
-          <!-- Group 3: 調理スタイル -->
-          <div style="margin-bottom: 14px;">
-            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🍳 調理スタイル・道具</div>
-            <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
-              <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="指定なし" checked> 🎲 指定なし</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="フライパン1つ (ワンパン)"> 🍳 ワンパン</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="電子レンジのみ"> ⚡ レンジのみ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="包丁・火いらず"> 🫕 包丁・火いらず</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="火を使わない (和えるだけ)"> 🥗 火を使わない</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiStyle" value="じっくり煮込み・本格調理"> 🍲 本格煮込み</label>
-            </div>
-          </div>
-
-          <!-- Group 4: 食材の買い足し方針 -->
-          <div style="margin-bottom: 14px;">
-            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🛒 食材の買い足し方針</div>
-            <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
-              <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="ストック優先 (不足食材最小限)" checked> 🟢 ストック重視</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="定番調味料・野菜の買い足しOK"> 🟡 定番品の買い足しOK</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="自由に追加食材OK"> 🔴 買い足し自由</label>
-            </div>
-          </div>
-
-          <!-- Group 5: 人数 -->
-          <div style="margin-bottom: 14px;">
-            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">👥 人数</div>
-            <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
-              <label class="pill ai-theme-label"><input type="radio" name="aiServings" value="1人分"> 👤 1人分</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiServings" value="2人分" checked> 👥 2人分</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiServings" value="3〜4人分"> 👨‍👩‍👧 3〜4人分</label>
-            </div>
-          </div>
-
-          <!-- Group 6: 提案数 -->
-          <div style="margin-bottom: 14px;">
-            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 6px;">🔢 提案数</div>
-            <div style="display: flex; flex-wrap: wrap; gap: 6px;" class="ai-group-chips">
-              <label class="pill ai-theme-label"><input type="radio" name="aiCount" value="3"> ⚡ 3個 (高速)</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiCount" value="5" checked> 🍱 5個 (標準)</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiCount" value="10"> 📚 10個 (たっぷり)</label>
-            </div>
-          </div>
-
-
-
-          <button id="btn-generate-ai" class="btn" style="border-radius: 20px; font-size: 1rem; width: 100%;">✨
-            レシピを提案する</button>
-          <div id="ai-loading-spinner"
-            style="display: none; text-align: center; margin-top: 16px; color: var(--primary);">
-            <div style="font-size: 1.5rem; animation: spin 1s infinite linear; display: inline-block;">🍳</div>
-            <p style="font-size: 0.9rem; font-weight: bold; margin-top: 8px;">レシピを考えています...</p>
-          </div>
-          <style>
-            @keyframes spin {
-              100% {
-                transform: rotate(360deg);
+            <style>
+              @keyframes spin {
+                100% {
+                  transform: rotate(360deg);
+                }
               }
-            }
 
-            .ai-theme-label {
-              cursor: pointer;
-              border: 1px solid transparent;
-              font-size: 0.82rem;
-              padding: 5px 10px;
-            }
+              .ai-theme-label {
+                cursor: pointer;
+                border: 1px solid transparent;
+                font-size: 0.82rem;
+                padding: 5px 10px;
+              }
 
-            .ai-theme-label:has(input:checked) {
-              background: white !important;
-              color: var(--primary) !important;
-              border: 1px solid var(--primary-light);
-              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-              font-weight: bold;
-            }
+              .ai-theme-label:has(input:checked) {
+                background: white !important;
+                color: var(--primary) !important;
+                border: 1px solid var(--primary-light);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+                font-weight: bold;
+              }
 
-            .ai-theme-label input {
-              display: none;
-            }
-          </style>
-        </div>
-        <div id="suggest-ai-grid" class="recipe-grid" style="margin-top: 16px;"></div>
-        <div id="suggest-ai-controls"
-          style="display: none; text-align: center; margin-top: 24px; padding-bottom: 24px;">
-          <button id="btn-generate-ai-another" class="btn"
-            style="border-radius: 20px; font-size: 0.95rem; background: #10B981; color: white; padding: 12px 24px; box-shadow: 0 4px 6px rgba(16,185,129,0.3); border: none; font-weight: bold; cursor: pointer;">🔁
-            別のレシピを提案する</button>
-            
-          <div id="ai-loading-spinner-another" style="display: none; text-align: center; margin-top: 16px; color: var(--primary);">
-            <div style="font-size: 1.5rem; animation: spin 1s infinite linear; display: inline-block;">🍳</div>
-            <p style="font-size: 0.9rem; font-weight: bold; margin-top: 8px;">別のレシピを考えています...</p>
+              .ai-theme-label input {
+                display: none;
+              }
+            </style>
           </div>
-        </div>
+          <div id="suggest-ai-grid" class="recipe-grid" style="margin-top: 16px;"></div>
+          <div id="suggest-ai-controls"
+            style="display: none; text-align: center; margin-top: 24px; padding-bottom: 24px;">
+            <button id="btn-generate-ai-another" class="btn"
+              style="border-radius: 20px; font-size: 0.95rem; background: #10B981; color: white; padding: 12px 24px; box-shadow: 0 4px 6px rgba(16,185,129,0.3); border: none; font-weight: bold; cursor: pointer;">🔁 別のレシピを提案する</button>
+              
+            <div id="ai-loading-spinner-another" style="display: none; text-align: center; margin-top: 16px; color: var(--primary);">
+              <div style="font-size: 1.5rem; animation: spin 1s infinite linear; display: inline-block;">🍳</div>
+              <p style="font-size: 0.9rem; font-weight: bold; margin-top: 8px;">別のレシピを考えています...</p>
+            </div>
+          </div>
         </div> <!-- End subpanel-suggest-ai -->
       </div>
     </div>
 
+  <!-- 🎛️ AI詳細条件 絞り込みモーダル (モバイルアプリ風 ボトムシート / モーダル) -->
+  <div id="modal-ai-filter" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 540px; height: 500px; max-height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.18);">
+      
+      <!-- モーダルヘッダー -->
+      <div style="padding: 14px 18px; background: white; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10;">
+        <h3 style="margin: 0; font-size: 1.05rem; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 6px;">
+          <span>🎛️ こだわり条件の選択</span>
+        </h3>
+        <button type="button" onclick="closeAiFilterModal()" style="background: #F1F5F9; border: none; font-size: 1.1rem; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; color: #64748B; display: flex; align-items: center; justify-content: center; font-weight: bold;">✕</button>
+      </div>
+
+      <!-- モーダルコンテンツ (固定高・内部スクロール型) -->
+      <div style="padding: 14px; flex: 1; min-height: 0; display: flex; flex-direction: column; background: #F8FAFC; overflow: hidden;">
+        
+        <!-- 6 Category Grid Tabs (横スクロール一切なし・2行×3列) -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; flex: 0 0 auto;">
+          <button type="button" id="ai-tab-btn-role" class="ai-cat-tab-btn active" onclick="switchAiCategoryTab('role')">🍽️ 役割</button>
+          <button type="button" id="ai-tab-btn-genre" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('genre')">🌍 ジャンル</button>
+          <button type="button" id="ai-tab-btn-taste" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('taste')">👅 味付け</button>
+          <button type="button" id="ai-tab-btn-purpose" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('purpose')">🎯 目的</button>
+          <button type="button" id="ai-tab-btn-style" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('style')">🍳 調理法</button>
+          <button type="button" id="ai-tab-btn-strictness" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('strictness')">🛒 食材</button>
+        </div>
+
+        <style>
+          .ai-cat-tab-btn {
+            background: white;
+            border: 1px solid #CBD5E1;
+            color: #475569;
+            padding: 8px 4px;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+          }
+          .ai-cat-tab-btn.active {
+            background: var(--primary-light) !important;
+            border-color: var(--primary) !important;
+            color: var(--primary) !important;
+            box-shadow: 0 2px 5px rgba(255,107,82,0.2);
+          }
+        </style>
+
+        <!-- カテゴリパネル領域 (スクロール固定枠) -->
+        <div style="flex: 1; min-height: 0; overflow-y: auto; background: white; border-radius: 14px; padding: 12px; border: 1px solid #E2E8F0;">
+
+          <!-- Category 1: 料理の種類・役割 (初期表示) -->
+          <div id="ai-cat-panel-role" class="ai-cat-panel" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;" class="ai-group-chips">
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="おまかせ" checked onchange="updateAiConditionsPreview()"> 🎲 おまかせ</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="メインおかず (主菜)" onchange="updateAiConditionsPreview()"> 🍖 メインおかず</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="サブおかず・副菜・小鉢" onchange="updateAiConditionsPreview()"> 🥗 副菜・小鉢</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="主食 (ご飯もの・丼・チャーハン)" onchange="updateAiConditionsPreview()"> 🍚 ご飯もの・丼</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="主食 (麺・パスタ・うどん・そば)" onchange="updateAiConditionsPreview()"> 🍜 麺・パスタ</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="主食 (パン・サンドイッチ・トースト)" onchange="updateAiConditionsPreview()"> 🍞 パン・サンド</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="スープ・汁物・鍋" onchange="updateAiConditionsPreview()"> 🍲 スープ・汁物</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="サラダ・マリネ" onchange="updateAiConditionsPreview()"> 🥬 サラダ・マリネ</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="おつまみ・家飲み" onchange="updateAiConditionsPreview()"> 🥂 おつまみ</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="お弁当のおかず (冷めても美味しい)" onchange="updateAiConditionsPreview()"> 🍱 お弁当おかず</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="作り置き・常備菜" onchange="updateAiConditionsPreview()"> 🫙 常備菜</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="スイーツ・デザート・おやつ" onchange="updateAiConditionsPreview()"> 🍰 スイーツ</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="ドリンク・スムージー" onchange="updateAiConditionsPreview()"> 🥤 ドリンク</label>
+          </div>
+
+          <!-- Category 2: 料理ジャンル -->
+          <div id="ai-cat-panel-genre" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;" class="ai-group-chips">
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="おまかせ" checked onchange="updateAiConditionsPreview()"> 🎲 おまかせ</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="和食・家庭料理" onchange="updateAiConditionsPreview()"> 🍱 和食</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="洋食 (ハンバーグ・グラタン等)" onchange="updateAiConditionsPreview()"> 🍽️ 洋食</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="イタリアン・パスタ" onchange="updateAiConditionsPreview()"> 🍝 イタリアン</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="中華料理" onchange="updateAiConditionsPreview()"> 🥟 中華</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="韓国料理" onchange="updateAiConditionsPreview()"> 🇰🇷 韓国</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="タイ・ベトナム・東南アジア料理" onchange="updateAiConditionsPreview()"> 🌶️ アジアン</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="インド・スパイス料理・カレー" onchange="updateAiConditionsPreview()"> 🍛 カレー</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="メキシカン・アメリカン" onchange="updateAiConditionsPreview()"> 🌮 メキシカン</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="フレンチ・ビストロ風" onchange="updateAiConditionsPreview()"> 🇫🇷 フレンチ</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="カフェ風・おしゃれワンプレート" onchange="updateAiConditionsPreview()"> ☕ カフェ風</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="無国籍・創作・フュージョン料理" onchange="updateAiConditionsPreview()"> 🎨 創作</label>
+          </div>
+
+          <!-- Category 3: 味の方向性 -->
+          <div id="ai-cat-panel-taste" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;" class="ai-group-chips">
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="さっぱり・あっさり (酢・柑橘・ポン酢など酸味のある軽い味付け)" onchange="updateAiConditionsPreview()"> 🍋 さっぱり・酸味</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="こってり・濃厚 (バター・チーズ・クリーム系)" onchange="updateAiConditionsPreview()"> 🧈 こってり・濃厚</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="甘辛い (照り焼き・すき焼き風の甘辛ダレ系)" onchange="updateAiConditionsPreview()"> 🍯 甘辛</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="ピリ辛・旨辛・スパイシー (唐秘子・豆板醤・カレー粉など)" onchange="updateAiConditionsPreview()"> 🌶️ ピリ辛・旨辛</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="塩味・シンプル (素材の味を活かしたあっさり塩味)" onchange="updateAiConditionsPreview()"> 🧂 塩味・シンプル</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="味噌・発酵系 (味噌・塩麹・醤油麹などコク深い味わい)" onchange="updateAiConditionsPreview()"> 🫘 味噌・発酵系</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="だし・和風 (かつお・昆布・白だしなど出汁がきいた優しい味)" onchange="updateAiConditionsPreview()"> 🐟 だし・和風</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="にんにく・ガーリック (ニンニクの効いたパンチのある味)" onchange="updateAiConditionsPreview()"> 🧄 ガーリック</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="ごま・ナッツ系 (ごまだれ・ピーナッツソースなど香ばしい味)" onchange="updateAiConditionsPreview()"> 🥜 ごま・ナッツ</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="カレー風味・スパイス (カレー粉・クミンなどのスパイス)" onchange="updateAiConditionsPreview()"> 🍛 カレースパイス</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="デミグラス・トマト系 (トマトソース・ケチャップ・デミグラスなど)" onchange="updateAiConditionsPreview()"> 🍅 トマト・デミ</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="クリーム・ホワイトソース系 (牛乳・生クリーム・チーズなど)" onchange="updateAiConditionsPreview()"> 🥛 クリームチーズ</label>
+          </div>
+
+        <!-- Category 4: 目的・シーン -->
+        <div id="ai-cat-panel-purpose" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; background: white; border-radius: 14px; padding: 12px; border: 1px solid #E2E8F0;" class="ai-group-chips">
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="時短・爆速 (10〜15分以内で完成)" onchange="updateAiConditionsPreview()"> ⏱️ 時短・爆速</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="がっつり・スタミナ・ボリューム満点" onchange="updateAiConditionsPreview()"> 🍖 スタミナ</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="ヘルシー・低カロリー・ダイエット向け" onchange="updateAiConditionsPreview()"> 🥗 ヘルシー</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="高タンパク・筋トレ・ボディメイク飯" onchange="updateAiConditionsPreview()"> 💪 高タンパク</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="野菜たっぷり・野菜メイン" onchange="updateAiConditionsPreview()"> 🥦 野菜たっぷり</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="子供が喜ぶ・マイルドで食べやすい" onchange="updateAiConditionsPreview()"> 👶 子供向け</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="節約・コスパ重視 (少ない食材で美味しく)" onchange="updateAiConditionsPreview()"> 💰 節約・コスパ</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="おもてなし・ホームパーティ向け・見栄えよく" onchange="updateAiConditionsPreview()"> 🎉 おもてなし</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="夜食・軽め・胃に優しい" onchange="updateAiConditionsPreview()"> 🌙 夜食・軽め</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="朝ごはん・ブランチ" onchange="updateAiConditionsPreview()"> 🌅 朝ごはん</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="お酒に合う・ワインやビールのお供" onchange="updateAiConditionsPreview()"> 🍺 お酒のお供</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="疲労回復・栄養満点・体が温まる" onchange="updateAiConditionsPreview()"> 🔥 疲労回復</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="冷たい料理・暑い日にぴったり" onchange="updateAiConditionsPreview()"> 🧊 冷たい・夏向き</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="映え・SNS映え・見た目重視" onchange="updateAiConditionsPreview()"> 📸 SNS映え</label>
+        </div>
+
+        <!-- Category 5: 調理スタイル・道具 -->
+        <div id="ai-cat-panel-style" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; background: white; border-radius: 14px; padding: 12px; border: 1px solid #E2E8F0;" class="ai-group-chips">
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="フライパン1つ (ワンパン)" onchange="updateAiConditionsPreview()"> 🍳 ワンパン</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="鍋1つ (ワンポット)" onchange="updateAiConditionsPreview()"> 🫕 ワンポット</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="電子レンジのみ (レンジ調理)" onchange="updateAiConditionsPreview()"> ⚡ レンジのみ</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="オーブン・トースター" onchange="updateAiConditionsPreview()"> 🔥 トースター</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="炊飯器調理 (炊飯器に入れるだけ)" onchange="updateAiConditionsPreview()"> 🍚 炊飯器</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="包丁不要・手でちぎる・キッチンばさみ" onchange="updateAiConditionsPreview()"> ✂️ 包丁不要</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="火を使わない (和える・混ぜるだけ)" onchange="updateAiConditionsPreview()"> 🥄 火を使わない</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="揚げ物・フライ" onchange="updateAiConditionsPreview()"> 🍤 揚げ物</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="グリル・焼き物 (魚焼きグリル含む)" onchange="updateAiConditionsPreview()"> 🔥 グリル</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="蒸し料理 (せいろ・蒸し器・レンジ蒸し)" onchange="updateAiConditionsPreview()"> ♨️ 蒸し料理</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="じっくり煮込み・本格 (時間をかけて)" onchange="updateAiConditionsPreview()"> 🍲 煮込み</label>
+          <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="漬ける・マリネ (放置するだけ)" onchange="updateAiConditionsPreview()"> 🫙 マリネ</label>
+        </div>
+
+        <!-- Category 6: 食材の買い足し方針 -->
+        <div id="ai-cat-panel-strictness" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; background: white; border-radius: 14px; padding: 12px; border: 1px solid #E2E8F0;" class="ai-group-chips">
+          <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="手元にある食材のみ (買い足しゼロ)" checked onchange="updateAiConditionsPreview()"> 🟢 買い足しゼロ</label>
+          <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="定番調味料・野菜の買い足しOK" onchange="updateAiConditionsPreview()"> 🟡 定番品OK</label>
+          <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="自由に追加食材OK (本格味重視)" onchange="updateAiConditionsPreview()"> 🔴 買い足し自由</label>
+        </div>
+      </div>
+
+      <!-- モーダルフッター (Sticky Action Bar) -->
+      <div style="padding: 12px 16px; background: white; border-top: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; gap: 10px; position: sticky; bottom: 0; z-index: 10; box-shadow: 0 -4px 12px rgba(0,0,0,0.05);">
+        <button type="button" onclick="resetAiConditions()" style="font-size: 0.82rem; color: #E53E3E; background: #FFF5F5; border: 1px solid #FEB2B2; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 0 0 auto;">
+          🔄 リセット
+        </button>
+        <button type="button" onclick="closeAiFilterModal()" style="font-size: 0.95rem; color: #FFFFFF; background: var(--primary); border: none; padding: 12px 20px; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 1; box-shadow: 0 4px 12px rgba(255,107,82,0.35);">
+          ✨ この条件で決定する
+        </button>
+      </div>
+
+    </div>
   </div>
 
   <!-- レシピ詳細 モーダル -->
@@ -1889,16 +2042,32 @@
 
     const googleAuthProvider = new GoogleAuthProvider();
 
+    function getTimestampMs(ts) {
+      if (!ts) return 0;
+      if (typeof ts.toMillis === 'function') return ts.toMillis();
+      if (typeof ts.toDate === 'function') return ts.toDate().getTime();
+      if (ts instanceof Date) return ts.getTime();
+      if (typeof ts === 'number') return ts;
+      const d = new Date(ts);
+      return isNaN(d.getTime()) ? 0 : d.getTime();
+    }
+
     // Date formatter helper
     function formatDateString(ts) {
       if (!ts) return '';
-      const date = ts.toDate ? ts.toDate() : new Date(ts);
-      if (isNaN(date.getTime())) return '';
+      const ms = getTimestampMs(ts);
+      if (!ms) return '';
+      const date = new Date(ms);
       return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
     }
 
     // --- Mode Switcher Logic ---
+    const modeScrollPositions = { recipe: 0, fridge: 0 };
+
     window.switchAppMode = function (mode) {
+      if (currentAppMode) {
+        modeScrollPositions[currentAppMode] = window.scrollY;
+      }
       currentAppMode = mode;
 
       // Update Tab UI
@@ -1928,6 +2097,12 @@
         document.getElementById('nav-add-text').innerText = 'レシピ登録';
         document.getElementById('form-header-title').innerText = '📌 基本情報';
       }
+
+      // Restore independent scroll position for selected mode
+      const targetY = modeScrollPositions[mode] || 0;
+      setTimeout(() => {
+        window.scrollTo({ top: targetY, behavior: 'instant' });
+      }, 0);
     };
 
     function updateFormModeUI() {
@@ -2163,13 +2338,21 @@
     const modalSettings = document.getElementById('modal-settings');
     const modalDetail = document.getElementById('modal-recipe-detail');
 
+    window.closeAllModals = function closeAllModals() {
+      document.querySelectorAll('.modal-backdrop').forEach(m => {
+        m.classList.remove('active');
+        m.removeAttribute('style');
+      });
+    };
+
     function openSettingsModal() {
       updateSyncModalUI();
+      closeAllModals();
       modalSettings.classList.add('active');
     }
 
     // --- Navigation Logic ---
-    function switchPage(pageName) {
+    window.switchPage = function switchPage(pageName) {
       Object.values(pages).forEach(p => p.classList.remove('active'));
       Object.values(navButtons).forEach(b => b.classList.remove('active'));
 
@@ -2180,7 +2363,13 @@
         resetForm();
       }
 
-      if (pageName === 'list' && app) fetchRecipes();
+      if (pageName === 'list') {
+        if (app && recipesCache.length === 0) {
+          fetchRecipes();
+        } else {
+          renderRecipeList();
+        }
+      }
     }
 
     navButtons.list.addEventListener('click', () => {
@@ -2263,11 +2452,13 @@
     document.getElementById('btn-open-settings').addEventListener('click', openSettingsModal);
     document.getElementById('btn-close-settings').addEventListener('click', () => {
       modalSettings.classList.remove('active');
+      modalSettings.removeAttribute('style');
     });
 
     // --- Detail Modal Close ---
     document.getElementById('btn-close-detail').addEventListener('click', () => {
       modalDetail.classList.remove('active');
+      modalDetail.removeAttribute('style');
       currentDetailRecipe = null;
     });
 
@@ -2276,6 +2467,7 @@
       modal.addEventListener('click', (e) => {
         if (e.target === modal) {
           modal.classList.remove('active');
+          modal.removeAttribute('style');
           currentDetailRecipe = null;
         }
       });
@@ -2820,7 +3012,7 @@
       return maxScore >= 1.8 ? maxScore : 0;
     }
 
-    function computeRecipeSemanticScore(recipe, queryStr) {
+    window.computeRecipeSemanticScore = function computeRecipeSemanticScore(recipe, queryStr) {
       // 1. Convert common punctuation separators to spaces to prevent words from merging (e.g. "豚肉、玉ねぎ" -> "豚肉 玉ねぎ")
       let normalizedQuery = queryStr.replace(/[\u3000・,\/、。｜\|]/g, ' ');
       const rawKeywords = normalizedQuery.trim().split(/\s+/).filter(k => k.length > 0);
@@ -2872,13 +3064,17 @@
     }
 
     // Filter & Render List with Multi-Criteria Sorting
-    function renderRecipeList() {
+
+    window.renderRecipeList = function renderRecipeList() {
       const container = document.getElementById('recipe-list-container');
       const filterTagSelect = document.getElementById('filter-tag-select');
       const currentFilter = filterTagSelect ? filterTagSelect.value : '';
 
       const scoredRecipes = recipesCache.map(item => {
-        if (currentFilter && (!item.tags || !item.tags.includes(currentFilter))) return { item, score: 0 };
+        if (currentFilter) {
+          const hasTag = (item.category === currentFilter) || (Array.isArray(item.tags) && item.tags.includes(currentFilter));
+          if (!hasTag) return { item, score: 0 };
+        }
 
         let categoryMatch = false;
         if (activeCategory === 'all') {
@@ -2900,12 +3096,12 @@
         }
 
         if (sortBy === 'newest') {
-          const timeA = a.item.createdAt?.toMillis ? a.item.createdAt.toMillis() : (a.item.createdAt || 0);
-          const timeB = b.item.createdAt?.toMillis ? b.item.createdAt.toMillis() : (b.item.createdAt || 0);
+          const timeA = getTimestampMs(a.item.createdAt || a.item.updatedAt);
+          const timeB = getTimestampMs(b.item.createdAt || b.item.updatedAt);
           return timeB - timeA;
         } else if (sortBy === 'oldest') {
-          const timeA = a.item.createdAt?.toMillis ? a.item.createdAt.toMillis() : (a.item.createdAt || 0);
-          const timeB = b.item.createdAt?.toMillis ? b.item.createdAt.toMillis() : (b.item.createdAt || 0);
+          const timeA = getTimestampMs(a.item.createdAt || a.item.updatedAt);
+          const timeB = getTimestampMs(b.item.createdAt || b.item.updatedAt);
           return timeA - timeB;
         } else if (sortBy === 'cooked') {
           return (b.item.cookedCount || 0) - (a.item.cookedCount || 0);
@@ -2946,7 +3142,8 @@
       filtered.forEach(item => {
         const card = document.createElement('div');
         card.className = 'recipe-card';
-        card.addEventListener('click', () => openRecipeDetail(item));
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
 
         const photos = getRecipePhotos(item);
         const coverPhoto = photos[0] || "";
@@ -3011,12 +3208,20 @@
           </div>
         `;
 
-        // Bind pure Firestore instant favorite star click with uniform animation
+        // Card click opens recipe detail
+        card.onclick = (e) => {
+          if (e.target && typeof e.target.closest === 'function' && e.target.closest('.card-fav-btn')) return;
+          window.openRecipeDetail(item);
+        };
+
+        // Favorite button click
         const favBtn = card.querySelector('.card-fav-btn');
-        favBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          toggleFavorite(item.id, favBtn);
-        });
+        if (favBtn) {
+          favBtn.onclick = (e) => {
+            e.stopPropagation();
+            toggleFavorite(item.id, favBtn);
+          };
+        }
 
         grid.appendChild(card);
       });
@@ -3025,7 +3230,7 @@
       container.appendChild(grid);
     }
 
-    function updateFilterTagsUI() {
+    window.updateFilterTagsUI = function updateFilterTagsUI() {
       const filterTagSelect = document.getElementById('filter-tag-select');
       const suggestTagSelect = document.getElementById('suggest-tag-select');
       const currentFilter = filterTagSelect ? filterTagSelect.value : '';
@@ -3068,181 +3273,192 @@
     }
 
     // --- Open Detail Modal & Photo Gallery ---
-    function openRecipeDetail(recipe) {
-      currentDetailRecipe = recipe;
-      currentGalleryIndex = 0;
+    window.openRecipeDetail = function openRecipeDetail(recipe) {
+      if (!recipe) return;
+      const modal = document.getElementById('modal-recipe-detail') || modalDetail;
+      if (!modal) return;
 
-      document.getElementById('detail-title').innerText = recipe.title || '無題';
-      document.getElementById('detail-category-badge').innerText = recipe.category || 'その他';
+      closeAllModals();
+      modal.classList.add('active');
 
-      const count = recipe.cookedCount || 0;
-      document.getElementById('detail-cooked-count').innerText = count;
-      document.getElementById('btn-decrement-cooked').disabled = count <= 0;
+      try {
+        currentDetailRecipe = recipe;
+        currentGalleryIndex = 0;
 
-      updateDetailFavStar();
+        document.getElementById('detail-title').innerText = recipe.title || '無題';
+        document.getElementById('detail-category-badge').innerText = recipe.category || 'その他';
 
-      const servingsEl = document.getElementById('detail-servings');
-      if (recipe.servings) {
-        servingsEl.innerText = `👤 ${recipe.servings}`;
-        servingsEl.style.display = 'inline';
-      } else {
-        servingsEl.style.display = 'none';
-      }
+        const count = recipe.cookedCount || 0;
+        document.getElementById('detail-cooked-count').innerText = count;
+        document.getElementById('btn-decrement-cooked').disabled = count <= 0;
 
-      // Dates
-      const dateInfoEl = document.getElementById('detail-date-info');
-      const createdAtStr = formatDateString(recipe.createdAt);
-      const updatedAtStr = formatDateString(recipe.updatedAt || recipe.createdAt);
-      let dateHtml = `登録: ${createdAtStr}`;
-      if (updatedAtStr && updatedAtStr !== createdAtStr) {
-        dateHtml += ` (更新: ${updatedAtStr})`;
-      }
-      dateInfoEl.innerText = dateHtml;
+        updateDetailFavStar();
 
-      document.getElementById('section-ingredients').style.display = 'block';
-      document.getElementById('section-steps').style.display = 'block';
-      document.getElementById('detail-cooked-counter').style.display = 'flex';
-      document.getElementById('detail-section-title-memo').innerText = '💡 コツ・メモ';
+        const servingsEl = document.getElementById('detail-servings');
+        if (recipe.servings) {
+          servingsEl.innerText = `👤 ${recipe.servings}`;
+          servingsEl.style.display = 'inline';
+        } else {
+          servingsEl.style.display = 'none';
+        }
 
-      const btnDeleteRecipe = document.getElementById('btn-delete-recipe');
-      btnDeleteRecipe.innerHTML = `<span>🗑️</span> レシピを削除`;
+        // Dates
+        const dateInfoEl = document.getElementById('detail-date-info');
+        const createdAtStr = formatDateString(recipe.createdAt);
+        const updatedAtStr = formatDateString(recipe.updatedAt || recipe.createdAt);
+        let dateHtml = `登録: ${createdAtStr}`;
+        if (updatedAtStr && updatedAtStr !== createdAtStr) {
+          dateHtml += ` (更新: ${updatedAtStr})`;
+        }
+        dateInfoEl.innerText = dateHtml;
 
-      // Render Photo Gallery
-      const photos = getRecipePhotos(recipe);
-      const galleryContainer = document.getElementById('detail-gallery-container');
-      const btnPrev = document.getElementById('gallery-btn-prev');
-      const btnNext = document.getElementById('gallery-btn-next');
-      const thumbsRow = document.getElementById('gallery-thumbs-row');
+        document.getElementById('section-ingredients').style.display = 'block';
+        document.getElementById('section-steps').style.display = 'block';
+        document.getElementById('detail-cooked-counter').style.display = 'flex';
+        document.getElementById('detail-section-title-memo').innerText = '💡 コツ・メモ';
 
-      if (photos.length > 0) {
-        galleryContainer.style.display = 'block';
-        updateGalleryPhoto(photos);
+        const btnDeleteRecipe = document.getElementById('btn-delete-recipe');
+        if (btnDeleteRecipe) {
+          const typeStr = recipe.isAiGenerated ? '提案レシピ' : 'レシピ';
+          btnDeleteRecipe.innerHTML = `<span>🗑️</span> ${typeStr}を削除`;
+        }
 
-        if (photos.length > 1) {
-          btnPrev.style.display = 'flex';
-          btnNext.style.display = 'flex';
-          thumbsRow.style.display = 'flex';
-          thumbsRow.innerHTML = '';
+        // Render Photo Gallery
+        const photos = getRecipePhotos(recipe);
+        const galleryContainer = document.getElementById('detail-gallery-container');
+        const btnPrev = document.getElementById('gallery-btn-prev');
+        const btnNext = document.getElementById('gallery-btn-next');
+        const thumbsRow = document.getElementById('gallery-thumbs-row');
 
-          photos.forEach((p, idx) => {
-            const thumb = document.createElement('img');
-            thumb.className = `gallery-thumb-item ${idx === 0 ? 'active' : ''}`;
-            thumb.src = p;
-            thumb.addEventListener('click', () => {
-              currentGalleryIndex = idx;
-              updateGalleryPhoto(photos);
+        if (photos.length > 0) {
+          galleryContainer.style.display = 'block';
+          updateGalleryPhoto(photos);
+
+          if (photos.length > 1) {
+            btnPrev.style.display = 'flex';
+            btnNext.style.display = 'flex';
+            thumbsRow.style.display = 'flex';
+            thumbsRow.innerHTML = '';
+
+            photos.forEach((p, idx) => {
+              const thumb = document.createElement('img');
+              thumb.className = `gallery-thumb-item ${idx === 0 ? 'active' : ''}`;
+              thumb.src = p;
+              thumb.addEventListener('click', () => {
+                currentGalleryIndex = idx;
+                updateGalleryPhoto(photos);
+              });
+              thumbsRow.appendChild(thumb);
             });
-            thumbsRow.appendChild(thumb);
+          } else {
+            btnPrev.style.display = 'none';
+            btnNext.style.display = 'none';
+            thumbsRow.style.display = 'none';
+          }
+        } else {
+          galleryContainer.style.display = 'none';
+        }
+
+        // Ingredients
+        const secIngredients = document.getElementById('section-ingredients');
+        const listIngredients = document.getElementById('detail-ingredients-list');
+        listIngredients.innerHTML = '';
+
+        if (Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0) {
+          secIngredients.style.display = 'block';
+          recipe.ingredients.forEach(ing => {
+            let isMissing = false;
+
+            if (recipe.missing_ingredients && Array.isArray(recipe.missing_ingredients) && recipe.missing_ingredients.length > 0) {
+              isMissing = recipe.missing_ingredients.some(m => ing.includes(m) || m.includes(ing));
+            } else if (refrigeratorIngredients && refrigeratorIngredients.length > 0) {
+              isMissing = !isTriviallyAvailable(ing) && !isIngredientInStock(ing, refrigeratorIngredients);
+            }
+
+            const missingBadge = isMissing
+              ? `<span style="margin-left: 8px; font-size: 0.65rem; background: #F59E0B; color: white; padding: 2px 6px; border-radius: 8px; font-weight: bold; vertical-align: middle;">💡不足</span>`
+              : '';
+
+            const label = document.createElement('label');
+            label.className = 'ingredient-item';
+            label.innerHTML = `<input type="checkbox"> <span>${escapeHtml(ing)}</span>${missingBadge}`;
+            label.querySelector('input').addEventListener('change', (e) => {
+              if (e.target.checked) label.classList.add('checked');
+              else label.classList.remove('checked');
+            });
+            listIngredients.appendChild(label);
           });
         } else {
-          btnPrev.style.display = 'none';
-          btnNext.style.display = 'none';
-          thumbsRow.style.display = 'none';
+          secIngredients.style.display = 'none';
         }
-      } else {
-        galleryContainer.style.display = 'none';
-      }
 
-      // Ingredients
-      const secIngredients = document.getElementById('section-ingredients');
-      const listIngredients = document.getElementById('detail-ingredients-list');
-      listIngredients.innerHTML = '';
+        // Render Structured Steps
+        const secSteps = document.getElementById('section-steps');
+        const listSteps = document.getElementById('detail-steps-list');
+        listSteps.innerHTML = '';
 
-      if (Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0) {
-        secIngredients.style.display = 'block';
-        recipe.ingredients.forEach(ing => {
-          let isMissing = false;
+        if (Array.isArray(recipe.steps) && recipe.steps.length > 0) {
+          secSteps.style.display = 'block';
+          recipe.steps.forEach((step, idx) => {
+            let stepTitle = '';
+            let stepText = '';
 
-          // AI提案で明示的に不足とされているか、または手元のストックに含まれていないか判定
-          if (recipe.missing_ingredients && Array.isArray(recipe.missing_ingredients) && recipe.missing_ingredients.length > 0) {
-            isMissing = recipe.missing_ingredients.some(m => ing.includes(m) || m.includes(ing));
-          } else if (refrigeratorIngredients && refrigeratorIngredients.length > 0) {
-            isMissing = !isTriviallyAvailable(ing) && !isIngredientInStock(ing, refrigeratorIngredients);
-          }
-
-          const missingBadge = isMissing
-            ? `<span style="margin-left: 8px; font-size: 0.65rem; background: #F59E0B; color: white; padding: 2px 6px; border-radius: 8px; font-weight: bold; vertical-align: middle;">💡不足</span>`
-            : '';
-
-          const label = document.createElement('label');
-          label.className = 'ingredient-item';
-          label.innerHTML = `<input type="checkbox"> <span>${escapeHtml(ing)}</span>${missingBadge}`;
-          label.querySelector('input').addEventListener('change', (e) => {
-            if (e.target.checked) label.classList.add('checked');
-            else label.classList.remove('checked');
-          });
-          listIngredients.appendChild(label);
-        });
-      } else {
-        secIngredients.style.display = 'none';
-      }
-
-      // Render Structured Steps (Title + Detail)
-      const secSteps = document.getElementById('section-steps');
-      const listSteps = document.getElementById('detail-steps-list');
-      listSteps.innerHTML = '';
-
-      if (Array.isArray(recipe.steps) && recipe.steps.length > 0) {
-        secSteps.style.display = 'block';
-        recipe.steps.forEach((step, idx) => {
-          let stepTitle = '';
-          let stepText = '';
-
-          if (typeof step === 'object' && step !== null) {
-            stepTitle = step.title || '';
-            stepText = step.text || step.desc || '';
-          } else if (typeof step === 'string') {
-            let s = step.replace(/^[0-9０-９]+[\.．\s]*/, '').trim();
-            if (s.includes('\n')) {
-              const lines = s.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-              stepTitle = lines[0];
-              stepText = lines.slice(1).join('\n');
-            } else if (s.includes(':') || s.includes('：')) {
-              const parts = s.split(/[:：]/);
-              stepTitle = parts[0].trim();
-              stepText = parts.slice(1).join(':').trim();
-            } else {
-              stepText = s;
+            if (typeof step === 'object' && step !== null) {
+              stepTitle = step.title || '';
+              stepText = step.text || step.desc || '';
+            } else if (typeof step === 'string') {
+              let s = step.replace(/^[0-9０-９]+[\.．\s]*/, '').trim();
+              if (s.includes('\n')) {
+                const lines = s.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                stepTitle = lines[0];
+                stepText = lines.slice(1).join('\n');
+              } else if (s.includes(':') || s.includes('：')) {
+                const parts = s.split(/[:：]/);
+                stepTitle = parts[0].trim();
+                stepText = parts.slice(1).join(':').trim();
+              } else {
+                stepText = s;
+              }
             }
-          }
 
-          const item = document.createElement('div');
-          item.className = 'step-item';
-          item.innerHTML = `
-            <div class="step-number">${idx + 1}</div>
-            <div class="step-body">
-              ${stepTitle ? `<div class="step-heading">${escapeHtml(stepTitle)}</div>` : ''}
-              ${stepText ? `<div class="step-desc">${escapeHtml(stepText)}</div>` : ''}
-            </div>
-          `;
-          listSteps.appendChild(item);
-        });
-      } else {
-        secSteps.style.display = 'none';
+            const item = document.createElement('div');
+            item.className = 'step-item';
+            item.innerHTML = `
+              <div class="step-number">${idx + 1}</div>
+              <div class="step-body">
+                ${stepTitle ? `<div class="step-heading">${escapeHtml(stepTitle)}</div>` : ''}
+                ${stepText ? `<div class="step-desc">${escapeHtml(stepText)}</div>` : ''}
+              </div>
+            `;
+            listSteps.appendChild(item);
+          });
+        } else {
+          secSteps.style.display = 'none';
+        }
+
+        // Memo
+        const secMemo = document.getElementById('section-memo');
+        const contentMemo = document.getElementById('detail-memo-content');
+        if (recipe.memo) {
+          secMemo.style.display = 'block';
+          contentMemo.innerText = recipe.memo;
+        } else {
+          secMemo.style.display = 'none';
+        }
+
+        if (recipe.isAiGenerated) {
+          document.getElementById('modal-footer-default').style.display = 'none';
+          document.getElementById('modal-footer-ai').style.display = 'flex';
+          document.getElementById('btn-toggle-fav-detail').style.display = 'none';
+          document.getElementById('detail-cooked-counter').style.display = 'none';
+        } else {
+          document.getElementById('modal-footer-default').style.display = 'flex';
+          document.getElementById('modal-footer-ai').style.display = 'none';
+          document.getElementById('btn-toggle-fav-detail').style.display = 'block';
+        }
+      } catch (err) {
+        console.error('Error populating recipe detail modal:', err);
       }
-
-      // Memo
-      const secMemo = document.getElementById('section-memo');
-      const contentMemo = document.getElementById('detail-memo-content');
-      if (recipe.memo) {
-        secMemo.style.display = 'block';
-        contentMemo.innerText = recipe.memo;
-      } else {
-        secMemo.style.display = 'none';
-      }
-
-      if (recipe.isAiGenerated) {
-        document.getElementById('modal-footer-default').style.display = 'none';
-        document.getElementById('modal-footer-ai').style.display = 'flex';
-        document.getElementById('btn-toggle-fav-detail').style.display = 'none';
-        document.getElementById('detail-cooked-counter').style.display = 'none';
-      } else {
-        document.getElementById('modal-footer-default').style.display = 'flex';
-        document.getElementById('modal-footer-ai').style.display = 'none';
-        document.getElementById('btn-toggle-fav-detail').style.display = 'block';
-      }
-
-      modalDetail.classList.add('active');
     }
 
     function updateDetailFavStar() {
@@ -3775,7 +3991,8 @@
     function createMiniRecipeCardDOM(item, badgesHtml = '', onClick) {
       const card = document.createElement('div');
       card.className = 'recipe-card';
-      card.addEventListener('click', () => onClick(item));
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
 
       const photos = getRecipePhotos(item);
       const coverPhoto = photos[0] || "";
@@ -3805,6 +4022,12 @@
           </div>
         </div>
       `;
+
+      card.onclick = (e) => {
+        if (e.target && typeof e.target.closest === 'function' && e.target.closest('.card-fav-btn')) return;
+        onClick(item);
+      };
+
       return card;
     }
 
@@ -4083,6 +4306,114 @@
       }
     }
 
+    // --- AI Filter UI Helpers (Modal, Selection Badges & Reset) ---
+    window.switchAiCategoryTab = function switchAiCategoryTab(cat) {
+      const categories = ['role', 'genre', 'taste', 'purpose', 'style', 'strictness'];
+      categories.forEach(c => {
+        const panel = document.getElementById(`ai-cat-panel-${c}`);
+        const btn = document.getElementById(`ai-tab-btn-${c}`);
+        if (panel) panel.style.display = (c === cat) ? 'grid' : 'none';
+        if (btn) {
+          if (c === cat) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      });
+    };
+
+    window.openAiFilterModal = function openAiFilterModal() {
+      const modal = document.getElementById('modal-ai-filter');
+      if (modal) {
+        closeAllModals();
+        modal.classList.add('active');
+        updateAiConditionsPreview();
+      }
+    };
+
+    window.closeAiFilterModal = function closeAiFilterModal() {
+      const modal = document.getElementById('modal-ai-filter');
+      if (modal) {
+        modal.classList.remove('active');
+        modal.removeAttribute('style');
+        updateAiConditionsPreview();
+      }
+    };
+
+    // Attach backdrop listener after DOM is ready
+    window.addEventListener('DOMContentLoaded', () => {
+      const filterModal = document.getElementById('modal-ai-filter');
+      if (filterModal) {
+        filterModal.addEventListener('click', (e) => {
+          if (e.target.id === 'modal-ai-filter') {
+            closeAiFilterModal();
+          }
+        });
+      }
+    });
+
+    window.updateAiConditionsPreview = function updateAiConditionsPreview() {
+      const dishRoleEl = document.querySelector('input[name="aiDishRole"]:checked');
+      const genreEl = document.querySelector('input[name="aiGenre"]:checked');
+      const tasteEls = document.querySelectorAll('input[name="aiTaste"]:checked');
+      const purposeEls = document.querySelectorAll('input[name="aiPurpose"]:checked');
+      const styleEls = document.querySelectorAll('input[name="aiStyle"]:checked');
+      const strictnessEl = document.querySelector('input[name="aiStrictness"]:checked');
+
+      let summaryList = [];
+      if (dishRoleEl && dishRoleEl.value !== 'おまかせ') {
+        summaryList.push(dishRoleEl.value.split(' ')[0]);
+      }
+      if (genreEl && genreEl.value !== 'おまかせ') {
+        summaryList.push(genreEl.value.split(' ')[0]);
+      }
+      if (tasteEls.length > 0) {
+        Array.from(tasteEls).forEach(el => summaryList.push(el.parentElement.innerText.trim()));
+      }
+      if (purposeEls.length > 0) {
+        Array.from(purposeEls).forEach(el => summaryList.push(el.parentElement.innerText.trim()));
+      }
+      if (styleEls.length > 0) {
+        Array.from(styleEls).forEach(el => summaryList.push(el.parentElement.innerText.trim()));
+      }
+      if (strictnessEl && !strictnessEl.value.includes('買い足しゼロ')) {
+        summaryList.push(strictnessEl.parentElement.innerText.trim());
+      }
+
+      const previewEl = document.getElementById('ai-active-conditions-preview');
+      const badgeEl = document.getElementById('ai-filter-count-badge');
+
+      if (badgeEl) {
+        badgeEl.textContent = summaryList.length;
+        badgeEl.style.display = summaryList.length > 0 ? 'inline-block' : 'none';
+      }
+
+      if (previewEl) {
+        if (summaryList.length === 0) {
+          previewEl.innerHTML = '<span style="color: #999;">おまかせ (タップでこだわり条件を設定)</span>';
+        } else {
+          previewEl.innerHTML = summaryList.map(item =>
+            `<span style="background: #FFF0F2; color: var(--primary-dark); border: 1px solid var(--primary-light); padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; display: inline-flex; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">${item}</span>`
+          ).join('');
+        }
+      }
+    };
+
+    window.resetAiConditions = function resetAiConditions() {
+      const roleRadios = document.getElementsByName('aiDishRole');
+      if (roleRadios.length > 0) roleRadios[0].checked = true;
+
+      const genreRadios = document.getElementsByName('aiGenre');
+      if (genreRadios.length > 0) genreRadios[0].checked = true;
+
+      document.querySelectorAll('input[name="aiTaste"]').forEach(cb => cb.checked = false);
+      document.querySelectorAll('input[name="aiPurpose"]').forEach(cb => cb.checked = false);
+      document.querySelectorAll('input[name="aiStyle"]').forEach(cb => cb.checked = false);
+
+      const strictnessRadios = document.getElementsByName('aiStrictness');
+      if (strictnessRadios.length > 0) strictnessRadios[0].checked = true;
+
+      updateAiConditionsPreview();
+    };
+
     // --- AI Generation Logic ---
     document.getElementById('btn-generate-ai').addEventListener('click', () => doGenerateAI(false));
     document.getElementById('btn-generate-ai-another').addEventListener('click', () => doGenerateAI(true));
@@ -4103,25 +4434,31 @@
       const requiredIngEl = document.getElementById('ai-required-ingredients');
       const requiredIng = requiredIngEl ? requiredIngEl.value.trim() : '';
 
+      const dishRoleEl = document.querySelector('input[name="aiDishRole"]:checked');
       const genreEl = document.querySelector('input[name="aiGenre"]:checked');
-      const moodEl = document.querySelector('input[name="aiMood"]:checked');
-      const styleEl = document.querySelector('input[name="aiStyle"]:checked');
+      const tasteEls = document.querySelectorAll('input[name="aiTaste"]:checked');
+      const purposeEls = document.querySelectorAll('input[name="aiPurpose"]:checked');
+      const styleEls = document.querySelectorAll('input[name="aiStyle"]:checked');
       const strictnessEl = document.querySelector('input[name="aiStrictness"]:checked');
       const servingsEl = document.querySelector('input[name="aiServings"]:checked');
       const countEl = document.querySelector('input[name="aiCount"]:checked');
 
+      const dishRole = dishRoleEl ? dishRoleEl.value : "おまかせ";
       const genre = genreEl ? genreEl.value : "おまかせ";
-      const mood = moodEl ? moodEl.value : "指定なし";
-      const style = styleEl ? styleEl.value : "指定なし";
-      const strictness = strictnessEl ? strictnessEl.value : "ストック優先";
+      const tastes = Array.from(tasteEls).map(el => el.value);
+      const purposes = Array.from(purposeEls).map(el => el.value);
+      const styles = Array.from(styleEls).map(el => el.value);
+      const strictness = strictnessEl ? strictnessEl.value : "買い足しゼロ";
       const servings = servingsEl ? servingsEl.value : "2人分";
       const count = countEl ? countEl.value : "5";
 
       let conditions = [];
       if (requiredIng) conditions.push(`【使いたい必須食材・テーマ】: ${requiredIng}`);
+      if (dishRole !== 'おまかせ') conditions.push(`料理の種類・役割: ${dishRole}`);
       if (genre !== 'おまかせ') conditions.push(`ジャンル: ${genre}`);
-      if (mood !== '指定なし') conditions.push(`気分・目的: ${mood}`);
-      if (style !== '指定なし') conditions.push(`調理スタイル: ${style}`);
+      if (tastes.length > 0) conditions.push(`味の方向性: ${tastes.join(' / ')}`);
+      if (purposes.length > 0) conditions.push(`目的・シーン: ${purposes.join(' / ')}`);
+      if (styles.length > 0) conditions.push(`調理スタイル: ${styles.join(' / ')}`);
       conditions.push(`食材の買い足し方針: ${strictness}`);
       conditions.push(`分量: ${servings}`);
 
