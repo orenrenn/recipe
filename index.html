@@ -3983,26 +3983,28 @@
       }
 
       window.updateFilterTagsUI = function updateFilterTagsUI() {
-        const filterTagSelect = document.getElementById('filter-tag-select');
+        const categorySelect = document.getElementById('category-select');
         const suggestTagSelect = document.getElementById('suggest-tag-select');
-        const currentFilter = filterTagSelect ? filterTagSelect.value : '';
+        const currentCategoryFilter = categorySelect ? categorySelect.value : '';
         const currentSuggestFilter = suggestTagSelect ? suggestTagSelect.value : '';
 
-        if (filterTagSelect) {
-          filterTagSelect.innerHTML = '<option value="">すべてのタグ</option>';
-        }
-        if (suggestTagSelect) {
-          suggestTagSelect.innerHTML = `
-            <option value="all">すべてのカテゴリ</option>
-            <option value="fav">😋 おいしかった</option>
-            <option value="主菜">🍱 主菜</option>
-            <option value="副菜">🥗 副菜</option>
-            <option value="汁物">🍲 汁物</option>
-            <option value="主食">🍚 主食</option>
-            <option value="デザート">🍰 デザート</option>
-            <option value="その他">📦 その他</option>
-          `;
-        }
+        const baseOptionsHtml = `
+          <option value="all">すべてのカテゴリ</option>
+          <option value="fav">😋 おいしかった</option>
+          <option value="主菜">🍱 主菜</option>
+          <option value="副菜">🥗 副菜</option>
+          <option value="おつまみ">🍺 おつまみ</option>
+          <option value="汁物">🍲 汁物・スープ</option>
+          <option value="主食">🍚 主食 (ご飯・丼)</option>
+          <option value="麺・パスタ">🍜 麺・パスタ</option>
+          <option value="パン">🍞 パン・サンド</option>
+          <option value="サラダ">🥬 サラダ・前菜</option>
+          <option value="デザート">🍰 デザート・おやつ</option>
+          <option value="その他">📦 その他</option>
+        `;
+
+        if (categorySelect) categorySelect.innerHTML = baseOptionsHtml;
+        if (suggestTagSelect) suggestTagSelect.innerHTML = baseOptionsHtml;
 
         const allTags = new Set();
         recipesCache.forEach(r => {
@@ -4012,15 +4014,19 @@
           }
         });
 
-        const standardCats = new Set(['all', 'fav', '主菜', '副菜', '汁物', '主食', 'デザート', 'その他']);
+        const standardCats = new Set(['all', 'fav', '主菜', '副菜', 'おつまみ', '汁物', '汁物・スープ', '主食', '主食 (ご飯・丼)', '麺・パスタ', 'パン', 'パン・サンド', 'サラダ', 'サラダ・前菜', 'デザート', 'デザート・おやつ', 'その他']);
+
         Array.from(allTags).sort().forEach(tag => {
+          if (!tag) return;
           const safeTag = escapeHtml(tag);
-          if (filterTagSelect) filterTagSelect.insertAdjacentHTML('beforeend', `<option value="${safeTag}">${safeTag}</option>`);
-          if (suggestTagSelect && !standardCats.has(tag)) suggestTagSelect.insertAdjacentHTML('beforeend', `<option value="${safeTag}">${safeTag}</option>`);
+          if (!standardCats.has(tag)) {
+            if (categorySelect) categorySelect.insertAdjacentHTML('beforeend', `<option value="${safeTag}">${safeTag}</option>`);
+            if (suggestTagSelect) suggestTagSelect.insertAdjacentHTML('beforeend', `<option value="${safeTag}">${safeTag}</option>`);
+          }
         });
 
-        if (filterTagSelect) filterTagSelect.value = currentFilter;
-        if (suggestTagSelect) suggestTagSelect.value = currentSuggestFilter;
+        if (categorySelect && currentCategoryFilter) categorySelect.value = currentCategoryFilter;
+        if (suggestTagSelect && currentSuggestFilter) suggestTagSelect.value = currentSuggestFilter;
       }
 
       // Helper: Extract all photos for a recipe
