@@ -1365,11 +1365,11 @@
     <!-- PAGE 1: レシピ一覧 -->
     <div id="page-list" class="page active">
 
-      <!-- Ultra-Refined Glassmorphic Floating Pull to Refresh Indicator -->
+      <!-- Ultra-Clean Glass Capsule PTR Indicator with Readable Label -->
       <div id="pull-to-refresh-indicator"
-        style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%) translateY(-140%) scale(0.9); z-index: 100; pointer-events: none; opacity: 0; display: flex; align-items: center; justify-content: center; gap: 9px; font-size: 0.82rem; font-weight: 800; color: var(--primary-dark); background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(12px); border: 1.5px solid rgba(255, 107, 82, 0.25); padding: 9px 20px; border-radius: 30px; box-shadow: 0 8px 24px rgba(255, 107, 82, 0.16), 0 2px 8px rgba(0,0,0,0.06); transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;">
-        <span id="pull-refresh-icon" style="font-size: 1.15rem; transition: transform 0.2s ease; display: inline-block; filter: drop-shadow(0 2px 4px rgba(255,107,82,0.3));">✨</span>
-        <span id="pull-refresh-text" style="letter-spacing: 0.02em;">引き下げてクラウド同期...</span>
+        style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%) translateY(-150%) scale(0.8); z-index: 100; pointer-events: none; opacity: 0; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.8rem; font-weight: 800; color: var(--primary-dark); background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px); border: 1.5px solid rgba(255, 107, 82, 0.28); padding: 7px 18px; border-radius: 24px; box-shadow: 0 6px 20px rgba(255, 107, 82, 0.15), 0 2px 6px rgba(0,0,0,0.06); transition: transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;">
+        <span id="pull-refresh-icon" style="font-size: 1.1rem; transition: transform 0.15s ease; display: inline-block;">🍳</span>
+        <span id="pull-refresh-text" style="letter-spacing: 0.02em;">引っ張って最新に同期...</span>
       </div>
 
       <!-- 検索・フィルター・ソート -->
@@ -1668,7 +1668,7 @@
                 <div style="font-size: 0.72rem; color: #888; margin-bottom: 6px;">ストック食材からワンタップ選択 <span
                     style="color: #aaa;">(タップでON/OFF)</span>:</div>
                  <div id="ai-stock-chips-container"
-                  style="display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start; height: 98px; max-height: 98px; min-height: 98px; overflow-y: auto; padding: 2px 0;">
+                  style="display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start; height: 82px; max-height: 82px; min-height: 82px; overflow: hidden; padding: 2px 0;">
                 </div>
                 <div id="ai-stock-chips-action"
                   style="display: flex; align-items: center; justify-content: flex-start; gap: 8px; margin-top: 8px; min-height: 28px;">
@@ -3071,17 +3071,17 @@
           const text = document.getElementById('pull-refresh-text');
 
           if (indicator) {
-            indicator.style.transform = `translateX(-50%) translateY(${Math.min(pullDistance, 54)}px) scale(${0.9 + Math.min(pullDistance / PULL_THRESHOLD, 1) * 0.15})`;
+            const scaleProgress = Math.min(0.8 + (pullDistance / PULL_THRESHOLD) * 0.2, 1);
+            indicator.style.transform = `translateX(-50%) translateY(${Math.min(pullDistance, 54)}px) scale(${scaleProgress})`;
             indicator.style.opacity = `${Math.min(pullDistance / PULL_THRESHOLD, 1)}`;
+            icon.style.transform = `rotate(${pullDistance * 4}deg)`;
 
             if (pullDistance >= PULL_THRESHOLD) {
-              icon.style.transform = 'rotate(180deg)';
               icon.innerText = '🔄';
               text.innerText = '離して最新に更新...';
             } else {
-              icon.style.transform = 'rotate(0deg)';
-              icon.innerText = '✨';
-              text.innerText = '引き下げてクラウド同期...';
+              icon.innerText = '🍳';
+              text.innerText = '引っ張って最新に同期...';
             }
           }
         }
@@ -3101,25 +3101,26 @@
             indicator.style.opacity = '1';
             icon.style.transform = 'rotate(0deg)';
             icon.innerText = '🍳';
-            icon.style.animation = 'spin 0.7s cubic-bezier(0.4, 0, 0.2, 1) infinite';
-            text.innerText = 'データを同期中...';
+            icon.style.animation = 'spin 0.7s linear infinite';
+            if (text) text.innerText = 'データを同期中...';
           }
 
           await fetchRecipes(true);
 
           if (indicator) {
             icon.style.animation = 'none';
-            icon.innerText = '🎉';
-            text.innerText = '最新データを同期完了！';
+            icon.innerText = '✨';
+            if (text) text.innerText = '同期が完了しました！';
 
             setTimeout(() => {
-              indicator.style.transform = 'translateX(-50%) translateY(-140%) scale(0.9)';
+              indicator.style.transform = 'translateX(-50%) translateY(-150%) scale(0.8)';
               indicator.style.opacity = '0';
               setTimeout(() => {
-                icon.innerText = '✨';
+                icon.innerText = '🍳';
+                if (text) text.innerText = '引っ張って最新に同期...';
                 isRefreshing = false;
-              }, 200);
-            }, 650);
+              }, 250);
+            }, 600);
           } else {
             isRefreshing = false;
           }
@@ -3685,7 +3686,7 @@
         if (suggestTagSelect) {
           suggestTagSelect.innerHTML = `
             <option value="all">すべてのカテゴリ</option>
-            <option value="fav">⭐ お気に入り</option>
+            <option value="fav">😋 おいしかった</option>
             <option value="主菜">🍱 主菜</option>
             <option value="副菜">🥗 副菜</option>
             <option value="汁物">🍲 汁物</option>
@@ -4456,7 +4457,7 @@
           return;
         }
 
-        const PAGE_SIZE = 9;
+        const PAGE_SIZE = 6;
         const totalItems = mainStockIngredients.length;
         const totalPages = Math.ceil(totalItems / PAGE_SIZE);
 
@@ -4465,16 +4466,19 @@
         const startIdx = aiStockChipsOffset * PAGE_SIZE;
         const visibleItems = mainStockIngredients.slice(startIdx, startIdx + PAGE_SIZE);
 
-        // Render ONLY ingredient chips into the 3-line container
+        // Render ONLY ingredient chips into the 2-line fixed container (0 clipping)
         visibleItems.forEach(ingName => {
           const isSelected = currentItems.includes(ingName);
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.className = 'pill';
-          btn.style.fontSize = '0.75rem';
-          btn.style.padding = '4px 10px';
-          btn.style.cursor = 'pointer';
+          btn.style.fontSize = '0.8rem';
+          btn.style.padding = '5px 11px';
+          btn.style.height = '34px';
+          btn.style.lineHeight = '22px';
           btn.style.boxSizing = 'border-box';
+          btn.style.flex = '0 0 auto';
+          btn.style.cursor = 'pointer';
           btn.style.whiteSpace = 'nowrap';
           btn.style.transition = 'all 0.15s ease';
 
