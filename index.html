@@ -2262,15 +2262,26 @@
       // --- Mode Switcher Logic ---
       const modeScrollPositions = { recipe: 0, fridge: 0 };
 
-      function syncViewportHeight() {
+      function setViewPagerState(mode, isDragging = false) {
+        const sideList = document.getElementById('page-list-side');
+        const sideFridge = document.getElementById('page-fridge-side');
         const viewport = document.getElementById('mode-viewpager-viewport');
-        const activeSide = (currentAppMode === 'fridge') ? document.getElementById('page-fridge-side') : document.getElementById('page-list-side');
-        if (viewport && activeSide) {
-          const h = activeSide.offsetHeight;
-          if (h > 0) {
-            viewport.style.height = h + 'px';
+
+        if (isDragging) {
+          // Show both sides during active touch drag
+          if (sideList) sideList.style.display = 'block';
+          if (sideFridge) sideFridge.style.display = 'block';
+        } else {
+          // Hide inactive side post-transition so document height matches active content 100% (0 empty scroll space)
+          if (mode === 'recipe') {
+            if (sideList) sideList.style.display = 'block';
+            if (sideFridge) sideFridge.style.display = 'none';
+          } else if (mode === 'fridge') {
+            if (sideList) sideList.style.display = 'none';
+            if (sideFridge) sideFridge.style.display = 'block';
           }
         }
+        if (viewport) viewport.style.height = 'auto';
       }
 
       window.switchAppMode = function (mode) {
@@ -2279,11 +2290,8 @@
         }
         currentAppMode = mode;
 
-        // Both sides are ALWAYS display: block (0 disappearing / 0 flickering risk)
-        const sideList = document.getElementById('page-list-side');
-        const sideFridge = document.getElementById('page-fridge-side');
-        if (sideList) sideList.style.display = 'block';
-        if (sideFridge) sideFridge.style.display = 'block';
+        // Ensure both sides are visible during track slide animation
+        setViewPagerState(mode, true);
 
         // Update Tab UI
         document.getElementById('mode-recipe').classList.toggle('active', mode === 'recipe');
@@ -2316,9 +2324,10 @@
         const targetY = modeScrollPositions[mode] || 0;
         window.scrollTo({ top: targetY, behavior: 'instant' });
 
-        // Update container height to match active content exactly (0 empty scroll space)
-        syncViewportHeight();
-        setTimeout(syncViewportHeight, 330);
+        // Hide inactive side once transition completes to collapse document height
+        setTimeout(() => {
+          setViewPagerState(currentAppMode, false);
+        }, 330);
       };
 
       // --- Real-time 1:1 Side-by-Side Horizontal ViewPager Touch Drag ---
@@ -2340,9 +2349,6 @@
         swipeStartY = e.touches[0].clientY;
         touchMoveDistanceX = 0;
         isSwiping = true;
-
-        const viewport = document.getElementById('mode-viewpager-viewport');
-        if (viewport) viewport.style.height = 'auto';
       }, { passive: true });
 
       window.addEventListener('touchmove', (e) => {
@@ -2355,6 +2361,10 @@
 
         if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
           touchMoveDistanceX = diffX;
+
+          // Reveal both sides when user drags horizontally
+          setViewPagerState(currentAppMode, true);
+
           const track = document.getElementById('mode-viewpager-track');
           if (track) {
             const basePercent = (currentAppMode === 'fridge') ? -50 : 0;
@@ -2387,11 +2397,11 @@
             switchAppMode('recipe');
           } else if (track) {
             track.style.transform = (currentAppMode === 'fridge') ? 'translateX(-50%)' : 'translateX(0%)';
-            setTimeout(syncViewportHeight, 330);
+            setTimeout(() => setViewPagerState(currentAppMode, false), 330);
           }
         } else if (track) {
           track.style.transform = (currentAppMode === 'fridge') ? 'translateX(-50%)' : 'translateX(0%)';
-          setTimeout(syncViewportHeight, 330);
+          setTimeout(() => setViewPagerState(currentAppMode, false), 330);
         }
       }, { passive: true });
 
