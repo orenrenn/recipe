@@ -882,7 +882,13 @@
       cursor: not-allowed;
     }
 
-    /* Modal Overlay & Dialog */
+    /* Lock background body scroll when any modal is open */
+    body:has(.modal-backdrop.active),
+    body.modal-open {
+      overflow: hidden !important;
+      touch-action: none;
+    }
+
     .modal-backdrop {
       position: fixed;
       top: 0;
@@ -896,6 +902,7 @@
       justify-content: center;
       padding: 1rem;
       overscroll-behavior: contain;
+      touch-action: none;
     }
 
     .modal-backdrop.active {
@@ -2600,6 +2607,23 @@
             currentDetailRecipe = null;
           }
         });
+      });
+
+      // --- Background Body Scroll Lock Sync ---
+      function syncBodyScrollLock() {
+        const hasActiveModal = !!document.querySelector('.modal-backdrop.active');
+        if (hasActiveModal) {
+          document.body.classList.add('modal-open');
+          document.body.style.overflow = 'hidden';
+        } else {
+          document.body.classList.remove('modal-open');
+          document.body.style.overflow = '';
+        }
+      }
+
+      const modalObserver = new MutationObserver(() => syncBodyScrollLock());
+      document.querySelectorAll('.modal-backdrop').forEach(modal => {
+        modalObserver.observe(modal, { attributes: true, attributeFilter: ['class'] });
       });
 
       // --- Image Compression Logic ---
