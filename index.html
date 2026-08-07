@@ -3850,53 +3850,66 @@
         grid.className = 'recipe-grid';
 
         filtered.forEach(item => {
-          const card = document.createElement('div');
-          card.className = 'recipe-card';
-          card.setAttribute('role', 'button');
-          card.setAttribute('tabindex', '0');
+          const card = createFullRecipeCardDOM(item);
+          grid.appendChild(card);
+        });
 
-          const photos = getRecipePhotos(item);
-          const coverPhoto = photos[0] || "";
+        container.innerHTML = '';
+        container.appendChild(grid);
+      }
 
-          const imageHtml = coverPhoto
-            ? `<img src="${coverPhoto}" alt="${item.title}" class="card-img">`
-            : `<div class="card-placeholder">🍳</div>`;
+      function createFullRecipeCardDOM(item, customBadgesHtml = null) {
+        const card = document.createElement('div');
+        card.className = 'recipe-card';
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
 
-          const categoryTag = item.category ? `<div class="card-category-tag">${item.category}</div>` : '';
-          const photoCountBadge = photos.length > 1 ? `<div class="card-photo-count-tag">📷 ${photos.length}</div>` : '';
-          const faved = isFavorite(item.id);
-          const favBtnHtml = `<button class="card-fav-btn" title="おいしかった！"><span>${faved ? '😋' : '🤍'}</span></button>`;
+        const photos = getRecipePhotos(item);
+        const coverPhoto = photos[0] || "";
 
-          let ingredientsPreview = '';
-          if (Array.isArray(item.ingredients) && item.ingredients.length > 0) {
-            ingredientsPreview = `🛒 ${item.ingredients.slice(0, 3).join('・')}${item.ingredients.length > 3 ? '...' : ''}`;
-          } else if (item.memo) {
-            ingredientsPreview = item.memo;
-          }
+        const imageHtml = coverPhoto
+          ? `<img src="${coverPhoto}" alt="${escapeHtml(item.title)}" class="card-img">`
+          : `<div class="card-placeholder">${item.isAiGenerated ? '✨' : '🍳'}</div>`;
 
-          let badgesHtml = '';
-          if (currentAppMode === 'recipe' && Array.isArray(item.ingredients) && refrigeratorIngredients.length > 0) {
-            let missing = [];
-            const normFCache = refrigeratorIngredients.map(f => toHiragana(normalizeJapaneseText(f)));
+        const categoryTag = item.category ? `<div class="card-category-tag">${escapeHtml(item.category)}</div>` : '';
+        const photoCountBadge = photos.length > 1 ? `<div class="card-photo-count-tag">📷 ${photos.length}</div>` : '';
+        const faved = isFavorite(item.id);
+        const favBtnHtml = `<button class="card-fav-btn" title="おいしかった！"><span>${faved ? '😋' : '🤍'}</span></button>`;
 
-            item.ingredients.forEach(ing => {
-              if (!isTriviallyAvailable(ing) && !isIngredientInStock(ing, refrigeratorIngredients, normFCache)) {
-                missing.push(ing);
-              }
-            });
+        let ingredientsPreview = '';
+        if (Array.isArray(item.ingredients) && item.ingredients.length > 0) {
+          ingredientsPreview = `🛒 ${item.ingredients.slice(0, 3).join('・')}${item.ingredients.length > 3 ? '...' : ''}`;
+        } else if (item.memo) {
+          ingredientsPreview = item.memo;
+        }
 
-            if (missing.length > 0) {
-              let missingStr = missing.slice(0, 3).join('・');
-              if (missing.length > 3) missingStr += ` (他${missing.length - 3}件)`;
-              badgesHtml = `<div style="background:#F59E0B; color:white; font-size:0.7rem; font-weight:bold; padding:2px 6px; border-radius:8px; box-shadow: 0 1px 2px rgba(0,0,0,0.2); width: fit-content; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">💡不足: ${escapeHtml(missingStr)}</div>`;
-            } else if (item.ingredients.length > 0) {
-              badgesHtml = `<div style="background:var(--primary); color:white; font-size:0.7rem; font-weight:bold; padding:2px 6px; border-radius:8px; box-shadow: 0 1px 2px rgba(0,0,0,0.2); width: fit-content; margin-bottom: 4px;">✅ 全て揃っています</div>`;
+        let badgesHtml = '';
+        if (customBadgesHtml !== null) {
+          badgesHtml = customBadgesHtml;
+        } else if (Array.isArray(item.ingredients) && refrigeratorIngredients.length > 0) {
+          let missing = [];
+          const normFCache = refrigeratorIngredients.map(f => toHiragana(normalizeJapaneseText(f)));
+
+          item.ingredients.forEach(ing => {
+            if (!isTriviallyAvailable(ing) && !isIngredientInStock(ing, refrigeratorIngredients, normFCache)) {
+              missing.push(ing);
             }
+          });
+
+          if (missing.length > 0) {
+            let missingStr = missing.slice(0, 3).join('・');
+            if (missing.length > 3) missingStr += ` (他${missing.length - 3}件)`;
+            badgesHtml = `<div style="background:#F59E0B; color:white; font-size:0.7rem; font-weight:bold; padding:2px 6px; border-radius:8px; box-shadow: 0 1px 2px rgba(0,0,0,0.2); width: fit-content; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">💡不足: ${escapeHtml(missingStr)}</div>`;
+          } else if (item.ingredients.length > 0) {
+            badgesHtml = `<div style="background:var(--primary); color:white; font-size:0.7rem; font-weight:bold; padding:2px 6px; border-radius:8px; box-shadow: 0 1px 2px rgba(0,0,0,0.2); width: fit-content; margin-bottom: 4px;">✅ 全て揃っています</div>`;
           }
+        }
 
-          const dateHtml = `<div style="font-size: 0.75rem; color: #999; margin-top: 6px; text-align: right;">${formatDateString(item.updatedAt || item.createdAt)}</div>`;
+        const dateHtml = (item.createdAt || item.updatedAt)
+          ? `<div style="font-size: 0.75rem; color: #999; margin-top: 6px; text-align: right;">${formatDateString(item.updatedAt || item.createdAt)}</div>`
+          : '';
 
-          card.innerHTML = `
+        card.innerHTML = `
           <div class="card-img-wrapper">
             ${imageHtml}
             ${categoryTag}
@@ -3911,26 +3924,20 @@
           </div>
         `;
 
-          // Card click opens recipe detail
-          card.onclick = (e) => {
-            if (e.target && typeof e.target.closest === 'function' && e.target.closest('.card-fav-btn')) return;
-            window.openRecipeDetail(item);
+        card.onclick = (e) => {
+          if (e.target && typeof e.target.closest === 'function' && e.target.closest('.card-fav-btn')) return;
+          window.openRecipeDetail(item);
+        };
+
+        const favBtn = card.querySelector('.card-fav-btn');
+        if (favBtn) {
+          favBtn.onclick = (e) => {
+            e.stopPropagation();
+            toggleFavorite(item.id, favBtn);
           };
+        }
 
-          // Favorite button click
-          const favBtn = card.querySelector('.card-fav-btn');
-          if (favBtn) {
-            favBtn.onclick = (e) => {
-              e.stopPropagation();
-              toggleFavorite(item.id, favBtn);
-            };
-          }
-
-          grid.appendChild(card);
-        });
-
-        container.innerHTML = '';
-        container.appendChild(grid);
+        return card;
       }
 
       window.updateFilterTagsUI = function updateFilterTagsUI() {
@@ -4744,7 +4751,7 @@
           ? `<img src="${coverPhoto}" alt="${item.title}" class="card-img">`
           : `<div class="card-placeholder" style="font-size: 2.5rem;">${item.isAiGenerated ? '✨' : '🍳'}</div>`;
 
-        const categoryTag = item.category ? `<div class="card-category-tag">${item.category}</div>` : '';
+        const categoryTag = item.category ? `<div class="card-category-tag" style="position: static; top: auto; left: auto; margin: 0; width: fit-content;">${escapeHtml(item.category)}</div>` : '';
 
         let ingredientsPreview = '';
         if (Array.isArray(item.ingredients) && item.ingredients.length > 0) {
@@ -4754,9 +4761,9 @@
         card.innerHTML = `
         <div class="card-img-wrapper">
           ${imageHtml}
-          ${categoryTag}
-          <div style="position:absolute; top:8px; left:8px; display:flex; flex-direction:column; gap:4px; z-index:10; max-width: 90%;">
+          <div style="position:absolute; top:8px; left:8px; display:flex; flex-direction:column; gap:4px; z-index:10; max-width: 90%; align-items: flex-start;">
             ${badgesHtml}
+            ${categoryTag}
           </div>
         </div>
         <div class="card-content">
@@ -5041,13 +5048,13 @@
         const pageData = currentScoredRecipes.slice(startIdx, startIdx + ITEMS_PER_SUGGEST_PAGE);
 
         pageData.forEach(res => {
-          let badges = `<div style="background:var(--primary); color:white; font-size:0.75rem; font-weight:bold; padding:4px 8px; border-radius:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); width: fit-content;">✅ 食材一致: ${res.matchCount}</div>`;
+          let badges = `<div style="background:var(--primary); color:white; font-size:0.7rem; font-weight:bold; padding:2px 6px; border-radius:8px; box-shadow: 0 1px 2px rgba(0,0,0,0.2); width: fit-content; margin-bottom: 4px;">✅ 食材一致: ${res.matchCount}</div>`;
           if (res.missing.length > 0) {
             let missingStr = res.missing.slice(0, 3).join('・');
             if (res.missing.length > 3) missingStr += ` (他${res.missing.length - 3}件)`;
-            badges += `<div style="background:#F59E0B; color:white; font-size:0.7rem; font-weight:bold; padding:4px 8px; border-radius:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); width: fit-content; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">💡不足: ${escapeHtml(missingStr)}</div>`;
+            badges += `<div style="background:#F59E0B; color:white; font-size:0.7rem; font-weight:bold; padding:2px 6px; border-radius:8px; box-shadow: 0 1px 2px rgba(0,0,0,0.2); width: fit-content; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">💡不足: ${escapeHtml(missingStr)}</div>`;
           }
-          const card = createMiniRecipeCardDOM(res.item, badges, (item) => openRecipeDetail(item));
+          const card = createFullRecipeCardDOM(res.item, badges);
           grid.appendChild(card);
         });
 
