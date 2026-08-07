@@ -1534,45 +1534,12 @@
         </summary>
 
         <div style="padding: 16px 20px 20px; border-top: 1px solid var(--border); text-align: center;">
-          <div
-            style="display: flex; flex-direction: column; gap: 8px; justify-content: center; margin-bottom: 16px; align-items: center; width: 100%;">
-            <div style="display: flex; gap: 8px; width: 100%; max-width: 400px; box-sizing: border-box;">
-              <input type="text" id="fridge-ingredient-input" placeholder="食材名 (必須・例:豚肉)" class="form-input"
-                style="flex: 1; min-width: 0;">
-            </div>
-            <div style="display: flex; gap: 8px; width: 100%; max-width: 400px; box-sizing: border-box;">
-              <select id="fridge-category-input" class="form-input"
-                style="flex: 1; min-width: 0; padding: 10px 8px; color: #555;">
-                <option value="">種類(任意)</option>
-                <option value="野菜・きのこ">🥬 野菜・きのこ</option>
-                <option value="肉類">🍖 肉類</option>
-                <option value="魚介類">🐟 魚介類</option>
-                <option value="卵・乳製品">🥚 卵・乳製品</option>
-                <option value="穀物・麺類">🍚 穀物・麺類</option>
-                <option value="調味料">🧂 調味料</option>
-                <option value="加工品・その他">🥫 加工品・その他</option>
-              </select>
-              <select id="fridge-storage-input" class="form-input"
-                style="flex: 1; min-width: 0; padding: 10px 8px; color: #555;">
-                <option value="">場所(任意)</option>
-                <option value="📦 常温">📦 常温</option>
-                <option value="❄️ 冷蔵">❄️ 冷蔵</option>
-                <option value="🧊 冷凍">🧊 冷凍</option>
-              </select>
-            </div>
-            <div
-              style="display: flex; gap: 8px; width: 100%; max-width: 400px; box-sizing: border-box; align-items: center;">
-              <input type="text" id="fridge-amount-input" placeholder="分量 (例:200g)" class="form-input"
-                style="flex: 1; min-width: 0;">
-              <div
-                style="flex: 1; display: flex; align-items: center; background: white; border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 0 12px; overflow: hidden;">
-                <span style="font-size: 0.8rem; color: #64748B; white-space: nowrap; margin-right: 4px;">期限:</span>
-                <input type="date" id="fridge-expiry-input"
-                  style="flex: 1; border: none; background: transparent; outline: none; font-size: 0.95rem; color: #334155; padding: 12px 0; width: 100%;">
-              </div>
-            </div>
-            <button id="btn-add-fridge-item" class="btn"
-              style="width: 100%; max-width: 400px; padding: 10px 16px; border-radius: 12px; margin-top: 4px;">追加</button>
+          <!-- Prominent Add Ingredient Modal Trigger Button -->
+          <div style="display: flex; justify-content: center; margin-bottom: 12px; width: 100%;">
+            <button type="button" onclick="openFridgeItemModal()" class="btn"
+              style="width: 100%; max-width: 380px; padding: 13px 20px; border-radius: 16px; background: linear-gradient(135deg, #FF6B52 0%, #FF3B30 100%); color: white; border: none; font-weight: 800; font-size: 0.98rem; box-shadow: 0 4px 14px rgba(255, 107, 82, 0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <span>➕</span> <span>新しい食材を登録する</span>
+            </button>
           </div>
 
           <div
@@ -1584,9 +1551,9 @@
             </select>
             <select id="fridge-sort-select" class="form-input"
               style="flex: 1; padding: 8px; font-size: 0.85rem; color: #555;" onchange="renderFridgeUI()">
+              <option value="name" selected>名前順</option>
               <option value="newest">新しい順</option>
               <option value="expiry">期限が近い順</option>
-              <option value="name">名前順</option>
             </select>
           </div>
 
@@ -2098,6 +2065,66 @@
         </svg>
         <span>Googleでログインして同期</span>
       </button>
+    </div>
+  </div>
+
+  <!-- 🥦 食材の追加・編集 モーダル -->
+  <div id="modal-fridge-item" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 460px; padding: 0; overflow: hidden; border-radius: 24px; box-shadow: 0 16px 40px rgba(0,0,0,0.22);">
+      <!-- ヘッダー -->
+      <div style="padding: 16px 20px; background: linear-gradient(135deg, #FFFDF9 0%, #FFF5F2 100%); border-bottom: 1.5px solid #F1F5F9; display: flex; align-items: center; justify-content: space-between;">
+        <h3 id="fridge-modal-title" style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--primary-dark); display: flex; align-items: center; gap: 8px;">
+          <span>🥦 食材の登録</span>
+        </h3>
+        <button type="button" onclick="closeFridgeItemModal()" style="background: #F1F5F9; border: none; font-size: 1.1rem; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; color: #64748B; display: flex; align-items: center; justify-content: center; font-weight: bold;">✕</button>
+      </div>
+
+      <!-- モーダル本体 -->
+      <div style="padding: 20px; background: white;">
+        <div style="margin-bottom: 14px;">
+          <label style="font-weight: 800; font-size: 0.88rem; color: #334155; margin-bottom: 6px; display: block;">食材名 <span style="color: var(--primary);">*</span></label>
+          <input type="text" id="fridge-ingredient-input" placeholder="例: 豚バラ肉, キャベツ, 卵..." class="form-input" style="width: 100%; border-radius: 12px; font-weight: 700; padding: 12px 14px !important; box-sizing: border-box;">
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 14px;">
+          <div style="flex: 1; min-width: 0;">
+            <label style="font-weight: 800; font-size: 0.88rem; color: #334155; margin-bottom: 6px; display: block;">保存場所</label>
+            <select id="fridge-storage-input" class="form-input" style="width: 100%; border-radius: 12px; font-weight: 700; font-size: 0.85rem !important; padding: 10px 20px 10px 8px !important; box-sizing: border-box;">
+              <option value="❄️ 冷蔵">❄️ 冷蔵</option>
+              <option value="🧊 冷凍">🧊 冷凍</option>
+              <option value="📦 常温">📦 常温</option>
+            </select>
+          </div>
+          <div style="flex: 1; min-width: 0;">
+            <label style="font-weight: 800; font-size: 0.88rem; color: #334155; margin-bottom: 6px; display: block;">カテゴリ</label>
+            <select id="fridge-category-input" class="form-input" style="width: 100%; border-radius: 12px; font-weight: 700; font-size: 0.85rem !important; padding: 10px 20px 10px 8px !important; box-sizing: border-box;">
+              <option value="野菜・きのこ">🥬 野菜・きのこ</option>
+              <option value="肉類">🍖 肉類</option>
+              <option value="魚介類">🐟 魚介類</option>
+              <option value="卵・乳製品">🥚 卵・乳製品</option>
+              <option value="穀物・麺類">🍚 穀物・麺類</option>
+              <option value="調味料">🧂 調味料</option>
+              <option value="加工品・その他">🥫 加工品・その他</option>
+              <option value="その他">📦 その他</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 22px;">
+          <div style="flex: 1;">
+            <label style="font-weight: 800; font-size: 0.88rem; color: #334155; margin-bottom: 6px; display: block;">分量・個数</label>
+            <input type="text" id="fridge-amount-input" placeholder="例: 200g, 1パック..." class="form-input" style="width: 100%; border-radius: 12px; font-weight: 700; padding: 10px 12px !important; box-sizing: border-box;">
+          </div>
+          <div style="flex: 1;">
+            <label style="font-weight: 800; font-size: 0.88rem; color: #334155; margin-bottom: 6px; display: block;">賞味期限</label>
+            <input type="date" id="fridge-expiry-input" class="form-input" style="width: 100%; border-radius: 12px; font-weight: 700; padding: 9px 12px !important; box-sizing: border-box;">
+          </div>
+        </div>
+
+        <button type="button" id="btn-save-fridge-item" class="btn" style="width: 100%; padding: 14px; border-radius: 14px; font-size: 1rem; font-weight: 800; background: var(--primary); color: white; border: none; box-shadow: 0 4px 14px rgba(255, 107, 82, 0.35); cursor: pointer;">
+          <span>➕</span> <span id="btn-save-fridge-text">食材を保存する</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -4049,6 +4076,329 @@
         updateGalleryPhoto(photos);
       });
 
+      // --- Fridge Ingredient Stock Modal Logic & Rendering ---
+      let editingFridgeItemId = null;
+
+      window.openFridgeItemModal = function (item = null) {
+        if (window.closeAllModals) window.closeAllModals();
+        const modal = document.getElementById('modal-fridge-item');
+        const titleEl = document.getElementById('fridge-modal-title');
+        const btnTextEl = document.getElementById('btn-save-fridge-text');
+
+        if (item) {
+          editingFridgeItemId = item.id;
+          if (titleEl) titleEl.innerHTML = `<span>✏️ 食材の編集</span>`;
+          if (btnTextEl) btnTextEl.innerText = `食材を更新する`;
+
+          document.getElementById('fridge-ingredient-input').value = item.name || '';
+          document.getElementById('fridge-amount-input').value = item.amount || '';
+          document.getElementById('fridge-expiry-input').value = item.expiry || '';
+          document.getElementById('fridge-storage-input').value = item.storage || '❄️ 冷蔵';
+          document.getElementById('fridge-category-input').value = item.category || '野菜・きのこ';
+        } else {
+          editingFridgeItemId = null;
+          if (titleEl) titleEl.innerHTML = `<span>🥦 食材の登録</span>`;
+          if (btnTextEl) btnTextEl.innerText = `食材を登録する`;
+
+          document.getElementById('fridge-ingredient-input').value = '';
+          document.getElementById('fridge-amount-input').value = '';
+          document.getElementById('fridge-expiry-input').value = '';
+          document.getElementById('fridge-storage-input').value = '❄️ 冷蔵';
+          document.getElementById('fridge-category-input').value = '野菜・きのこ';
+        }
+
+        if (modal) modal.classList.add('active');
+        setTimeout(() => {
+          document.getElementById('fridge-ingredient-input').focus();
+        }, 100);
+      };
+
+      window.closeFridgeItemModal = function () {
+        const modal = document.getElementById('modal-fridge-item');
+        if (modal) modal.classList.remove('active');
+      };
+
+      document.getElementById('btn-save-fridge-item')?.addEventListener('click', async () => {
+        const name = document.getElementById('fridge-ingredient-input').value.trim();
+        const storage = document.getElementById('fridge-storage-input').value;
+        const category = document.getElementById('fridge-category-input').value;
+        const amount = document.getElementById('fridge-amount-input').value.trim();
+        const expiry = document.getElementById('fridge-expiry-input').value;
+
+        if (!name) {
+          alert('食材名を入力してください。');
+          return;
+        }
+
+        if (editingFridgeItemId) {
+          const item = refrigeratorItems.find(i => i.id === editingFridgeItemId);
+          if (item) {
+            item.name = name;
+            item.storage = storage;
+            item.category = category;
+            item.amount = amount;
+            item.expiry = expiry;
+            if (item.firestoreId && currentUser) {
+              try {
+                await updateDoc(doc(db, "users", currentUser.uid, "fridge_items", item.firestoreId), {
+                  name, storage, category, amount, expiry
+                });
+              } catch (e) { console.error(e); }
+            }
+          }
+        } else {
+          const newItem = {
+            id: 'item_' + Date.now(),
+            name, storage, category, amount, expiry,
+            createdAt: new Date()
+          };
+          if (currentUser) {
+            try {
+              const docRef = await addDoc(collection(db, "users", currentUser.uid, "fridge_items"), newItem);
+              newItem.firestoreId = docRef.id;
+            } catch (e) { console.error(e); }
+          }
+          refrigeratorItems.unshift(newItem);
+        }
+
+        saveLocalFridgeItems();
+        closeFridgeItemModal();
+        renderFridgeUI();
+      });
+
+      // --- Rich Modern Stock Card Renderer ---
+      window.renderFridgeUI = function () {
+        const container = document.getElementById('fridge-tags-container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        if (refrigeratorItems.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 28px 16px; background: white; border-radius: 20px; border: 1.5px dashed #CBD5E1; margin: 10px 0; width: 100%; box-sizing: border-box;">
+              <div style="font-size: 2.5rem; margin-bottom: 8px;">🥦 🥩 🥚</div>
+              <div style="font-size: 1rem; font-weight: 800; color: #334155;">冷蔵庫の食材が登録されていません</div>
+              <div style="font-size: 0.82rem; color: #64748B; margin-top: 4px;">上の「新しい食材を登録する」ボタンから追加してみましょう！</div>
+            </div>`;
+          if (window.suggestLocalRecipes) window.suggestLocalRecipes();
+          return;
+        }
+
+        const groupMode = document.getElementById('fridge-group-select')?.value || 'category';
+        const sortMode = document.getElementById('fridge-sort-select')?.value || 'name';
+
+        // 1. Sort
+        let sortedItems = [...refrigeratorItems];
+        if (sortMode === 'name') {
+          sortedItems.sort((a, b) => a.name.localeCompare(b.name));
+        } else if (sortMode === 'expiry') {
+          sortedItems.sort((a, b) => {
+            if (!a.expiry && !b.expiry) return 0;
+            if (!a.expiry) return 1;
+            if (!b.expiry) return -1;
+            return a.expiry.localeCompare(b.expiry);
+          });
+        } else if (sortMode === 'newest') {
+          sortedItems.sort((a, b) => {
+            const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt || 0);
+            const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt || 0);
+            return timeB - timeA;
+          });
+        }
+
+        // 2. Group
+        const grouped = {};
+        sortedItems.forEach(item => {
+          const gKey = groupMode === 'category'
+            ? (item.category || 'その他')
+            : (item.storage || '指定なし');
+          if (!grouped[gKey]) grouped[gKey] = [];
+          grouped[gKey].push(item);
+        });
+
+        // 3. Order Groups
+        let orderedKeys = Object.keys(grouped);
+        if (groupMode === 'category') {
+          const catOrder = ["野菜・きのこ", "肉類", "魚介類", "卵・乳製品", "穀物・麺類", "調味料", "加工品・その他", "その他"];
+          orderedKeys.sort((a, b) => {
+            let iA = catOrder.indexOf(a);
+            let iB = catOrder.indexOf(b);
+            if (iA === -1) iA = 999;
+            if (iB === -1) iB = 999;
+            return iA - iB;
+          });
+        } else {
+          const storOrder = ["📦 常温", "❄️ 冷蔵", "🧊 冷凍", "指定なし"];
+          orderedKeys.sort((a, b) => {
+            let iA = storOrder.indexOf(a);
+            let iB = storOrder.indexOf(b);
+            if (iA === -1) iA = 999;
+            if (iB === -1) iB = 999;
+            return iA - iB;
+          });
+        }
+
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        // 4. Render Rich Modern Stock Group Cards
+        orderedKeys.forEach(key => {
+          const items = grouped[key];
+          const details = document.createElement('details');
+          details.open = true;
+          details.style.marginBottom = '14px';
+          details.style.width = '100%';
+
+          let displayTitle = key;
+          if (groupMode === 'category') {
+            const emojiMap = {
+              "野菜・きのこ": "🥬 野菜・きのこ",
+              "肉類": "🍖 肉類",
+              "魚介類": "🐟 魚介類",
+              "卵・乳製品": "🥚 卵・乳製品",
+              "穀物・麺類": "🍚 穀物・麺類",
+              "調味料": "🧂 調味料",
+              "加工品・その他": "🥫 加工品・その他",
+              "その他": "📦 その他"
+            };
+            displayTitle = emojiMap[key] || key;
+          }
+
+          const categoryThemeMap = {
+            "野菜・きのこ": { bg: "linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)", border: "#BBF7D0", borderLeft: "#16A34A", text: "#14532D", pillBg: "#16A34A" },
+            "肉類": { bg: "linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%)", border: "#FECDD3", borderLeft: "#E11D48", text: "#881337", pillBg: "#E11D48" },
+            "魚介類": { bg: "linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)", border: "#BAE6FD", borderLeft: "#0284C7", text: "#0C4A6E", pillBg: "#0284C7" },
+            "卵・乳製品": { bg: "linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)", border: "#FDE68A", borderLeft: "#D97706", text: "#78350F", pillBg: "#D97706" },
+            "穀物・麺類": { bg: "linear-gradient(135deg, #FAFAF9 0%, #F5F5F4 100%)", border: "#E7E5E4", borderLeft: "#78716C", text: "#292524", pillBg: "#78716C" },
+            "調味料": { bg: "linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%)", border: "#E9D5FF", borderLeft: "#9333EA", text: "#581C87", pillBg: "#9333EA" },
+            "加工品・その他": { bg: "linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%)", border: "#FED7AA", borderLeft: "#EA580C", text: "#7C2D12", pillBg: "#EA580C" },
+            "その他": { bg: "linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)", border: "#E2E8F0", borderLeft: "#64748B", text: "#334155", pillBg: "#64748B" },
+            "❄️ 冷蔵": { bg: "linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)", border: "#C7D2FE", borderLeft: "#4F46E5", text: "#312E81", pillBg: "#4F46E5" },
+            "🧊 冷凍": { bg: "linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)", border: "#BAE6FD", borderLeft: "#0284C7", text: "#0C4A6E", pillBg: "#0284C7" },
+            "📦 常温": { bg: "linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)", border: "#FDE68A", borderLeft: "#D97706", text: "#78350F", pillBg: "#D97706" }
+          };
+
+          const theme = categoryThemeMap[key] || categoryThemeMap["その他"];
+
+          const summary = document.createElement('summary');
+          summary.style.fontWeight = '800';
+          summary.style.fontSize = '0.95rem';
+          summary.style.color = theme.text;
+          summary.style.padding = '10px 14px';
+          summary.style.background = theme.bg;
+          summary.style.borderRadius = '14px';
+          summary.style.border = `1.5px solid ${theme.border}`;
+          summary.style.borderLeft = `5px solid ${theme.borderLeft}`;
+          summary.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.04)';
+          summary.style.cursor = 'pointer';
+          summary.style.display = 'flex';
+          summary.style.alignItems = 'center';
+          summary.style.justifyContent = 'space-between';
+          summary.style.userSelect = 'none';
+
+          summary.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>${escapeHtml(displayTitle)}</span>
+              <span style="font-size: 0.75rem; font-weight: 800; background: ${theme.pillBg}; color: #FFFFFF; padding: 2px 9px; border-radius: 12px;">${items.length}件</span>
+            </div>
+            <span style="color: ${theme.borderLeft}; font-size: 0.8rem; font-weight: bold;">▼</span>
+          `;
+
+          const style = document.createElement('style');
+          style.innerHTML = `details > summary { list-style: none; } details > summary::-webkit-details-marker { display: none; }`;
+          summary.appendChild(style);
+          details.appendChild(summary);
+
+          const gridContainer = document.createElement('div');
+          gridContainer.style.display = 'grid';
+          gridContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(130px, 1fr))';
+          gridContainer.style.gap = '8px';
+          gridContainer.style.padding = '10px 2px 2px 2px';
+
+          items.forEach(item => {
+            const card = document.createElement('div');
+            card.style.background = '#FFFFFF';
+            card.style.border = '1.5px solid #E2E8F0';
+            card.style.borderRadius = '16px';
+            card.style.padding = '10px 11px';
+            card.style.display = 'flex';
+            card.style.flexDirection = 'column';
+            card.style.justifyContent = 'space-between';
+            card.style.gap = '6px';
+            card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)';
+            card.style.minWidth = '0';
+            card.style.boxSizing = 'border-box';
+
+            // Storage badge color logic
+            let storageBg = '#F1F5F9';
+            let storageColor = '#475569';
+            const stor = item.storage || '';
+            if (stor.includes('冷凍') || stor.includes('🧊')) {
+              storageBg = '#E0F2FE'; storageColor = '#0284C7';
+            } else if (stor.includes('冷蔵') || stor.includes('❄️')) {
+              storageBg = '#EEF2FF'; storageColor = '#4F46E5';
+            } else if (stor.includes('常温') || stor.includes('📦')) {
+              storageBg = '#FEF3C7'; storageColor = '#D97706';
+            }
+
+            // Expiration warning calculation
+            let expiryHtml = '';
+            if (item.expiry) {
+              const diffMs = new Date(item.expiry).getTime() - new Date(todayStr).getTime();
+              const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+              
+              if (diffDays < 0) {
+                expiryHtml = `<span style="background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; font-size: 0.65rem; font-weight: 800; padding: 1px 5px; border-radius: 5px; white-space: nowrap;">⚠️ 期限切れ</span>`;
+              } else if (diffDays <= 2) {
+                expiryHtml = `<span style="background: #FFEDD5; color: #EA580C; border: 1px solid #FDBA74; font-size: 0.65rem; font-weight: 800; padding: 1px 5px; border-radius: 5px; white-space: nowrap;">⏰ あと${diffDays}日</span>`;
+              } else {
+                expiryHtml = `<span style="background: #F1F5F9; color: #64748B; font-size: 0.65rem; font-weight: 700; padding: 1px 5px; border-radius: 5px; white-space: nowrap;">📅 ${escapeHtml(item.expiry.slice(5))}</span>`;
+              }
+            }
+
+            const categoryTag = (groupMode === 'category') ? (item.storage || '') : (item.category || '');
+
+            card.innerHTML = `
+              <!-- Full Uncut Ingredient Name (Zero Truncation) -->
+              <div style="font-weight: 800; font-size: 0.9rem; color: #0F172A; line-height: 1.35; word-break: break-word; overflow-wrap: anywhere;">
+                ${escapeHtml(item.name)}
+              </div>
+
+              <!-- Bottom Row: Badges & Action Buttons -->
+              <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 4px; margin-top: 4px; border-top: 1px dashed #F1F5F9; padding-top: 5px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 3px; align-items: center; flex: 1; min-width: 0;">
+                  ${categoryTag ? `<span style="background: ${storageBg}; color: ${storageColor}; font-size: 0.65rem; font-weight: 800; padding: 1px 5px; border-radius: 5px; white-space: nowrap;">${escapeHtml(categoryTag)}</span>` : ''}
+                  ${item.amount ? `<span style="background: #F8FAFC; color: #334155; border: 1px solid #E2E8F0; font-size: 0.65rem; font-weight: 700; padding: 1px 5px; border-radius: 5px; white-space: nowrap;">⚖️ ${escapeHtml(item.amount)}</span>` : ''}
+                  ${expiryHtml}
+                </div>
+                <div style="display: flex; align-items: center; gap: 2px; flex: 0 0 auto;">
+                  <button class="btn-edit-ing" title="編集" style="background: #F8FAFC; border: 1px solid #CBD5E1; width: 24px; height: 24px; border-radius: 50%; color: #64748B; font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">✏️</button>
+                  <button class="btn-remove-ing" title="削除" style="background: #FFF5F5; border: 1px solid #FECDD3; width: 24px; height: 24px; border-radius: 50%; color: #E11D48; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">✕</button>
+                </div>
+              </div>
+            `;
+
+            card.querySelector('.btn-edit-ing').addEventListener('click', (e) => {
+              e.stopPropagation();
+              openFridgeItemModal(item);
+            });
+
+            card.querySelector('.btn-remove-ing').addEventListener('click', async (e) => {
+              e.stopPropagation();
+              if (confirm(`「${item.name}」を削除しますか？`)) {
+                await deleteFridgeItem(item.id);
+              }
+            });
+
+            gridContainer.appendChild(card);
+          });
+
+          details.appendChild(gridContainer);
+          container.appendChild(details);
+        });
+
+        if (window.suggestLocalRecipes) window.suggestLocalRecipes();
+        if (window.renderAiStockChips) window.renderAiStockChips();
+      };
+
       document.getElementById('gallery-btn-next').addEventListener('click', () => {
         if (!currentDetailRecipe) return;
         const photos = getRecipePhotos(currentDetailRecipe);
@@ -4249,241 +4599,7 @@
         }
       }
 
-      let editingFridgeItemId = null;
 
-      async function updateFridgeItem(id, name, amount, expiry, storage, category) {
-        if (!name || !db) return;
-        const nameTrim = name.trim();
-        if (!nameTrim) return;
-
-        try {
-          await updateDoc(doc(db, "refrigerators", id), {
-            name: nameTrim,
-            amount: amount.trim(),
-            expiry: expiry,
-            storage: storage,
-            category: category || "",
-            updatedAt: serverTimestamp()
-          });
-        } catch (e) {
-          console.error("Failed to update fridge item:", e);
-          alert("更新に失敗しました: " + e.message);
-        }
-      }
-
-      document.getElementById('btn-add-fridge-item').addEventListener('click', () => {
-        const inputName = document.getElementById('fridge-ingredient-input');
-        const inputAmount = document.getElementById('fridge-amount-input');
-        const inputExpiry = document.getElementById('fridge-expiry-input');
-        const inputStorage = document.getElementById('fridge-storage-input');
-        const inputCategory = document.getElementById('fridge-category-input');
-        const btn = document.getElementById('btn-add-fridge-item');
-
-        if (editingFridgeItemId) {
-          updateFridgeItem(editingFridgeItemId, inputName.value, inputAmount.value, inputExpiry.value, inputStorage.value, inputCategory.value);
-          editingFridgeItemId = null;
-          btn.innerText = '追加';
-          btn.style.background = 'var(--primary)';
-        } else {
-          addFridgeItem(inputName.value, inputAmount.value, inputExpiry.value, inputStorage.value, inputCategory.value);
-        }
-
-        inputName.value = '';
-        inputAmount.value = '';
-        inputExpiry.value = '';
-        inputStorage.value = '';
-        inputCategory.value = '';
-      });
-      document.getElementById('fridge-ingredient-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          document.getElementById('btn-add-fridge-item').click();
-        }
-      });
-
-      window.renderFridgeUI = function () {
-        const container = document.getElementById('fridge-tags-container');
-        container.innerHTML = '';
-        if (refrigeratorItems.length === 0) {
-          container.innerHTML = `<div style="font-size:0.9rem; color:#999; margin:10px 0;">食材が登録されていません</div>`;
-          suggestLocalRecipes();
-          return;
-        }
-
-        const groupMode = document.getElementById('fridge-group-select')?.value || 'category';
-        const sortMode = document.getElementById('fridge-sort-select')?.value || 'newest';
-
-        // 1. Sort
-        let sortedItems = [...refrigeratorItems];
-        if (sortMode === 'newest') {
-          sortedItems.sort((a, b) => {
-            const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt || 0);
-            const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt || 0);
-            return timeB - timeA;
-          });
-        } else if (sortMode === 'expiry') {
-          sortedItems.sort((a, b) => {
-            if (!a.expiry && !b.expiry) return 0;
-            if (!a.expiry) return 1;
-            if (!b.expiry) return -1;
-            return a.expiry.localeCompare(b.expiry);
-          });
-        } else if (sortMode === 'name') {
-          sortedItems.sort((a, b) => a.name.localeCompare(b.name));
-        }
-
-        // 2. Group
-        const grouped = {};
-        sortedItems.forEach(item => {
-          const gKey = groupMode === 'category'
-            ? (item.category || 'その他')
-            : (item.storage || '指定なし');
-          if (!grouped[gKey]) grouped[gKey] = [];
-          grouped[gKey].push(item);
-        });
-
-        // 3. Order Groups
-        let orderedKeys = Object.keys(grouped);
-        if (groupMode === 'category') {
-          const catOrder = ["野菜・きのこ", "肉類", "魚介類", "卵・乳製品", "穀物・麺類", "調味料", "加工品・その他", "その他"];
-          orderedKeys.sort((a, b) => {
-            let iA = catOrder.indexOf(a);
-            let iB = catOrder.indexOf(b);
-            if (iA === -1) iA = 999;
-            if (iB === -1) iB = 999;
-            return iA - iB;
-          });
-        } else {
-          const storOrder = ["📦 常温", "❄️ 冷蔵", "🧊 冷凍", "指定なし"];
-          orderedKeys.sort((a, b) => {
-            let iA = storOrder.indexOf(a);
-            let iB = storOrder.indexOf(b);
-            if (iA === -1) iA = 999;
-            if (iB === -1) iB = 999;
-            return iA - iB;
-          });
-        }
-
-        // 4. Render
-        orderedKeys.forEach(key => {
-          const items = grouped[key];
-          const details = document.createElement('details');
-          details.open = true;
-          details.style.marginBottom = '12px';
-          details.style.width = '100%';
-
-          let displayTitle = key;
-          if (groupMode === 'category') {
-            const emojiMap = {
-              "野菜・きのこ": "🥬 野菜・きのこ",
-              "肉類": "🍖 肉類",
-              "魚介類": "🐟 魚介類",
-              "卵・乳製品": "🥚 卵・乳製品",
-              "穀物・麺類": "🍚 穀物・麺類",
-              "調味料": "🧂 調味料",
-              "加工品・その他": "🥫 加工品・その他",
-              "その他": "❓ その他"
-            };
-            displayTitle = emojiMap[key] || key;
-          }
-
-          const summary = document.createElement('summary');
-          summary.style.fontWeight = 'bold';
-          summary.style.color = 'var(--primary-dark)';
-          summary.style.padding = '8px 12px';
-          summary.style.backgroundColor = '#F8FAFC';
-          summary.style.borderRadius = '8px';
-          summary.style.cursor = 'pointer';
-          summary.style.display = 'flex';
-          summary.style.justifyContent = 'space-between';
-          summary.innerHTML = `<span>${escapeHtml(displayTitle)} <span style="font-size:0.8rem; color:#888;">(${items.length})</span></span> <span style="color:#CBD5E1; font-size: 0.8rem;">▼</span>`;
-
-          // Hide default arrow marker in webkit
-          const style = document.createElement('style');
-          style.innerHTML = `details > summary { list-style: none; } details > summary::-webkit-details-marker { display: none; }`;
-          summary.appendChild(style);
-
-          details.appendChild(summary);
-
-          const listWrap = document.createElement('div');
-          listWrap.style.display = 'flex';
-          listWrap.style.flexWrap = 'wrap';
-          listWrap.style.gap = '8px';
-          listWrap.style.padding = '12px 4px';
-
-          items.forEach(item => {
-            const tag = document.createElement('div');
-            tag.className = 'pill';
-            tag.style.background = '#E0E7FF';
-            tag.style.color = '#4338CA';
-            tag.style.border = '1px solid #C7D2FE';
-            tag.style.display = 'flex';
-            tag.style.flexDirection = 'column';
-            tag.style.alignItems = 'flex-start';
-            tag.style.padding = '8px 12px';
-            tag.style.position = 'relative';
-            tag.style.minWidth = '120px';
-
-            let detailsHtml = '';
-            const extraTag = groupMode === 'category' ? item.storage : (item.category ? item.category : '');
-
-            if (item.amount || item.expiry || extraTag) {
-              detailsHtml = `<div style="font-size: 0.75rem; color: #6366F1; margin-top: 4px; font-weight: 500;">
-              ${extraTag ? `<span>${escapeHtml(extraTag)}</span> &nbsp; ` : ''}
-              ${item.amount ? `⚖️ ${escapeHtml(item.amount)}` : ''}
-              ${item.amount && item.expiry ? ' &nbsp; ' : ''}
-              ${item.expiry ? `📅 ${escapeHtml(item.expiry)}` : ''}
-            </div>`;
-            }
-
-            tag.innerHTML = `
-            <div style="font-weight: 600; font-size: 0.95rem; padding-right: 48px;">${escapeHtml(item.name)}</div>
-            ${detailsHtml}
-            <button class="btn-edit-ing" style="position: absolute; top: 6px; right: 30px; background:none;border:none;color:inherit;cursor:pointer;font-size:1.0rem;line-height:1; opacity: 0.6;">✏️</button>
-            <button class="btn-remove-ing" style="position: absolute; top: 6px; right: 8px; background:none;border:none;color:inherit;cursor:pointer;font-size:1.2rem;line-height:1; opacity: 0.6;">&times;</button>
-          `;
-
-            tag.querySelector('.btn-edit-ing').addEventListener('click', () => {
-              document.getElementById('fridge-ingredient-input').value = item.name || '';
-              document.getElementById('fridge-amount-input').value = item.amount || '';
-              document.getElementById('fridge-expiry-input').value = item.expiry || '';
-              document.getElementById('fridge-storage-input').value = item.storage || '';
-              document.getElementById('fridge-category-input').value = item.category || '';
-
-              editingFridgeItemId = item.id;
-              const btn = document.getElementById('btn-add-fridge-item');
-              btn.innerText = '更新する';
-              btn.style.background = '#10B981';
-
-              document.getElementById('fridge-ingredient-input').focus();
-              window.scrollTo({ top: document.getElementById('page-fridge').offsetTop, behavior: 'smooth' });
-            });
-            tag.querySelector('.btn-edit-ing').addEventListener('mouseenter', (e) => e.target.style.opacity = '1');
-            tag.querySelector('.btn-edit-ing').addEventListener('mouseleave', (e) => e.target.style.opacity = '0.6');
-
-            tag.querySelector('.btn-remove-ing').addEventListener('click', () => {
-              if (confirm(`「${item.name}」を削除しますか？`)) {
-                if (editingFridgeItemId === item.id) {
-                  editingFridgeItemId = null;
-                  const btn = document.getElementById('btn-add-fridge-item');
-                  btn.innerText = '追加';
-                  btn.style.background = 'var(--primary)';
-                }
-                removeFridgeItem(item.id);
-              }
-            });
-            tag.querySelector('.btn-remove-ing').addEventListener('mouseenter', (e) => e.target.style.opacity = '1');
-            tag.querySelector('.btn-remove-ing').addEventListener('mouseleave', (e) => e.target.style.opacity = '0.6');
-            listWrap.appendChild(tag);
-          });
-
-          details.appendChild(listWrap);
-          container.appendChild(details);
-        });
-
-        suggestLocalRecipes();
-        renderAiStockChips();
-      };
 
       function createMiniRecipeCardDOM(item, badgesHtml = '', onClick) {
         const card = document.createElement('div');
