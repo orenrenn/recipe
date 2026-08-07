@@ -1528,34 +1528,30 @@
           style="width: 50%; flex: 0 0 50%; box-sizing: border-box; padding-left: 2px; position: relative;">
           <!-- PAGE 3: 冷蔵庫管理 & レシピ提案 -->
           <div id="page-fridge" class="page" style="display: block;">
-            <details id="fridge-stock-accordion" class="form-card"
-              style="margin-bottom: 20px; padding: 0; overflow: hidden;">
-              <summary
-                style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; cursor: pointer; list-style: none; user-select: none; background: linear-gradient(135deg, #FFFDF9 0%, #FFF5F2 100%);">
+            <div class="form-card"
+              style="margin-bottom: 20px; padding: 0; overflow: hidden; border-radius: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); background: white; border: 1.5px solid #E2E8F0;">
+              <!-- Section Header (Permanent title) -->
+              <div
+                style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: linear-gradient(135deg, #FFFDF9 0%, #FFF5F2 100%); border-bottom: 1.5px solid #F1F5F9;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <span style="font-size: 1.2rem;">🧺</span>
                   <h2 style="font-size: 1.1rem; font-weight: 800; margin: 0; color: var(--primary-dark);">食材ストック</h2>
                 </div>
-                <div
-                  style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: bold; color: var(--primary-dark);">
-                  <span class="accordion-label"></span>
-                  <span class="accordion-arrow"
-                    style="transition: transform 0.3s ease; display: inline-block; font-size: 0.8rem;">▼</span>
-                </div>
-              </summary>
+              </div>
 
-              <div style="padding: 16px 20px 20px; border-top: 1px solid var(--border); text-align: center;">
+              <div style="padding: 16px 16px 16px; text-align: center;">
                 <!-- Prominent Add Ingredient Modal Trigger Button -->
-                <div style="display: flex; justify-content: center; margin-bottom: 12px; width: 100%;">
+                <div style="display: flex; justify-content: center; margin-bottom: 14px; width: 100%;">
                   <button type="button" onclick="openFridgeItemModal()" class="btn"
                     style="width: 100%; max-width: 380px; padding: 13px 20px; border-radius: 16px; background: linear-gradient(135deg, #FF6B52 0%, #FF3B30 100%); color: white; border: none; font-weight: 800; font-size: 0.98rem; box-shadow: 0 4px 14px rgba(255, 107, 82, 0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
                     <span>➕</span> <span>新しい食材を登録する</span>
                   </button>
                 </div>
 
-                <details id="fridge-master-accordion" style="margin-bottom: 16px;">
+                <!-- Ingredients Master Accordion (Closed by default) -->
+                <details id="fridge-master-accordion" style="margin-bottom: 8px;">
                   <summary
-                    style="font-weight: bold; color: var(--primary-dark); padding: 12px 16px; background: #F8FAFC; border-radius: 14px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; border: 1.5px solid #E2E8F0;">
+                    style="font-weight: 800; color: var(--primary-dark); padding: 12px 16px; background: #F8FAFC; border-radius: 14px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; border: 1.5px solid #E2E8F0; user-select: none;">
                     <span>📋 食材ストック一覧を開く/閉じる</span>
                     <span style="color: #94A3B8; font-size: 0.9rem;">▼</span>
                     <style>
@@ -1586,13 +1582,13 @@
 
                     <!-- Ingredients Grid Container -->
                     <div id="fridge-tags-container" class="ingredient-list"
-                      style="justify-content: center; gap: 12px; padding-bottom: 8px;">
+                      style="justify-content: center; gap: 12px; padding-bottom: 4px;">
                       <!-- Tags go here -->
                     </div>
                   </div>
                 </details>
               </div>
-            </details>
+            </div>
 
             <!-- サジェストセクション (タブ切り替え化) -->
             <div id="suggest-section"
