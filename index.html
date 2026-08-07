@@ -947,6 +947,20 @@
       transform: translateY(-2px);
     }
 
+    /* Fridge Stock Accordion */
+    #fridge-stock-accordion summary::-webkit-details-marker {
+      display: none;
+    }
+    #fridge-stock-accordion[open] .accordion-arrow {
+      transform: rotate(180deg);
+    }
+    #fridge-stock-accordion[open] .accordion-label::before {
+      content: '閉じる';
+    }
+    #fridge-stock-accordion:not([open]) .accordion-label::before {
+      content: '開く';
+    }
+
     .modal-backdrop {
       position: fixed;
       top: 0;
@@ -1471,83 +1485,95 @@
 
     <!-- PAGE 3: 冷蔵庫管理 & レシピ提案 -->
     <div id="page-fridge" class="page">
-      <div class="form-card" style="margin-bottom: 20px; text-align: center;">
-        <h2 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--primary-dark);">🧺 みんなの食材ストック</h2>
-        <div
-          style="display: flex; flex-direction: column; gap: 8px; justify-content: center; margin-bottom: 16px; align-items: center; width: 100%;">
-          <div style="display: flex; gap: 8px; width: 100%; max-width: 400px; box-sizing: border-box;">
-            <input type="text" id="fridge-ingredient-input" placeholder="食材名 (必須・例:豚肉)" class="form-input"
-              style="flex: 1; min-width: 0;">
+      <details id="fridge-stock-accordion" class="form-card" style="margin-bottom: 20px; padding: 0; overflow: hidden;">
+        <summary style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; cursor: pointer; list-style: none; user-select: none; background: linear-gradient(135deg, #FFFDF9 0%, #FFF5F2 100%);">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.2rem;">🧺</span>
+            <h2 style="font-size: 1.1rem; font-weight: 800; margin: 0; color: var(--primary-dark);">みんなの食材ストック</h2>
           </div>
-          <div style="display: flex; gap: 8px; width: 100%; max-width: 400px; box-sizing: border-box;">
-            <select id="fridge-category-input" class="form-input"
-              style="flex: 1; min-width: 0; padding: 10px 8px; color: #555;">
-              <option value="">種類(任意)</option>
-              <option value="野菜・きのこ">🥬 野菜・きのこ</option>
-              <option value="肉類">🍖 肉類</option>
-              <option value="魚介類">🐟 魚介類</option>
-              <option value="卵・乳製品">🥚 卵・乳製品</option>
-              <option value="穀物・麺類">🍚 穀物・麺類</option>
-              <option value="調味料">🧂 調味料</option>
-              <option value="加工品・その他">🥫 加工品・その他</option>
-            </select>
-            <select id="fridge-storage-input" class="form-input"
-              style="flex: 1; min-width: 0; padding: 10px 8px; color: #555;">
-              <option value="">場所(任意)</option>
-              <option value="📦 常温">📦 常温</option>
-              <option value="❄️ 冷蔵">❄️ 冷蔵</option>
-              <option value="🧊 冷凍">🧊 冷凍</option>
-            </select>
+          <div style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: bold; color: var(--primary-dark);">
+            <span class="accordion-label"></span>
+            <span class="accordion-arrow" style="transition: transform 0.3s ease; display: inline-block; font-size: 0.8rem;">▼</span>
           </div>
+        </summary>
+
+        <div style="padding: 16px 20px 20px; border-top: 1px solid var(--border); text-align: center;">
           <div
-            style="display: flex; gap: 8px; width: 100%; max-width: 400px; box-sizing: border-box; align-items: center;">
-            <input type="text" id="fridge-amount-input" placeholder="分量 (例:200g)" class="form-input"
-              style="flex: 1; min-width: 0;">
+            style="display: flex; flex-direction: column; gap: 8px; justify-content: center; margin-bottom: 16px; align-items: center; width: 100%;">
+            <div style="display: flex; gap: 8px; width: 100%; max-width: 400px; box-sizing: border-box;">
+              <input type="text" id="fridge-ingredient-input" placeholder="食材名 (必須・例:豚肉)" class="form-input"
+                style="flex: 1; min-width: 0;">
+            </div>
+            <div style="display: flex; gap: 8px; width: 100%; max-width: 400px; box-sizing: border-box;">
+              <select id="fridge-category-input" class="form-input"
+                style="flex: 1; min-width: 0; padding: 10px 8px; color: #555;">
+                <option value="">種類(任意)</option>
+                <option value="野菜・きのこ">🥬 野菜・きのこ</option>
+                <option value="肉類">🍖 肉類</option>
+                <option value="魚介類">🐟 魚介類</option>
+                <option value="卵・乳製品">🥚 卵・乳製品</option>
+                <option value="穀物・麺類">🍚 穀物・麺類</option>
+                <option value="調味料">🧂 調味料</option>
+                <option value="加工品・その他">🥫 加工品・その他</option>
+              </select>
+              <select id="fridge-storage-input" class="form-input"
+                style="flex: 1; min-width: 0; padding: 10px 8px; color: #555;">
+                <option value="">場所(任意)</option>
+                <option value="📦 常温">📦 常温</option>
+                <option value="❄️ 冷蔵">❄️ 冷蔵</option>
+                <option value="🧊 冷凍">🧊 冷凍</option>
+              </select>
+            </div>
             <div
-              style="flex: 1; display: flex; align-items: center; background: white; border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 0 12px; overflow: hidden;">
-              <span style="font-size: 0.8rem; color: #64748B; white-space: nowrap; margin-right: 4px;">期限:</span>
-              <input type="date" id="fridge-expiry-input"
-                style="flex: 1; border: none; background: transparent; outline: none; font-size: 0.95rem; color: #334155; padding: 12px 0; width: 100%;">
+              style="display: flex; gap: 8px; width: 100%; max-width: 400px; box-sizing: border-box; align-items: center;">
+              <input type="text" id="fridge-amount-input" placeholder="分量 (例:200g)" class="form-input"
+                style="flex: 1; min-width: 0;">
+              <div
+                style="flex: 1; display: flex; align-items: center; background: white; border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 0 12px; overflow: hidden;">
+                <span style="font-size: 0.8rem; color: #64748B; white-space: nowrap; margin-right: 4px;">期限:</span>
+                <input type="date" id="fridge-expiry-input"
+                  style="flex: 1; border: none; background: transparent; outline: none; font-size: 0.95rem; color: #334155; padding: 12px 0; width: 100%;">
+              </div>
             </div>
+            <button id="btn-add-fridge-item" class="btn"
+              style="width: 100%; max-width: 400px; padding: 10px 16px; border-radius: 12px; margin-top: 4px;">追加</button>
           </div>
-          <button id="btn-add-fridge-item" class="btn"
-            style="width: 100%; max-width: 400px; padding: 10px 16px; border-radius: 12px; margin-top: 4px;">追加</button>
-        </div>
 
-        <div
-          style="display: flex; gap: 8px; justify-content: space-between; align-items: center; width: 100%; max-width: 400px; margin: 16px auto 8px; padding-top: 16px; border-top: 1px dashed #E2E8F0;">
-          <select id="fridge-group-select" class="form-input"
-            style="flex: 1; padding: 8px; font-size: 0.85rem; color: #555;" onchange="renderFridgeUI()">
-            <option value="category">種類でまとめる</option>
-            <option value="storage">場所でまとめる</option>
-          </select>
-          <select id="fridge-sort-select" class="form-input"
-            style="flex: 1; padding: 8px; font-size: 0.85rem; color: #555;" onchange="renderFridgeUI()">
-            <option value="newest">新しい順</option>
-            <option value="expiry">期限が近い順</option>
-            <option value="name">名前順</option>
-          </select>
-        </div>
+          <div
+            style="display: flex; gap: 8px; justify-content: space-between; align-items: center; width: 100%; max-width: 400px; margin: 16px auto 8px; padding-top: 16px; border-top: 1px dashed #E2E8F0;">
+            <select id="fridge-group-select" class="form-input"
+              style="flex: 1; padding: 8px; font-size: 0.85rem; color: #555;" onchange="renderFridgeUI()">
+              <option value="category">種類でまとめる</option>
+              <option value="storage">場所でまとめる</option>
+            </select>
+            <select id="fridge-sort-select" class="form-input"
+              style="flex: 1; padding: 8px; font-size: 0.85rem; color: #555;" onchange="renderFridgeUI()">
+              <option value="newest">新しい順</option>
+              <option value="expiry">期限が近い順</option>
+              <option value="name">名前順</option>
+            </select>
+          </div>
 
-        <details id="fridge-master-accordion" style="margin-bottom: 16px;">
-          <summary
-            style="font-weight: bold; color: var(--primary-dark); padding: 12px; background: #F8FAFC; border-radius: 8px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; border: 1px solid #E2E8F0;">
-            <span>📋 すべての食材一覧を開く/閉じる</span>
-            <span style="color: #94A3B8; font-size: 0.9rem;">▼</span>
-            <style>
-              #fridge-master-accordion>summary::-webkit-details-marker {
-                display: none;
-              }
-            </style>
-          </summary>
-          <div style="padding-top: 12px;">
-            <div id="fridge-tags-container" class="ingredient-list"
-              style="justify-content: center; gap: 12px; padding-bottom: 8px;">
-              <!-- Tags go here -->
+          <details id="fridge-master-accordion" style="margin-bottom: 16px;">
+            <summary
+              style="font-weight: bold; color: var(--primary-dark); padding: 12px; background: #F8FAFC; border-radius: 8px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; border: 1px solid #E2E8F0;">
+              <span>📋 すべての食材一覧を開く/閉じる</span>
+              <span style="color: #94A3B8; font-size: 0.9rem;">▼</span>
+              <style>
+                #fridge-master-accordion>summary::-webkit-details-marker {
+                  display: none;
+                }
+              </style>
+            </summary>
+            <div style="padding-top: 12px;">
+              <div id="fridge-tags-container" class="ingredient-list"
+                style="justify-content: center; gap: 12px; padding-bottom: 8px;">
+                <!-- Tags go here -->
+              </div>
             </div>
-          </div>
-        </details>
-      </div>
+          </details>
+        </div>
+      </details>
 
       <!-- サジェストセクション (タブ切り替え化) -->
       <div id="suggest-section" style="margin-top: 24px; border-top: 2px dashed var(--border); padding-top: 16px;">
