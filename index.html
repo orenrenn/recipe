@@ -167,24 +167,7 @@
     }
 
     .page {
-      display: none;
-    }
-
-    .page.active {
       display: block;
-      animation: fadeIn 0.25s ease;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(4px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
     }
 
     /* Controls (Search & Filter & Sort) */
@@ -1349,27 +1332,43 @@
     </div>
   </header>
 
-  <!-- Navigation Tabs -->
-  <nav>
-    <button id="nav-list" class="nav-tab active">
-      <span>📋</span> <span id="nav-list-text">レシピ一覧</span>
-    </button>
-    <button id="nav-add" class="nav-tab">
-      <span id="nav-add-icon">➕</span> <span id="nav-add-text">レシピ登録</span>
-    </button>
-  </nav>
-
-  <!-- Main Content Area -->
+  <!-- Main Content Area with 1:1 Realtime Side-by-Side Horizontal ViewPager Track -->
   <div class="container">
+    <div id="mode-viewpager-viewport" style="width: 100%; overflow: hidden; position: relative; border-radius: var(--radius-lg); transition: height 0.32s cubic-bezier(0.25, 1, 0.5, 1);">
+      <div id="mode-viewpager-track" style="display: flex; align-items: flex-start; width: 200%; transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform;">
+        
+        <!-- SIDE 1: レシピエリア (レシピ一覧 / レシピ登録) -->
+        <div id="page-list-side" style="width: 50%; flex: 0 0 50%; box-sizing: border-box; padding-right: 2px; position: relative;">
+          
+          <!-- Navigation Tabs (Integrated inside SIDE 1 for seamless 1:1 sliding) -->
+          <nav style="margin-bottom: 12px;">
+            <button id="nav-list" class="nav-tab active">
+              <span>📋</span> <span id="nav-list-text">レシピ一覧</span>
+            </button>
+            <button id="nav-add" class="nav-tab">
+              <span id="nav-add-icon">➕</span> <span id="nav-add-text">レシピ登録</span>
+            </button>
+          </nav>
+          <!-- PAGE 1: レシピ一覧 -->
+          <div id="page-list" class="page" style="display: block;">
 
-    <!-- PAGE 1: レシピ一覧 -->
-    <div id="page-list" class="page active">
-
-      <!-- Ultra-Clean Glass Capsule PTR Indicator with Readable Label -->
+      <!-- Ultra-Premium Glassmorphic Dynamic PTR Pill Indicator with SVG Progress Ring -->
       <div id="pull-to-refresh-indicator"
-        style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%) translateY(-150%) scale(0.8); z-index: 100; pointer-events: none; opacity: 0; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.8rem; font-weight: 800; color: var(--primary-dark); background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px); border: 1.5px solid rgba(255, 107, 82, 0.28); padding: 7px 18px; border-radius: 24px; box-shadow: 0 6px 20px rgba(255, 107, 82, 0.15), 0 2px 6px rgba(0,0,0,0.06); transition: transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;">
-        <span id="pull-refresh-icon" style="font-size: 1.1rem; transition: transform 0.15s ease; display: inline-block;">🍳</span>
-        <span id="pull-refresh-text" style="letter-spacing: 0.02em;">引っ張って最新に同期...</span>
+        style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%) translateY(-160%) scale(0.8); z-index: 100; pointer-events: none; opacity: 0; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.83rem; font-weight: 800; background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 246, 243, 0.94) 100%); backdrop-filter: blur(16px) saturate(180%); border: 1.5px solid rgba(255, 107, 82, 0.35); padding: 8px 22px; border-radius: 30px; box-shadow: 0 12px 32px rgba(255, 107, 82, 0.22), 0 3px 10px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1); transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease; white-space: nowrap; width: max-content;">
+        <div style="position: relative; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex: 0 0 28px;">
+          <svg width="28" height="28" viewBox="0 0 32 32" style="position: absolute; top: 0; left: 0; transform: rotate(-90deg); width: 28px; height: 28px;">
+            <circle cx="16" cy="16" r="13" fill="none" stroke="rgba(255,107,82,0.18)" stroke-width="3" />
+            <circle id="ptr-svg-circle" cx="16" cy="16" r="13" fill="none" stroke="url(#ptrGradient)" stroke-width="3" stroke-linecap="round" stroke-dasharray="81.68" stroke-dashoffset="81.68" style="transition: stroke-dashoffset 0.05s linear;" />
+            <defs>
+              <linearGradient id="ptrGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#FF6B52" />
+                <stop offset="100%" stop-color="#FF3B30" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <span id="pull-refresh-icon" style="font-size: 1.05rem; line-height: 1; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; z-index: 1; margin: 0; padding: 0;">✨</span>
+        </div>
+        <span id="pull-refresh-text" style="background: linear-gradient(135deg, #FF5722 0%, #E53E3E 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.03em; font-weight: 800; white-space: nowrap;">下に引いてクラウド同期</span>
       </div>
 
       <!-- 検索・フィルター・ソート -->
@@ -1420,7 +1419,7 @@
     </div>
 
     <!-- PAGE 2: レシピ追加 / 編集 -->
-    <div id="page-add" class="page">
+    <div id="page-add" class="page" style="display: none;">
       <div class="form-card">
         <div class="form-section-title" id="form-header-title">📌 基本情報</div>
 
@@ -1513,9 +1512,12 @@
         <span id="btn-save-content"><span>💾</span> レシピを保存する</span>
       </button>
     </div>
+        </div>
 
-    <!-- PAGE 3: 冷蔵庫管理 & レシピ提案 -->
-    <div id="page-fridge" class="page">
+        <!-- SIDE 2: レシピ提案エリア -->
+        <div id="page-fridge-side" style="width: 50%; flex: 0 0 50%; box-sizing: border-box; padding-left: 2px; position: relative;">
+          <!-- PAGE 3: 冷蔵庫管理 & レシピ提案 -->
+          <div id="page-fridge" class="page" style="display: block;">
       <details id="fridge-stock-accordion" class="form-card" style="margin-bottom: 20px; padding: 0; overflow: hidden;">
         <summary
           style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; cursor: pointer; list-style: none; user-select: none; background: linear-gradient(135deg, #FFFDF9 0%, #FFF5F2 100%);">
@@ -1779,323 +1781,325 @@
             </div>
           </div>
         </div> <!-- End subpanel-suggest-ai -->
+      </div> <!-- End page-fridge -->
+    </div> <!-- End page-fridge-side -->
+      </div> <!-- End mode-viewpager-track -->
+    </div> <!-- End mode-viewpager-viewport -->
+  </div> <!-- End container -->
+
+  <!-- 🎛️ AI詳細条件 絞り込みモーダル (モーダルはViewport外のルート直下に配置) -->
+  <div id="modal-ai-filter" class="modal-backdrop">
+    <div class="modal-card"
+      style="max-width: 560px; height: 530px; max-height: 88vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border-radius: 24px; box-shadow: 0 16px 40px rgba(0,0,0,0.22);">
+
+      <!-- モーダルヘッダー -->
+      <div
+        style="padding: 14px 20px; background: linear-gradient(135deg, #FFFDF9 0%, #FFF5F2 100%); border-bottom: 1.5px solid #F1F5F9; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10;">
+        <h3
+          style="margin: 0; font-size: 1.1rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+          <span>🎛️ こだわり条件の徹底絞り込み</span>
+        </h3>
+        <button type="button" onclick="closeAiFilterModal()"
+          style="background: #F1F5F9; border: none; font-size: 1.1rem; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; color: #64748B; display: flex; align-items: center; justify-content: center; font-weight: bold;">✕</button>
       </div>
-    </div>
 
-    <!-- 🎛️ AI詳細条件 絞り込みモーダル (モバイルアプリ風 ボトムシート / モーダル) -->
-    <div id="modal-ai-filter" class="modal-backdrop">
-      <div class="modal-card"
-        style="max-width: 540px; height: 500px; max-height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.18);">
+      <!-- モーダルコンテンツ (固定高・内部スクロール型) -->
+      <div
+        style="padding: 14px; flex: 1; min-height: 0; display: flex; flex-direction: column; background: #F8FAFC; overflow: hidden;">
 
-        <!-- モーダルヘッダー -->
+        <!-- 8 Category Grid Tabs (4列×2行・横スクロールなし) -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 10px; flex: 0 0 auto;">
+          <button type="button" id="ai-tab-btn-role" class="ai-cat-tab-btn active" onclick="switchAiCategoryTab('role')">🍽️ 役割</button>
+          <button type="button" id="ai-tab-btn-genre" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('genre')">🌍 ジャンル</button>
+          <button type="button" id="ai-tab-btn-taste" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('taste')">👅 味付け</button>
+          <button type="button" id="ai-tab-btn-purpose" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('purpose')">🎯 目的</button>
+          <button type="button" id="ai-tab-btn-style" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('style')">🍳 調理法</button>
+          <button type="button" id="ai-tab-btn-time" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('time')">⏱️ 時間</button>
+          <button type="button" id="ai-tab-btn-nutrition" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('nutrition')">🥗 栄養</button>
+          <button type="button" id="ai-tab-btn-strictness" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('strictness')">🛒 食材</button>
+        </div>
+
+        <style>
+          .ai-cat-tab-btn {
+            background: white;
+            border: 1px solid #CBD5E1;
+            color: #475569;
+            padding: 7px 2px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .ai-cat-tab-btn.active {
+            background: var(--primary-light) !important;
+            border-color: var(--primary) !important;
+            color: var(--primary) !important;
+            box-shadow: 0 2px 5px rgba(255, 107, 82, 0.2);
+          }
+        </style>
+
+        <!-- カテゴリパネル領域 (スクロール固定枠) -->
+        <div style="flex: 1; min-height: 0; overflow-y: auto; background: white; border-radius: 14px; padding: 12px; border: 1px solid #E2E8F0;">
+
+          <!-- Category 1: 料理の種類・役割 (初期表示) -->
+          <div id="ai-cat-panel-role" class="ai-cat-panel" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="おまかせ" checked onchange="updateAiConditionsPreview()"> 🎲 おまかせ</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="メインおかず (主菜)" onchange="updateAiConditionsPreview()"> 🍖 メインおかず</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="サブおかず・副菜・小鉢" onchange="updateAiConditionsPreview()"> 🥗 副菜・小鉢</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="主食 (ご飯もの・丼・チャーハン)" onchange="updateAiConditionsPreview()"> 🍚 ご飯もの・丼</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="主食 (麺・パスタ・うどん・そば)" onchange="updateAiConditionsPreview()"> 🍜 麺・パスタ</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="主食 (パン・サンドイッチ・トースト)" onchange="updateAiConditionsPreview()"> 🍞 パン・サンド</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="スープ・汁物・鍋" onchange="updateAiConditionsPreview()"> 🍲 スープ・汁物・鍋</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="サラダ・マリネ" onchange="updateAiConditionsPreview()"> 🥬 サラダ・マリネ</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="おつまみ・家飲み" onchange="updateAiConditionsPreview()"> 🥂 おつまみ</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="お弁当のおかず (冷めても美味しい)" onchange="updateAiConditionsPreview()"> 🍱 お弁当おかず</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="作り置き・常備菜" onchange="updateAiConditionsPreview()"> 🫙 常備菜</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="スイーツ・デザート・おやつ" onchange="updateAiConditionsPreview()"> 🍰 スイーツ</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="ドリンク・スムージー" onchange="updateAiConditionsPreview()"> 🥤 ドリンク</label>
+          </div>
+
+          <!-- Category 2: 料理ジャンル -->
+          <div id="ai-cat-panel-genre" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="おまかせ" checked onchange="updateAiConditionsPreview()"> 🎲 おまかせ</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="和食・家庭料理" onchange="updateAiConditionsPreview()"> 🍱 和食</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="洋食 (ハンバーグ・グラタン等)" onchange="updateAiConditionsPreview()"> 🍽️ 洋食</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="イタリアン・パスタ" onchange="updateAiConditionsPreview()"> 🍝 イタリアン</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="中華料理" onchange="updateAiConditionsPreview()"> 🥟 中華</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="韓国料理" onchange="updateAiConditionsPreview()"> 🇰🇷 韓国</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="タイ・ベトナム・東南アジア料理" onchange="updateAiConditionsPreview()"> 🌶️ アジアン</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="インド・スパイス料理・カレー" onchange="updateAiConditionsPreview()"> 🍛 カレー</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="メキシカン・アメリカン" onchange="updateAiConditionsPreview()"> 🌮 メキシカン</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="フレンチ・ビストロ風" onchange="updateAiConditionsPreview()"> 🇫🇷 フレンチ</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="スペイン・バル風 (アヒージョ等)" onchange="updateAiConditionsPreview()"> 🇪🇸 バル風</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="カフェ風・おしゃれワンプレート" onchange="updateAiConditionsPreview()"> ☕ カフェ風</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="無国籍・創作・フュージョン料理" onchange="updateAiConditionsPreview()"> 🎨 創作</label>
+          </div>
+
+          <!-- Category 3: 味の方向性 -->
+          <div id="ai-cat-panel-taste" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="さっぱり・あっさり (酢・柑橘・ポン酢など酸味のある軽い味付け)" onchange="updateAiConditionsPreview()"> 🍋 さっぱり・酸味</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="こってり・濃厚 (バター・チーズ・クリーム系)" onchange="updateAiConditionsPreview()"> 🧈 こってり・濃厚</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="甘辛い (照り焼き・すき焼き風の甘辛ダレ系)" onchange="updateAiConditionsPreview()"> 🍯 甘辛</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="ピリ辛・旨辛・スパイシー (唐辛子・豆板醤・カレー粉など)" onchange="updateAiConditionsPreview()"> 🌶️ ピリ辛・旨辛</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="塩味・シンプル (素材の味を活かしたあっさり塩味)" onchange="updateAiConditionsPreview()"> 🧂 塩味・シンプル</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="味噌・発酵系 (味噌・塩麹・醤油麹などコク深い味わい)" onchange="updateAiConditionsPreview()"> 🫘 味味噌・発酵系</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="だし・和風 (かつお・昆布・白だしなど出汁がきいた優しい味)" onchange="updateAiConditionsPreview()"> 🐟 だし・和風</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="にんにく・ガーリック (ニンニクの効いたパンチのある味)" onchange="updateAiConditionsPreview()"> 🧄 ガーリック</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="ごま・ナッツ系 (ごまだれ・ピーナッツソースなど香ばしい味)" onchange="updateAiConditionsPreview()"> 🥜 ごま・ナッツ</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="ハーブ・香草 (バジル・パセリ・大葉などの豊かな香り)" onchange="updateAiConditionsPreview()"> 🌿 ハーブ・香草</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="デミグラス・トマト系 (トマトソース・ケチャップ・デミグラスなど)" onchange="updateAiConditionsPreview()"> 🍅 トマト・デミ</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="クリーム・ホワイトソース系 (牛乳・生クリーム・チーズなど)" onchange="updateAiConditionsPreview()"> 🥛 クリームチーズ</label>
+          </div>
+
+          <!-- Category 4: 目的・シーン -->
+          <div id="ai-cat-panel-purpose" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="時短・爆速 (10〜15分以内で完成)" onchange="updateAiConditionsPreview()"> ⏱️ 時短・爆速</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="がっつり・スタミナ・ボリューム満点" onchange="updateAiConditionsPreview()"> 🍖 スタミナ</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="ヘルシー・低カロリー・ダイエット向け" onchange="updateAiConditionsPreview()"> 🥗 ヘルシー</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="高タンパク・筋トレ・ボディメイク飯" onchange="updateAiConditionsPreview()"> 💪 高タンパク</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="野菜たっぷり・野菜メイン" onchange="updateAiConditionsPreview()"> 🥦 野菜たっぷり</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="子供が喜ぶ・マイルドで食べやすい" onchange="updateAiConditionsPreview()"> 👶 子供向け</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="節約・コスパ重視 (少ない食材で美味しく)" onchange="updateAiConditionsPreview()"> 💰 節約・コスパ</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="おもてなし・ホームパーティ向け・見栄えよく" onchange="updateAiConditionsPreview()"> 🎉 おもてなし</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="夜食・軽め・胃に優しい" onchange="updateAiConditionsPreview()"> 🌙 夜食・軽め</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="朝ごはん・ブランチ" onchange="updateAiConditionsPreview()"> 🌅 朝ごはん</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="お酒に合う・ワインやビールのお供" onchange="updateAiConditionsPreview()"> 🍺 お酒のお供</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="疲労回復・栄養満点・体が温まる" onchange="updateAiConditionsPreview()"> 🔥 疲労回復</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="冷たい料理・暑い日にぴったり" onchange="updateAiConditionsPreview()"> 🧊 冷たい・夏向き</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="映え・SNS映え・見た目重視" onchange="updateAiConditionsPreview()"> 📸 SNS映え</label>
+          </div>
+
+          <!-- Category 5: 調理スタイル・道具 -->
+          <div id="ai-cat-panel-style" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="フライパン1つ (ワンパン)" onchange="updateAiConditionsPreview()"> 🍳 ワンパン</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="鍋1つ (ワンポット)" onchange="updateAiConditionsPreview()"> 🫕 ワンポット</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="電子レンジのみ (レンジ調理)" onchange="updateAiConditionsPreview()"> ⚡ レンジのみ</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="オーブン・トースター" onchange="updateAiConditionsPreview()"> 🔥 トースター</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="炊飯器調理 (炊飯器に入れるだけ)" onchange="updateAiConditionsPreview()"> 🍚 炊飯器</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="包丁不要・手でちぎる・キッチンばさみ" onchange="updateAiConditionsPreview()"> ✂️ 包丁不要</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="火を使わない (和える・混ぜるだけ)" onchange="updateAiConditionsPreview()"> 🥄 火を使わない</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="揚げ物・フライ" onchange="updateAiConditionsPreview()"> 🍤 揚げ物</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="グリル・焼き物 (魚焼きグリル含む)" onchange="updateAiConditionsPreview()"> 🔥 グリル</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="蒸し料理 (せいろ・蒸し器・レンジ蒸し)" onchange="updateAiConditionsPreview()"> ♨️ 蒸し料理</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="じっくり煮込み・本格 (時間をかけて)" onchange="updateAiConditionsPreview()"> 🍲 煮込み</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="漬ける・マリネ (放置するだけ)" onchange="updateAiConditionsPreview()"> 🫙 マリネ</label>
+          </div>
+
+          <!-- Category 6: 調理時間・難易度 -->
+          <div id="ai-cat-panel-time" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
+            <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="指定なし" checked onchange="updateAiConditionsPreview()"> 🎲 指定なし</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="5分以内の超爆速スピード調理" onchange="updateAiConditionsPreview()"> ⚡ 5分以内 (超爆速)</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="10〜15分程度の時短お手軽調理" onchange="updateAiConditionsPreview()"> ⏱️ 10〜15分 (お手軽)</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="20〜30分程度の標準調理" onchange="updateAiConditionsPreview()"> 🍳 20〜30分 (標準)</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="40分以上のじっくり本格調理" onchange="updateAiConditionsPreview()"> 🍲 40分以上 (本格)</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="料理初心者向け・失敗なしのカンタンレシピ" onchange="updateAiConditionsPreview()"> 🔰 初心者向け</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="本格プロ・シェフ級の本格派レシピ" onchange="updateAiConditionsPreview()"> 👨‍🍳 本格プロ味</label>
+          </div>
+
+          <!-- Category 7: 栄養・健康 -->
+          <div id="ai-cat-panel-nutrition" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="糖質オフ・ロカボ・糖質制限" onchange="updateAiConditionsPreview()"> 🥦 糖質オフ</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="脂質控えめ・ローファット" onchange="updateAiConditionsPreview()"> 📉 脂質控えめ</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="グルテンフリー・小麦粉不使用" onchange="updateAiConditionsPreview()"> 🌾 グルテンフリー</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="ベジタリアン・植物性メイン" onchange="updateAiConditionsPreview()"> 🥬 ベジメイン</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="減塩・塩分控えめ・優しめ" onchange="updateAiConditionsPreview()"> 🫀 減塩・塩分控えめ</label>
+            <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="腸活・食物繊維豊富 (きのこ・海藻・発酵食材)" onchange="updateAiConditionsPreview()"> 🫘 腸活・繊維豊富</label>
+          </div>
+
+          <!-- Category 8: 食材の買い足し方針 -->
+          <div id="ai-cat-panel-strictness" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
+            <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="手元にある食材のみ (買い足しゼロ)" checked onchange="updateAiConditionsPreview()"> 🟢 買い足しゼロ</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="定番調味料・野菜の買い足しOK" onchange="updateAiConditionsPreview()"> 🟡 定番品OK</label>
+            <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="自由に追加食材OK (本格味重視)" onchange="updateAiConditionsPreview()"> 🔴 買い足し自由</label>
+          </div>
+        </div>
+
+        <!-- モーダルフッター (Sticky Action Bar) -->
         <div
-          style="padding: 14px 18px; background: white; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10;">
-          <h3
-            style="margin: 0; font-size: 1.05rem; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 6px;">
-            <span>🎛️ こだわり条件の選択</span>
-          </h3>
+          style="padding: 12px 16px; background: white; border-top: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; gap: 10px; position: sticky; bottom: 0; z-index: 10; box-shadow: 0 -4px 12px rgba(0,0,0,0.05);">
           <button type="button" onclick="closeAiFilterModal()"
-            style="background: #F1F5F9; border: none; font-size: 1.1rem; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; color: #64748B; display: flex; align-items: center; justify-content: center; font-weight: bold;">✕</button>
-        </div>
-
-        <!-- モーダルコンテンツ (固定高・内部スクロール型) -->
-        <div
-          style="padding: 14px; flex: 1; min-height: 0; display: flex; flex-direction: column; background: #F8FAFC; overflow: hidden;">
-
-          <!-- 8 Category Grid Tabs (4列×2行・横スクロールなし) -->
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 10px; flex: 0 0 auto;">
-            <button type="button" id="ai-tab-btn-role" class="ai-cat-tab-btn active" onclick="switchAiCategoryTab('role')">🍽️ 役割</button>
-            <button type="button" id="ai-tab-btn-genre" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('genre')">🌍 ジャンル</button>
-            <button type="button" id="ai-tab-btn-taste" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('taste')">👅 味付け</button>
-            <button type="button" id="ai-tab-btn-purpose" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('purpose')">🎯 目的</button>
-            <button type="button" id="ai-tab-btn-style" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('style')">🍳 調理法</button>
-            <button type="button" id="ai-tab-btn-time" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('time')">⏱️ 時間</button>
-            <button type="button" id="ai-tab-btn-nutrition" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('nutrition')">🥗 栄養</button>
-            <button type="button" id="ai-tab-btn-strictness" class="ai-cat-tab-btn" onclick="switchAiCategoryTab('strictness')">🛒 食材</button>
-          </div>
-
-          <style>
-            .ai-cat-tab-btn {
-              background: white;
-              border: 1px solid #CBD5E1;
-              color: #475569;
-              padding: 7px 2px;
-              border-radius: 8px;
-              font-size: 0.72rem;
-              font-weight: bold;
-              cursor: pointer;
-              text-align: center;
-              transition: all 0.2s ease;
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
-            }
-
-            .ai-cat-tab-btn.active {
-              background: var(--primary-light) !important;
-              border-color: var(--primary) !important;
-              color: var(--primary) !important;
-              box-shadow: 0 2px 5px rgba(255, 107, 82, 0.2);
-            }
-          </style>
-
-          <!-- カテゴリパネル領域 (スクロール固定枠) -->
-          <div style="flex: 1; min-height: 0; overflow-y: auto; background: white; border-radius: 14px; padding: 12px; border: 1px solid #E2E8F0;">
-
-            <!-- Category 1: 料理の種類・役割 (初期表示) -->
-            <div id="ai-cat-panel-role" class="ai-cat-panel" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="おまかせ" checked onchange="updateAiConditionsPreview()"> 🎲 おまかせ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="メインおかず (主菜)" onchange="updateAiConditionsPreview()"> 🍖 メインおかず</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="サブおかず・副菜・小鉢" onchange="updateAiConditionsPreview()"> 🥗 副菜・小鉢</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="主食 (ご飯もの・丼・チャーハン)" onchange="updateAiConditionsPreview()"> 🍚 ご飯もの・丼</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="主食 (麺・パスタ・うどん・そば)" onchange="updateAiConditionsPreview()"> 🍜 麺・パスタ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="主食 (パン・サンドイッチ・トースト)" onchange="updateAiConditionsPreview()"> 🍞 パン・サンド</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="スープ・汁物・鍋" onchange="updateAiConditionsPreview()"> 🍲 スープ・汁物・鍋</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="サラダ・マリネ" onchange="updateAiConditionsPreview()"> 🥬 サラダ・マリネ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="おつまみ・家飲み" onchange="updateAiConditionsPreview()"> 🥂 おつまみ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="お弁当のおかず (冷めても美味しい)" onchange="updateAiConditionsPreview()"> 🍱 お弁当おかず</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="作り置き・常備菜" onchange="updateAiConditionsPreview()"> 🫙 常備菜</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="スイーツ・デザート・おやつ" onchange="updateAiConditionsPreview()"> 🍰 スイーツ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiDishRole" value="ドリンク・スムージー" onchange="updateAiConditionsPreview()"> 🥤 ドリンク</label>
-            </div>
-
-            <!-- Category 2: 料理ジャンル -->
-            <div id="ai-cat-panel-genre" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="おまかせ" checked onchange="updateAiConditionsPreview()"> 🎲 おまかせ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="和食・家庭料理" onchange="updateAiConditionsPreview()"> 🍱 和食</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="洋食 (ハンバーグ・グラタン等)" onchange="updateAiConditionsPreview()"> 🍽️ 洋食</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="イタリアン・パスタ" onchange="updateAiConditionsPreview()"> 🍝 イタリアン</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="中華料理" onchange="updateAiConditionsPreview()"> 🥟 中華</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="韓国料理" onchange="updateAiConditionsPreview()"> 🇰🇷 韓国</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="タイ・ベトナム・東南アジア料理" onchange="updateAiConditionsPreview()"> 🌶️ アジアン</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="インド・スパイス料理・カレー" onchange="updateAiConditionsPreview()"> 🍛 カレー</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="メキシカン・アメリカン" onchange="updateAiConditionsPreview()"> 🌮 メキシカン</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="フレンチ・ビストロ風" onchange="updateAiConditionsPreview()"> 🇫🇷 フレンチ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="スペイン・バル風 (アヒージョ等)" onchange="updateAiConditionsPreview()"> 🇪🇸 バル風</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="カフェ風・おしゃれワンプレート" onchange="updateAiConditionsPreview()"> ☕ カフェ風</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiGenre" value="無国籍・創作・フュージョン料理" onchange="updateAiConditionsPreview()"> 🎨 創作</label>
-            </div>
-
-            <!-- Category 3: 味の方向性 -->
-            <div id="ai-cat-panel-taste" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="さっぱり・あっさり (酢・柑橘・ポン酢など酸味のある軽い味付け)" onchange="updateAiConditionsPreview()"> 🍋 さっぱり・酸味</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="こってり・濃厚 (バター・チーズ・クリーム系)" onchange="updateAiConditionsPreview()"> 🧈 こってり・濃厚</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="甘辛い (照り焼き・すき焼き風の甘辛ダレ系)" onchange="updateAiConditionsPreview()"> 🍯 甘辛</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="ピリ辛・旨辛・スパイシー (唐辛子・豆板醤・カレー粉など)" onchange="updateAiConditionsPreview()"> 🌶️ ピリ辛・旨辛</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="塩味・シンプル (素材の味を活かしたあっさり塩味)" onchange="updateAiConditionsPreview()"> 🧂 塩味・シンプル</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="味噌・発酵系 (味噌・塩麹・醤油麹などコク深い味わい)" onchange="updateAiConditionsPreview()"> 🫘 味噌・発酵系</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="だし・和風 (かつお・昆布・白だしなど出汁がきいた優しい味)" onchange="updateAiConditionsPreview()"> 🐟 だし・和風</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="にんにく・ガーリック (ニンニクの効いたパンチのある味)" onchange="updateAiConditionsPreview()"> 🧄 ガーリック</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="ごま・ナッツ系 (ごまだれ・ピーナッツソースなど香ばしい味)" onchange="updateAiConditionsPreview()"> 🥜 ごま・ナッツ</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="ハーブ・香草 (バジル・パセリ・大葉などの豊かな香り)" onchange="updateAiConditionsPreview()"> 🌿 ハーブ・香草</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="デミグラス・トマト系 (トマトソース・ケチャップ・デミグラスなど)" onchange="updateAiConditionsPreview()"> 🍅 トマト・デミ</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiTaste" value="クリーム・ホワイトソース系 (牛乳・生クリーム・チーズなど)" onchange="updateAiConditionsPreview()"> 🥛 クリームチーズ</label>
-            </div>
-
-            <!-- Category 4: 目的・シーン -->
-            <div id="ai-cat-panel-purpose" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="時短・爆速 (10〜15分以内で完成)" onchange="updateAiConditionsPreview()"> ⏱️ 時短・爆速</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="がっつり・スタミナ・ボリューム満点" onchange="updateAiConditionsPreview()"> 🍖 スタミナ</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="ヘルシー・低カロリー・ダイエット向け" onchange="updateAiConditionsPreview()"> 🥗 ヘルシー</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="高タンパク・筋トレ・ボディメイク飯" onchange="updateAiConditionsPreview()"> 💪 高タンパク</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="野菜たっぷり・野菜メイン" onchange="updateAiConditionsPreview()"> 🥦 野菜たっぷり</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="子供が喜ぶ・マイルドで食べやすい" onchange="updateAiConditionsPreview()"> 👶 子供向け</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="節約・コスパ重視 (少ない食材で美味しく)" onchange="updateAiConditionsPreview()"> 💰 節約・コスパ</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="おもてなし・ホームパーティ向け・見栄えよく" onchange="updateAiConditionsPreview()"> 🎉 おもてなし</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="夜食・軽め・胃に優しい" onchange="updateAiConditionsPreview()"> 🌙 夜食・軽め</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="朝ごはん・ブランチ" onchange="updateAiConditionsPreview()"> 🌅 朝ごはん</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="お酒に合う・ワインやビールのお供" onchange="updateAiConditionsPreview()"> 🍺 お酒のお供</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="疲労回復・栄養満点・体が温まる" onchange="updateAiConditionsPreview()"> 🔥 疲労回復</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="冷たい料理・暑い日にぴったり" onchange="updateAiConditionsPreview()"> 🧊 冷たい・夏向き</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiPurpose" value="映え・SNS映え・見た目重視" onchange="updateAiConditionsPreview()"> 📸 SNS映え</label>
-            </div>
-
-            <!-- Category 5: 調理スタイル・道具 -->
-            <div id="ai-cat-panel-style" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="フライパン1つ (ワンパン)" onchange="updateAiConditionsPreview()"> 🍳 ワンパン</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="鍋1つ (ワンポット)" onchange="updateAiConditionsPreview()"> 🫕 ワンポット</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="電子レンジのみ (レンジ調理)" onchange="updateAiConditionsPreview()"> ⚡ レンジのみ</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="オーブン・トースター" onchange="updateAiConditionsPreview()"> 🔥 トースター</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="炊飯器調理 (炊飯器に入れるだけ)" onchange="updateAiConditionsPreview()"> 🍚 炊飯器</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="包丁不要・手でちぎる・キッチンばさみ" onchange="updateAiConditionsPreview()"> ✂️ 包丁不要</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="火を使わない (和える・混ぜるだけ)" onchange="updateAiConditionsPreview()"> 🥄 火を使わない</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="揚げ物・フライ" onchange="updateAiConditionsPreview()"> 🍤 揚げ物</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="グリル・焼き物 (魚焼きグリル含む)" onchange="updateAiConditionsPreview()"> 🔥 グリル</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="蒸し料理 (せいろ・蒸し器・レンジ蒸し)" onchange="updateAiConditionsPreview()"> ♨️ 蒸し料理</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="じっくり煮込み・本格 (時間をかけて)" onchange="updateAiConditionsPreview()"> 🍲 煮込み</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiStyle" value="漬ける・マリネ (放置するだけ)" onchange="updateAiConditionsPreview()"> 🫙 マリネ</label>
-            </div>
-
-            <!-- Category 6: 調理時間・難易度 -->
-            <div id="ai-cat-panel-time" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
-              <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="指定なし" checked onchange="updateAiConditionsPreview()"> 🎲 指定なし</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="5分以内の超爆速スピード調理" onchange="updateAiConditionsPreview()"> ⚡ 5分以内 (超爆速)</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="10〜15分程度の時短お手軽調理" onchange="updateAiConditionsPreview()"> ⏱️ 10〜15分 (お手軽)</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="20〜30分程度の標準調理" onchange="updateAiConditionsPreview()"> 🍳 20〜30分 (標準)</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="40分以上のじっくり本格調理" onchange="updateAiConditionsPreview()"> 🍲 40分以上 (本格)</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="料理初心者向け・失敗なしのカンタンレシピ" onchange="updateAiConditionsPreview()"> 🔰 初心者向け</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiTime" value="本格プロ・シェフ級の本格派レシピ" onchange="updateAiConditionsPreview()"> 👨‍🍳 本格プロ味</label>
-            </div>
-
-            <!-- Category 7: 栄養・健康 -->
-            <div id="ai-cat-panel-nutrition" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="糖質オフ・ロカボ・糖質制限" onchange="updateAiConditionsPreview()"> 🥦 糖質オフ</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="脂質控えめ・ローファット" onchange="updateAiConditionsPreview()"> 📉 脂質控えめ</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="グルテンフリー・小麦粉不使用" onchange="updateAiConditionsPreview()"> 🌾 グルテンフリー</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="ベジタリアン・植物性メイン" onchange="updateAiConditionsPreview()"> 🥬 ベジメイン</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="減塩・塩分控えめ・優しめ" onchange="updateAiConditionsPreview()"> 🫀 減塩・塩分控えめ</label>
-              <label class="pill ai-theme-label"><input type="checkbox" name="aiNutrition" value="腸活・食物繊維豊富 (きのこ・海藻・発酵食材)" onchange="updateAiConditionsPreview()"> 🫘 腸活・繊維豊富</label>
-            </div>
-
-            <!-- Category 8: 食材の買い足し方針 -->
-            <div id="ai-cat-panel-strictness" class="ai-cat-panel" style="display: none; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; align-content: start;">
-              <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="手元にある食材のみ (買い足しゼロ)" checked onchange="updateAiConditionsPreview()"> 🟢 買い足しゼロ</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="定番調味料・野菜の買い足しOK" onchange="updateAiConditionsPreview()"> 🟡 定番品OK</label>
-              <label class="pill ai-theme-label"><input type="radio" name="aiStrictness" value="自由に追加食材OK (本格味重視)" onchange="updateAiConditionsPreview()"> 🔴 買い足し自由</label>
-            </div>
-          </div>
-
-          <!-- モーダルフッター (Sticky Action Bar) -->
-          <div
-            style="padding: 12px 16px; background: white; border-top: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; gap: 10px; position: sticky; bottom: 0; z-index: 10; box-shadow: 0 -4px 12px rgba(0,0,0,0.05);">
-            <button type="button" onclick="closeAiFilterModal()"
-              style="font-size: 0.88rem; color: #FFFFFF; background: var(--primary); border: none; padding: 12px 14px; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 1; white-space: nowrap; box-shadow: 0 4px 12px rgba(255,107,82,0.35);">
-              ✨ この条件で決定する
-            </button>
-            <button type="button" onclick="resetAiConditions()"
-              style="font-size: 0.82rem; color: #E53E3E; background: #FFF5F5; border: 1px solid #FEB2B2; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 0 0 auto;">
-              🔄 リセット
-            </button>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <!-- レシピ詳細 モーダル -->
-    <div id="modal-recipe-detail" class="modal-backdrop">
-      <div class="modal-card">
-        <div class="modal-header">
-          <div class="modal-title-group">
-            <h2 id="detail-title" class="modal-title">料理名</h2>
-            <div class="modal-meta">
-              <span id="detail-category-badge" class="pill"
-                style="background: var(--primary-light); color: var(--primary); border: none;">主菜</span>
-              <span id="detail-servings">👤 2人分</span>
-            </div>
-            <div id="detail-date-info" style="font-size: 0.75rem; color: #999; margin-top: 4px;"></div>
-          </div>
-          <button id="btn-toggle-fav-detail" class="icon-btn" style="margin-right: 8px;" title="おいしかった！">
-            <span id="detail-fav-star">😋</span>
+            style="font-size: 0.88rem; color: #FFFFFF; background: var(--primary); border: none; padding: 12px 14px; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 1; white-space: nowrap; box-shadow: 0 4px 12px rgba(255,107,82,0.35);">
+            ✨ この条件で決定する
           </button>
-          <button id="btn-close-detail" class="modal-close-btn">✕</button>
-        </div>
-
-        <div class="modal-body">
-
-          <div id="detail-gallery-container" class="detail-gallery-container" style="display: none;">
-            <div class="detail-main-img-wrapper">
-              <button id="gallery-btn-prev" class="gallery-nav-btn prev" style="display: none;">❮</button>
-              <img id="detail-main-img" class="detail-main-img" src="" alt="料理写真">
-              <button id="gallery-btn-next" class="gallery-nav-btn next" style="display: none;">❯</button>
-            </div>
-            <div id="gallery-thumbs-row" class="gallery-thumbs-row" style="display: none;"></div>
-          </div>
-
-          <!-- 材料 -->
-          <div id="section-ingredients" class="detail-section" style="display: none;">
-            <div class="detail-section-title">🛒 材料</div>
-            <div id="detail-ingredients-list" class="ingredient-list"></div>
-          </div>
-
-          <!-- 作り方 (見出し＋詳細構造表示) -->
-          <div id="section-steps" class="detail-section" style="display: none;">
-            <div class="detail-section-title">👩‍🍳 作り方</div>
-            <div id="detail-steps-list" class="step-list"></div>
-          </div>
-
-          <!-- コツ・メモ -->
-          <div id="section-memo" class="detail-section" style="display: none;">
-            <div class="detail-section-title" id="detail-section-title-memo">💡 コツ・メモ</div>
-            <div id="detail-memo-content" class="notes-box"></div>
-          </div>
-        </div>
-
-        <div class="modal-footer" id="modal-footer-default">
-          <button id="btn-edit-recipe" class="btn btn-secondary" style="width: auto; padding: 10px 18px;">
-            <span>✏️</span> 編集する
-          </button>
-          <button id="btn-delete-recipe" class="btn btn-danger" style="width: auto; padding: 10px 18px;">
-            <span>🗑️</span> レシピを削除
-          </button>
-        </div>
-        <div class="modal-footer" id="modal-footer-ai" style="display: none;">
-          <button id="btn-save-ai-recipe" class="btn" style="width: 100%; padding: 12px 18px; border-radius: 14px;">
-            <span>💾</span> このレシピをマイレシピに登録する
+          <button type="button" onclick="resetAiConditions()"
+            style="font-size: 0.82rem; color: #E53E3E; background: #FFF5F5; border: 1px solid #FEB2B2; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 0 0 auto;">
+            🔄 リセット
           </button>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- データ同期設定 モーダル -->
-    <div id="modal-settings" class="modal-backdrop">
-      <div class="modal-card" style="max-width: 480px; padding: 1.5rem; border-radius: 24px;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 1.6rem; color: #3B82F6;">☁️</span>
-            <h2 style="font-size: 1.35rem; font-weight: 800; margin: 0; color: #1E293B;">データ同期設定</h2>
+  <!-- レシピ詳細 モーダル -->
+  <div id="modal-recipe-detail" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 id="detail-title" class="modal-title">料理名</h2>
+          <div class="modal-meta">
+            <span id="detail-category-badge" class="pill"
+              style="background: var(--primary-light); color: var(--primary); border: none;">主菜</span>
+            <span id="detail-servings">👤 2人分</span>
           </div>
-          <button id="btn-close-settings" class="modal-close-btn">✕</button>
+          <div id="detail-date-info" style="font-size: 0.75rem; color: #999; margin-top: 4px;"></div>
         </div>
+        <button id="btn-toggle-fav-detail" class="icon-btn" style="margin-right: 8px;" title="おいしかった！">
+          <span id="detail-fav-star">😋</span>
+        </button>
+        <button id="btn-close-detail" class="modal-close-btn">✕</button>
+      </div>
 
-        <!-- クラウド同期完了表示バナー -->
-        <div id="sync-status-banner"
-          style="display: none; background: #ECFDF5; border: 1.5px solid #A7F3D0; border-radius: 14px; padding: 12px 14px; margin-bottom: 1.2rem; font-size: 0.9rem; color: #065F46; font-weight: 700; align-items: center; justify-content: space-between;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 1.3rem;">✅</span>
-            <span>データはクラウドに同期されています</span>
+      <div class="modal-body">
+
+        <div id="detail-gallery-container" class="detail-gallery-container" style="display: none;">
+          <div class="detail-main-img-wrapper">
+            <button id="gallery-btn-prev" class="gallery-nav-btn prev" style="display: none;">❮</button>
+            <img id="detail-main-img" class="detail-main-img" src="" alt="料理写真">
+            <button id="gallery-btn-next" class="gallery-nav-btn next" style="display: none;">❯</button>
           </div>
-          <button id="btn-disconnect-sync"
-            style="background: none; border: none; color: #EF4444; font-size: 0.82rem; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0;">解除</button>
+          <div id="gallery-thumbs-row" class="gallery-thumbs-row" style="display: none;"></div>
         </div>
 
-        <p id="sync-description"
-          style="font-size: 0.88rem; color: #64748B; margin-top: 0; margin-bottom: 1.2rem; line-height: 1.5;">
-          Firebaseの設定(JSON)を貼り付けると、Googleアカウントでのログイン画面が開き、データをクラウドに保存できます。
-        </p>
-
-        <div id="firebase-config-container" class="form-group" style="margin-bottom: 1.5rem;">
-          <textarea id="firebase-config-json" rows="6"
-            style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 14px; padding: 12px; font-size: 0.88rem; color: #334155; resize: vertical;"
-            placeholder='{"apiKey": "AIzaSy...", "authDomain": "...", ...}'></textarea>
+        <!-- 材料 -->
+        <div id="section-ingredients" class="detail-section" style="display: none;">
+          <div class="detail-section-title">🛒 材料</div>
+          <div id="detail-ingredients-list" class="ingredient-list"></div>
         </div>
 
-        <div style="margin-bottom: 1.5rem; border-top: 1px solid #E2E8F0; padding-top: 1.5rem;">
-          <h3 style="font-size: 1.05rem; font-weight: 800; color: #1E293B; margin-bottom: 0.6rem;">✨ AIレシピ提案機能の設定</h3>
-          <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 0.8rem;">Gemini API
-            キーを設定すると、冷蔵庫の食材からAIがレシピを自動提案します。</p>
-          <div class="form-group" style="margin-bottom: 0;">
-            <input type="password" id="gemini-api-key-input" placeholder="AIzaSy..." class="search-input"
-              style="width: 100%; border-radius: 12px; font-family: monospace;">
-          </div>
+        <!-- 作り方 (見出し＋詳細構造表示) -->
+        <div id="section-steps" class="detail-section" style="display: none;">
+          <div class="detail-section-title">👩‍🍳 作り方</div>
+          <div id="detail-steps-list" class="step-list"></div>
         </div>
 
-        <button id="btn-sync-google" class="btn"
-          style="background: linear-gradient(135deg, #818CF8, #6366F1); border-radius: 14px; padding: 14px; font-size: 1.05rem; font-weight: 800; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; border: none; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);">
-          <svg width="22" height="22" viewBox="0 0 24 24" style="background: white; border-radius: 50%; padding: 2px;">
-            <path fill="#4285F4"
-              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-            <path fill="#34A853"
-              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-            <path fill="#FBBC05"
-              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-            <path fill="#EA4335"
-              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-          </svg>
-          <span>Googleでログインして同期</span>
+        <!-- コツ・メモ -->
+        <div id="section-memo" class="detail-section" style="display: none;">
+          <div class="detail-section-title" id="detail-section-title-memo">💡 コツ・メモ</div>
+          <div id="detail-memo-content" class="notes-box"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer" id="modal-footer-default">
+        <button id="btn-edit-recipe" class="btn btn-secondary" style="width: auto; padding: 10px 18px;">
+          <span>✏️</span> 編集する
+        </button>
+        <button id="btn-delete-recipe" class="btn btn-danger" style="width: auto; padding: 10px 18px;">
+          <span>🗑️</span> レシピを削除
+        </button>
+      </div>
+      <div class="modal-footer" id="modal-footer-ai" style="display: none;">
+        <button id="btn-save-ai-recipe" class="btn" style="width: 100%; padding: 12px 18px; border-radius: 14px;">
+          <span>💾</span> このレシピをマイレシピに登録する
         </button>
       </div>
     </div>
+  </div>
+
+  <!-- データ同期設定 モーダル -->
+  <div id="modal-settings" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 480px; padding: 1.5rem; border-radius: 24px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.6rem; color: #3B82F6;">☁️</span>
+          <h2 style="font-size: 1.35rem; font-weight: 800; margin: 0; color: #1E293B;">データ同期設定</h2>
+        </div>
+        <button id="btn-close-settings" class="modal-close-btn">✕</button>
+      </div>
+
+      <!-- クラウド同期完了表示バナー -->
+      <div id="sync-status-banner"
+        style="display: none; background: #ECFDF5; border: 1.5px solid #A7F3D0; border-radius: 14px; padding: 12px 14px; margin-bottom: 1.2rem; font-size: 0.9rem; color: #065F46; font-weight: 700; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.3rem;">✅</span>
+          <span>データはクラウドに同期されています</span>
+        </div>
+        <button id="btn-disconnect-sync"
+          style="background: none; border: none; color: #EF4444; font-size: 0.82rem; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0;">解除</button>
+      </div>
+
+      <p id="sync-description"
+        style="font-size: 0.88rem; color: #64748B; margin-top: 0; margin-bottom: 1.2rem; line-height: 1.5;">
+        Firebaseの設定(JSON)を貼り付けると、Googleアカウントでのログイン画面が開き、データをクラウドに保存できます。
+      </p>
+
+      <div id="firebase-config-container" class="form-group" style="margin-bottom: 1.5rem;">
+        <textarea id="firebase-config-json" rows="6"
+          style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 14px; padding: 12px; font-size: 0.88rem; color: #334155; resize: vertical;"
+          placeholder='{"apiKey": "AIzaSy...", "authDomain": "...", ...}'></textarea>
+      </div>
+
+      <div style="margin-bottom: 1.5rem; border-top: 1px solid #E2E8F0; padding-top: 1.5rem;">
+        <h3 style="font-size: 1.05rem; font-weight: 800; color: #1E293B; margin-bottom: 0.6rem;">✨ AIレシピ提案機能の設定</h3>
+        <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 0.8rem;">Gemini API
+          キーを設定すると、冷蔵庫の食材からAIがレシピを自動提案します。</p>
+        <div class="form-group" style="margin-bottom: 0;">
+          <input type="password" id="gemini-api-key-input" placeholder="AIzaSy..." class="search-input"
+            style="width: 100%; border-radius: 12px; font-family: monospace;">
+        </div>
+      </div>
+
+      <button id="btn-sync-google" class="btn"
+        style="background: linear-gradient(135deg, #818CF8, #6366F1); border-radius: 14px; padding: 14px; font-size: 1.05rem; font-weight: 800; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; border: none; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);">
+        <svg width="22" height="22" viewBox="0 0 24 24" style="background: white; border-radius: 50%; padding: 2px;">
+          <path fill="#4285F4"
+            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+          <path fill="#34A853"
+            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+          <path fill="#FBBC05"
+            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+          <path fill="#EA4335"
+            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+        </svg>
+        <span>Googleでログインして同期</span>
+      </button>
+    </div>
+  </div>
 
     <!-- Floating Scroll To Top Button -->
     <button id="btn-scroll-top" class="btn-scroll-top" aria-label="ページ最上部へ戻る" title="トップへ戻る">
@@ -2258,31 +2262,47 @@
       // --- Mode Switcher Logic ---
       const modeScrollPositions = { recipe: 0, fridge: 0 };
 
+      function syncViewportHeight() {
+        const viewport = document.getElementById('mode-viewpager-viewport');
+        const activeSide = (currentAppMode === 'fridge') ? document.getElementById('page-fridge-side') : document.getElementById('page-list-side');
+        if (viewport && activeSide) {
+          const h = activeSide.offsetHeight;
+          if (h > 0) {
+            viewport.style.height = h + 'px';
+          }
+        }
+      }
+
       window.switchAppMode = function (mode) {
         if (currentAppMode) {
           modeScrollPositions[currentAppMode] = window.scrollY;
         }
         currentAppMode = mode;
 
+        // Both sides are ALWAYS display: block (0 disappearing / 0 flickering risk)
+        const sideList = document.getElementById('page-list-side');
+        const sideFridge = document.getElementById('page-fridge-side');
+        if (sideList) sideList.style.display = 'block';
+        if (sideFridge) sideFridge.style.display = 'block';
+
         // Update Tab UI
         document.getElementById('mode-recipe').classList.toggle('active', mode === 'recipe');
         document.getElementById('mode-fridge').classList.toggle('active', mode === 'fridge');
 
+        const track = document.getElementById('mode-viewpager-track');
+        if (track) {
+          track.style.transition = 'transform 0.32s cubic-bezier(0.25, 1, 0.5, 1)';
+          track.style.transform = (mode === 'fridge') ? 'translateX(-50%)' : 'translateX(0%)';
+        }
+
         const isFridge = mode === 'fridge';
 
         if (isFridge) {
-          document.querySelector('nav').style.display = 'none';
-          switchPage('fridge');
           if (window.renderFridgeUI) window.renderFridgeUI();
         } else {
-          document.querySelector('nav').style.display = 'flex';
-          if (document.getElementById('page-fridge').classList.contains('active')) {
-            switchPage('list');
-          } else {
-            renderRecipeList();
-            if (document.getElementById('page-add').classList.contains('active')) {
-              updateFormModeUI();
-            }
+          renderRecipeList();
+          if (document.getElementById('page-add').style.display === 'block') {
+            updateFormModeUI();
           }
         }
 
@@ -2292,47 +2312,86 @@
           document.getElementById('form-header-title').innerText = '📌 基本情報';
         }
 
-        // Restore independent scroll position for selected mode
+        // Restore saved scroll position for active mode
         const targetY = modeScrollPositions[mode] || 0;
-        setTimeout(() => {
-          window.scrollTo({ top: targetY, behavior: 'instant' });
-        }, 0);
+        window.scrollTo({ top: targetY, behavior: 'instant' });
+
+        // Update container height to match active content exactly (0 empty scroll space)
+        syncViewportHeight();
+        setTimeout(syncViewportHeight, 330);
       };
 
-      // --- Horizontal Touch Swipe Mode Switcher ---
+      // --- Real-time 1:1 Side-by-Side Horizontal ViewPager Touch Drag ---
       let swipeStartX = 0;
       let swipeStartY = 0;
       let isSwiping = false;
+      let touchMoveDistanceX = 0;
 
       window.addEventListener('touchstart', (e) => {
         if (e.touches.length !== 1) return;
         if (document.querySelector('.modal-backdrop.active')) return;
         const target = e.target;
-        if (target.closest('input, textarea, select, button, .modal-card, #fridge-stock-accordion, .search-filter-box, #pull-to-refresh-indicator')) {
+        if (target.closest('textarea, .modal-backdrop')) {
           isSwiping = false;
           return;
         }
 
         swipeStartX = e.touches[0].clientX;
         swipeStartY = e.touches[0].clientY;
+        touchMoveDistanceX = 0;
         isSwiping = true;
+
+        const viewport = document.getElementById('mode-viewpager-viewport');
+        if (viewport) viewport.style.height = 'auto';
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (!isSwiping || e.touches.length !== 1) return;
+
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const diffX = currentX - swipeStartX;
+        const diffY = currentY - swipeStartY;
+
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
+          touchMoveDistanceX = diffX;
+          const track = document.getElementById('mode-viewpager-track');
+          if (track) {
+            const basePercent = (currentAppMode === 'fridge') ? -50 : 0;
+            const screenWidth = window.innerWidth || 360;
+            const percentDelta = (diffX / screenWidth) * 50;
+            let targetPercent = basePercent + percentDelta;
+
+            if (targetPercent > 0) targetPercent = targetPercent * 0.22;
+            if (targetPercent < -50) targetPercent = -50 + (targetPercent + 50) * 0.22;
+
+            track.style.transition = 'none';
+            track.style.transform = `translateX(${targetPercent}%)`;
+          }
+        }
       }, { passive: true });
 
       window.addEventListener('touchend', (e) => {
-        if (!isSwiping || e.changedTouches.length !== 1) return;
+        if (!isSwiping) return;
         isSwiping = false;
 
-        const endX = e.changedTouches[0].clientX;
-        const endY = e.changedTouches[0].clientY;
-        const diffX = endX - swipeStartX;
-        const diffY = endY - swipeStartY;
+        const track = document.getElementById('mode-viewpager-track');
+        if (track) {
+          track.style.transition = 'transform 0.32s cubic-bezier(0.25, 1, 0.5, 1)';
+        }
 
-        if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
-          if (diffX < 0 && currentAppMode === 'recipe') {
+        if (Math.abs(touchMoveDistanceX) > 50) {
+          if (touchMoveDistanceX < 0 && currentAppMode === 'recipe') {
             switchAppMode('fridge');
-          } else if (diffX > 0 && currentAppMode === 'fridge') {
+          } else if (touchMoveDistanceX > 0 && currentAppMode === 'fridge') {
             switchAppMode('recipe');
+          } else if (track) {
+            track.style.transform = (currentAppMode === 'fridge') ? 'translateX(-50%)' : 'translateX(0%)';
+            setTimeout(syncViewportHeight, 330);
           }
+        } else if (track) {
+          track.style.transform = (currentAppMode === 'fridge') ? 'translateX(-50%)' : 'translateX(0%)';
+          setTimeout(syncViewportHeight, 330);
         }
       }, { passive: true });
 
@@ -2639,24 +2698,23 @@
 
       // --- Navigation Logic ---
       window.switchPage = function switchPage(pageName) {
-        Object.values(pages).forEach(p => p.classList.remove('active'));
         Object.values(navButtons).forEach(b => b.classList.remove('active'));
-
-        pages[pageName].classList.add('active');
         if (navButtons[pageName]) navButtons[pageName].classList.add('active');
 
-        if (pageName === 'add' && !editingRecipeId) {
-          resetForm();
-        }
-
-        if (pageName === 'list') {
+        if (pageName === 'add') {
+          pages.list.style.display = 'none';
+          pages.add.style.display = 'block';
+          if (!editingRecipeId) resetForm();
+        } else if (pageName === 'list') {
+          pages.add.style.display = 'none';
+          pages.list.style.display = 'block';
           if (app && recipesCache.length === 0) {
             fetchRecipes();
           } else {
             renderRecipeList();
           }
         }
-      }
+      };
 
       navButtons.list.addEventListener('click', () => {
         editingRecipeId = null;
@@ -3044,13 +3102,13 @@
       // --- Native Pull-to-Refresh Gesture Handling ---
       let touchStartY = 0;
       let pullDistance = 0;
-      const PULL_THRESHOLD = 60;
+      const PULL_THRESHOLD = 95;
       let isRefreshing = false;
 
       const listPage = document.getElementById('page-list');
 
       window.addEventListener('touchstart', (e) => {
-        if (window.scrollY <= 0 && !isRefreshing && currentAppMode === 'recipe' && listPage && listPage.classList.contains('active')) {
+        if (window.scrollY <= 0 && !isRefreshing && currentAppMode === 'recipe') {
           touchStartY = e.touches[0].clientY;
           pullDistance = 0;
         } else {
@@ -3064,24 +3122,35 @@
         const diff = currentY - touchStartY;
 
         if (diff > 0 && window.scrollY <= 0) {
-          pullDistance = Math.min(Math.pow(diff, 0.85), 90);
+          pullDistance = Math.min(Math.pow(diff, 0.88), 120);
 
           const indicator = document.getElementById('pull-to-refresh-indicator');
           const icon = document.getElementById('pull-refresh-icon');
           const text = document.getElementById('pull-refresh-text');
+          const circle = document.getElementById('ptr-svg-circle');
 
           if (indicator) {
-            const scaleProgress = Math.min(0.8 + (pullDistance / PULL_THRESHOLD) * 0.2, 1);
+            const progress = Math.min(pullDistance / PULL_THRESHOLD, 1);
+            const scaleProgress = Math.min(0.8 + progress * 0.2, 1);
+
             indicator.style.transform = `translateX(-50%) translateY(${Math.min(pullDistance, 54)}px) scale(${scaleProgress})`;
-            indicator.style.opacity = `${Math.min(pullDistance / PULL_THRESHOLD, 1)}`;
+            indicator.style.opacity = `${progress}`;
+
+            if (circle) {
+              const circumference = 81.68;
+              circle.style.strokeDashoffset = `${circumference * (1 - progress)}`;
+            }
+
             icon.style.transform = `rotate(${pullDistance * 4}deg)`;
 
             if (pullDistance >= PULL_THRESHOLD) {
-              icon.innerText = '🔄';
-              text.innerText = '離して最新に更新...';
+              icon.innerText = '🔥';
+              if (text) text.innerText = '離して即時同期！';
+              indicator.style.boxShadow = '0 14px 36px rgba(255, 107, 82, 0.35), 0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,1)';
             } else {
-              icon.innerText = '🍳';
-              text.innerText = '引っ張って最新に同期...';
+              icon.innerText = '✨';
+              if (text) text.innerText = '下に引いてクラウド同期';
+              indicator.style.boxShadow = '0 12px 32px rgba(255, 107, 82, 0.22), 0 3px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,1)';
             }
           }
         }
@@ -3093,6 +3162,7 @@
         const indicator = document.getElementById('pull-to-refresh-indicator');
         const icon = document.getElementById('pull-refresh-icon');
         const text = document.getElementById('pull-refresh-text');
+        const circle = document.getElementById('ptr-svg-circle');
 
         if (pullDistance >= PULL_THRESHOLD && db) {
           isRefreshing = true;
@@ -3102,25 +3172,27 @@
             icon.style.transform = 'rotate(0deg)';
             icon.innerText = '🍳';
             icon.style.animation = 'spin 0.7s linear infinite';
-            if (text) text.innerText = 'データを同期中...';
+            if (text) text.innerText = 'レシピデータを同期中...';
+            if (circle) circle.style.strokeDashoffset = '0';
           }
 
           await fetchRecipes(true);
 
           if (indicator) {
             icon.style.animation = 'none';
-            icon.innerText = '✨';
-            if (text) text.innerText = '同期が完了しました！';
+            icon.innerText = '🎉';
+            if (text) text.innerText = '最新データに同期完了！';
 
             setTimeout(() => {
-              indicator.style.transform = 'translateX(-50%) translateY(-150%) scale(0.8)';
+              indicator.style.transform = 'translateX(-50%) translateY(-160%) scale(0.8)';
               indicator.style.opacity = '0';
               setTimeout(() => {
-                icon.innerText = '🍳';
-                if (text) text.innerText = '引っ張って最新に同期...';
+                icon.innerText = '✨';
+                if (text) text.innerText = '下に引いてクラウド同期';
+                if (circle) circle.style.strokeDashoffset = '81.68';
                 isRefreshing = false;
               }, 250);
-            }, 600);
+            }, 650);
           } else {
             isRefreshing = false;
           }
