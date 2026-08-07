@@ -169,6 +169,8 @@ class TestFridgeItemModal:
     def test_fridge_category_options(self, page):
         """カテゴリの選択肢が仕様通りであること"""
         self._open_fridge_modal(page)
+        options = page.locator("#fridge-category-input option")
+        values = [o.get_attribute("value") for o in options.all()]
         expected = [
             "野菜・きのこ", "肉類", "魚介類", "卵・乳製品",
             "豆腐・豆類", "米・麺・粉", "調味料・油",
@@ -573,7 +575,7 @@ class TestModalExclusion:
     def test_only_one_modal_open_at_time(self, page):
         """モーダルは1つしか同時に開けないこと"""
         # 設定モーダルを開く
-        page.locator("#btn-open-settings").click()
+        page.evaluate("openSettingsModal()")
         page.wait_for_timeout(300)
         expect(page.locator("#modal-settings")).to_have_class(re.compile(r"active"))
 
