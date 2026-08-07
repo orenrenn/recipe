@@ -951,12 +951,15 @@
     #fridge-stock-accordion summary::-webkit-details-marker {
       display: none;
     }
+
     #fridge-stock-accordion[open] .accordion-arrow {
       transform: rotate(180deg);
     }
+
     #fridge-stock-accordion[open] .accordion-label::before {
       content: '閉じる';
     }
+
     #fridge-stock-accordion:not([open]) .accordion-label::before {
       content: '開く';
     }
@@ -1315,7 +1318,7 @@
         <span class="mode-icon">🍳</span> レシピ
       </button>
       <button id="mode-fridge" class="mode-btn" onclick="switchAppMode('fridge')">
-        <span class="mode-icon">🧺</span> 食材ストック
+        <span class="mode-icon">✨</span> レシピ提案
       </button>
     </div>
   </header>
@@ -1337,8 +1340,10 @@
     <div id="page-list" class="page active">
 
       <!-- Pull to Refresh Indicator -->
-      <div id="pull-to-refresh-indicator" style="height: 0px; opacity: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.82rem; font-weight: bold; color: var(--primary-dark); background: var(--primary-light); transition: height 0.2s ease, opacity 0.2s ease; border-radius: 12px; margin-bottom: 8px;">
-        <span id="pull-refresh-icon" style="font-size: 1.2rem; transition: transform 0.2s ease; display: inline-block;">🍳</span>
+      <div id="pull-to-refresh-indicator"
+        style="height: 0px; opacity: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.82rem; font-weight: bold; color: var(--primary-dark); background: var(--primary-light); transition: height 0.2s ease, opacity 0.2s ease; border-radius: 12px; margin-bottom: 8px;">
+        <span id="pull-refresh-icon"
+          style="font-size: 1.2rem; transition: transform 0.2s ease; display: inline-block;">🍳</span>
         <span id="pull-refresh-text">下に引っ張って再同期...</span>
       </div>
 
@@ -1350,8 +1355,10 @@
         </div>
 
         <div style="display: flex; align-items: center; gap: 8px; margin: 10px 0 6px 0; width: 100%;">
-          <span style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted); white-space: nowrap;">📂 カテゴリ:</span>
-          <select id="category-select" style="flex: 1; padding: 7px 12px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer;">
+          <span style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted); white-space: nowrap;">📂
+            カテゴリ:</span>
+          <select id="category-select"
+            style="flex: 1; padding: 7px 12px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer;">
             <option value="all">すべてのカテゴリ</option>
             <option value="fav">⭐ お気に入り</option>
             <option value="主菜">🍱 主菜</option>
@@ -1486,14 +1493,17 @@
     <!-- PAGE 3: 冷蔵庫管理 & レシピ提案 -->
     <div id="page-fridge" class="page">
       <details id="fridge-stock-accordion" class="form-card" style="margin-bottom: 20px; padding: 0; overflow: hidden;">
-        <summary style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; cursor: pointer; list-style: none; user-select: none; background: linear-gradient(135deg, #FFFDF9 0%, #FFF5F2 100%);">
+        <summary
+          style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; cursor: pointer; list-style: none; user-select: none; background: linear-gradient(135deg, #FFFDF9 0%, #FFF5F2 100%);">
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="font-size: 1.2rem;">🧺</span>
-            <h2 style="font-size: 1.1rem; font-weight: 800; margin: 0; color: var(--primary-dark);">みんなの食材ストック</h2>
+            <h2 style="font-size: 1.1rem; font-weight: 800; margin: 0; color: var(--primary-dark);">食材ストック</h2>
           </div>
-          <div style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: bold; color: var(--primary-dark);">
+          <div
+            style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: bold; color: var(--primary-dark);">
             <span class="accordion-label"></span>
-            <span class="accordion-arrow" style="transition: transform 0.3s ease; display: inline-block; font-size: 0.8rem;">▼</span>
+            <span class="accordion-arrow"
+              style="transition: transform 0.3s ease; display: inline-block; font-size: 0.8rem;">▼</span>
           </div>
         </summary>
 
@@ -1593,8 +1603,11 @@
           <div style="margin-bottom: 14px; border-bottom: 2px solid var(--primary-light); padding-bottom: 8px;">
             <h3 style="font-size: 1.05rem; color: #555; margin: 0 0 8px 0;">📖 自分のレシピから作れるもの</h3>
             <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0 10px 0; width: 100%;">
-              <span style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted); white-space: nowrap;">📂 カテゴリ:</span>
-              <select id="suggest-tag-select" style="flex: 1; padding: 7px 12px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer;" onchange="suggestLocalRecipes()">
+              <span style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted); white-space: nowrap;">📂
+                カテゴリ:</span>
+              <select id="suggest-tag-select"
+                style="flex: 1; padding: 7px 12px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer;"
+                onchange="suggestLocalRecipes()">
                 <option value="all">すべてのカテゴリ</option>
                 <option value="fav">⭐ お気に入り</option>
                 <option value="主菜">🍱 主菜</option>
@@ -2136,13 +2149,13 @@
       </div>
     </div>
 
-  <!-- Floating Scroll To Top Button -->
-  <button id="btn-scroll-top" class="btn-scroll-top" aria-label="ページ最上部へ戻る" title="トップへ戻る">
-    <svg viewBox="0 0 24 24">
-      <polyline points="18 15 12 9 6 15"></polyline>
-    </svg>
-  </button>
-  <!-- Dynamic PNG Canvas Generator for iOS Safari Apple Touch Icon -->
+    <!-- Floating Scroll To Top Button -->
+    <button id="btn-scroll-top" class="btn-scroll-top" aria-label="ページ最上部へ戻る" title="トップへ戻る">
+      <svg viewBox="0 0 24 24">
+        <polyline points="18 15 12 9 6 15"></polyline>
+      </svg>
+    </button>
+    <!-- Dynamic PNG Canvas Generator for iOS Safari Apple Touch Icon -->
     <script>
       function generateCutePngIcon(size = 192) {
         const canvas = document.createElement('canvas');
