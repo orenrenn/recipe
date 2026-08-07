@@ -891,21 +891,15 @@
       bottom: 0;
       background: rgba(0, 0, 0, 0.65);
       z-index: 1000;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       padding: 1rem;
       overscroll-behavior: contain;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transition: opacity 0.25s ease, visibility 0.25s ease;
     }
 
     .modal-backdrop.active {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
+      display: flex !important;
     }
 
     .modal-card {
@@ -2345,11 +2339,11 @@
       });
     };
 
-    function openSettingsModal() {
+    window.openSettingsModal = function openSettingsModal() {
       updateSyncModalUI();
       closeAllModals();
       modalSettings.classList.add('active');
-    }
+    };
 
     // --- Navigation Logic ---
     window.switchPage = function switchPage(pageName) {
