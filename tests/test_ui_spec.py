@@ -67,8 +67,11 @@ class TestInitialRendering:
         texts = options.all_text_contents()
         expected = [
             "すべてのカテゴリ", "😋 おいしかった",
-            "🍱 主菜", "🥗 副菜", "🍲 汁物",
-            "🍚 主食", "🍰 デザート", "📦 その他",
+            "🍱 主菜", "🥗 副菜", "🍺 おつまみ",
+            "🍲 汁物・スープ", "🍚 主食 (ご飯・丼)",
+            "🍜 麺・パスタ", "🍞 パン・サンド",
+            "🥬 サラダ・前菜", "🍰 デザート・おやつ",
+            "📦 その他",
         ]
         assert texts == expected, f"カテゴリ選択肢が仕様と異なります: {texts}"
 
@@ -410,7 +413,11 @@ class TestRecipeAddForm:
         self._switch_to_add_tab(page)
         options = page.locator("#recipe-category option")
         texts = options.all_text_contents()
-        expected = ["主菜", "副菜", "汁物", "主食", "デザート", "その他"]
+        expected = [
+            "主菜", "副菜", "おつまみ", "汁物・スープ",
+            "主食 (ご飯・丼)", "麺・パスタ", "パン・サンド",
+            "サラダ・前菜", "デザート", "その他",
+        ]
         assert texts == expected, f"登録フォームのカテゴリが仕様と異なります: {texts}"
 
     def test_form_servings_options(self, page):

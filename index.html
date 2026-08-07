@@ -1396,9 +1396,13 @@
                   <option value="fav">😋 おいしかった</option>
                   <option value="主菜">🍱 主菜</option>
                   <option value="副菜">🥗 副菜</option>
-                  <option value="汁物">🍲 汁物</option>
-                  <option value="主食">🍚 主食</option>
-                  <option value="デザート">🍰 デザート</option>
+                  <option value="おつまみ">🍺 おつまみ</option>
+                  <option value="汁物">🍲 汁物・スープ</option>
+                  <option value="主食">🍚 主食 (ご飯・丼)</option>
+                  <option value="麺・パスタ">🍜 麺・パスタ</option>
+                  <option value="パン">🍞 パン・サンド</option>
+                  <option value="サラダ">🥬 サラダ・前菜</option>
+                  <option value="デザート">🍰 デザート・おやつ</option>
                   <option value="その他">📦 その他</option>
                 </select>
               </div>
@@ -1443,8 +1447,12 @@
                   <select id="recipe-category">
                     <option value="主菜">主菜</option>
                     <option value="副菜">副菜</option>
-                    <option value="汁物">汁物</option>
-                    <option value="主食">主食</option>
+                    <option value="おつまみ">おつまみ</option>
+                    <option value="汁物">汁物・スープ</option>
+                    <option value="主食">主食 (ご飯・丼)</option>
+                    <option value="麺・パスタ">麺・パスタ</option>
+                    <option value="パン">パン・サンド</option>
+                    <option value="サラダ">サラダ・前菜</option>
                     <option value="デザート">デザート</option>
                     <option value="その他">その他</option>
                   </select>
@@ -1619,9 +1627,13 @@
                       <option value="fav">😋 おいしかった</option>
                       <option value="主菜">🍱 主菜</option>
                       <option value="副菜">🥗 副菜</option>
-                      <option value="汁物">🍲 汁物</option>
-                      <option value="主食">🍚 主食</option>
-                      <option value="デザート">🍰 デザート</option>
+                      <option value="おつまみ">🍺 おつまみ</option>
+                      <option value="汁物">🍲 汁物・スープ</option>
+                      <option value="主食">🍚 主食 (ご飯・丼)</option>
+                      <option value="麺・パスタ">🍜 麺・パスタ</option>
+                      <option value="パン">🍞 パン・サンド</option>
+                      <option value="サラダ">🥬 サラダ・前菜</option>
+                      <option value="デザート">🍰 デザート・おやつ</option>
                       <option value="その他">📦 その他</option>
                     </select>
                   </div>
@@ -2187,10 +2199,10 @@
     <!-- 🥦 食材の追加・編集 モーダル -->
     <div id="modal-fridge-item" class="modal-backdrop">
       <div class="modal-card"
-        style="max-width: 460px; padding: 0; overflow: hidden; border-radius: 24px; box-shadow: 0 16px 40px rgba(0,0,0,0.22);">
+        style="max-width: 460px; max-height: 88vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border-radius: 24px; box-shadow: 0 16px 40px rgba(0,0,0,0.22);">
         <!-- ヘッダー -->
         <div
-          style="padding: 16px 20px; background: linear-gradient(135deg, #FFFDF9 0%, #FFF5F2 100%); border-bottom: 1.5px solid #F1F5F9; display: flex; align-items: center; justify-content: space-between;">
+          style="padding: 16px 20px; background: linear-gradient(135deg, #FFFDF9 0%, #FFF5F2 100%); border-bottom: 1.5px solid #F1F5F9; display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto;">
           <h3 id="fridge-modal-title"
             style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--primary-dark); display: flex; align-items: center; gap: 8px;">
             <span>🥦 食材の登録</span>
@@ -2200,7 +2212,7 @@
         </div>
 
         <!-- モーダル本体 -->
-        <div style="padding: 20px; background: white;">
+        <div style="padding: 20px; background: white; overflow-y: auto; flex: 1; min-height: 0;">
           <div style="margin-bottom: 14px;">
             <label style="font-weight: 800; font-size: 0.88rem; color: #334155; margin-bottom: 6px; display: block;">食材名
               <span style="color: var(--primary);">*</span></label>
@@ -3775,6 +3787,43 @@
         return totalScore;
       }
 
+      function isCategoryMatch(item, targetCategory) {
+        if (!targetCategory || targetCategory === 'all') return true;
+        if (targetCategory === 'fav') return isFavorite(item.id);
+
+        const cat = (item.category || '').trim();
+        const tags = Array.isArray(item.tags) ? item.tags.map(t => String(t).trim()) : [];
+        const allItemCats = [cat, ...tags, item.aiCategory || '', item.dishRole || ''].filter(Boolean);
+
+        if (allItemCats.some(c => c === targetCategory || c.includes(targetCategory) || targetCategory.includes(c))) {
+          return true;
+        }
+
+        if (targetCategory === 'おつまみ') {
+          return allItemCats.some(c => c.includes('つまみ') || c.includes('酒') || c.includes('前菜'));
+        }
+        if (targetCategory === '汁物') {
+          return allItemCats.some(c => c.includes('汁') || c.includes('スープ') || c.includes('鍋'));
+        }
+        if (targetCategory === '主食') {
+          return allItemCats.some(c => c.includes('主食') || c.includes('飯') || c.includes('丼') || c.includes('チャーハン') || c.includes('おにぎり') || c.includes('トースト'));
+        }
+        if (targetCategory === '麺・パスタ') {
+          return allItemCats.some(c => c.includes('麺') || c.includes('パスタ') || c.includes('うどん') || c.includes('そば') || c.includes('ラーメン') || c.includes('焼きそば'));
+        }
+        if (targetCategory === 'パン') {
+          return allItemCats.some(c => c.includes('パン') || c.includes('サンド') || c.includes('トースト'));
+        }
+        if (targetCategory === 'サラダ') {
+          return allItemCats.some(c => c.includes('サラダ') || c.includes('マリネ') || c.includes('和え'));
+        }
+        if (targetCategory === 'デザート') {
+          return allItemCats.some(c => c.includes('デザート') || c.includes('スイーツ') || c.includes('おやつ') || c.includes('ケーキ') || c.includes('プリン'));
+        }
+
+        return false;
+      }
+
       // Filter & Render List with Multi-Criteria Sorting
 
       window.renderRecipeList = function renderRecipeList() {
@@ -3788,14 +3837,7 @@
             if (!hasTag) return { item, score: 0 };
           }
 
-          let categoryMatch = false;
-          if (activeCategory === 'all') {
-            categoryMatch = true;
-          } else if (activeCategory === 'fav') {
-            categoryMatch = isFavorite(item.id);
-          } else {
-            categoryMatch = ((item.category || 'その他') === activeCategory);
-          }
+          let categoryMatch = isCategoryMatch(item, activeCategory);
 
           let score = categoryMatch ? computeRecipeSemanticScore(item, searchQuery) : 0;
           return { item, score };
@@ -4276,25 +4318,32 @@
             item.category = category;
             item.amount = amount;
             item.expiry = expiry;
-            if (item.firestoreId && currentUser) {
+            if (db) {
               try {
-                await updateDoc(doc(db, "users", currentUser.uid, "fridge_items", item.firestoreId), {
-                  name, storage, category, amount, expiry
+                const targetId = item.firestoreId || item.id;
+                await updateDoc(doc(db, "refrigerators", targetId), {
+                  name, storage, category, amount, expiry,
+                  updatedAt: serverTimestamp()
                 });
-              } catch (e) { console.error(e); }
+              } catch (e) { console.warn("Firestore update fridge item note:", e); }
             }
           }
         } else {
           const newItem = {
             id: 'item_' + Date.now(),
             name, storage, category, amount, expiry,
-            createdAt: new Date()
+            createdAt: new Date().toISOString()
           };
-          if (currentUser) {
+          if (db) {
             try {
-              const docRef = await addDoc(collection(db, "users", currentUser.uid, "fridge_items"), newItem);
+              const docRef = await addDoc(collection(db, "refrigerators"), {
+                name, storage, category, amount, expiry,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+              });
               newItem.firestoreId = docRef.id;
-            } catch (e) { console.error(e); }
+              newItem.id = docRef.id;
+            } catch (e) { console.warn("Firestore add fridge item note:", e); }
           }
           refrigeratorItems.unshift(newItem);
         }
@@ -4303,6 +4352,49 @@
         closeFridgeItemModal();
         renderFridgeUI();
       });
+
+      window.saveLocalFridgeItems = function saveLocalFridgeItems() {
+        try {
+          localStorage.setItem('mogu_fridge_items', JSON.stringify(refrigeratorItems));
+        } catch (e) {
+          console.error("Failed to save local fridge items:", e);
+        }
+      };
+
+      window.loadLocalFridgeItems = function loadLocalFridgeItems() {
+        try {
+          const raw = localStorage.getItem('mogu_fridge_items');
+          if (raw) {
+            refrigeratorItems = JSON.parse(raw);
+            refrigeratorIngredients = refrigeratorItems.map(item => item.name);
+          }
+        } catch (e) {
+          console.error("Failed to load local fridge items:", e);
+        }
+      };
+
+      window.deleteFridgeItem = async function deleteFridgeItem(id) {
+        const index = refrigeratorItems.findIndex(i => i.id === id);
+        let deletedItem = null;
+        if (index !== -1) {
+          deletedItem = refrigeratorItems[index];
+          refrigeratorItems.splice(index, 1);
+          refrigeratorIngredients = refrigeratorItems.map(item => item.name);
+          saveLocalFridgeItems();
+          renderFridgeUI();
+        }
+
+        if (db) {
+          try {
+            const targetId = (deletedItem && deletedItem.firestoreId) ? deletedItem.firestoreId : id;
+            await deleteDoc(doc(db, "refrigerators", targetId));
+          } catch (e) {
+            console.warn("Firestore delete fridge item note:", e);
+          }
+        }
+      };
+
+      window.removeFridgeItem = window.deleteFridgeItem;
 
       // --- Rich Modern Stock Card Renderer ---
       window.renderFridgeUI = function () {
@@ -4728,14 +4820,10 @@
       }
 
       async function removeFridgeItem(id) {
-        if (!db) return;
-        try {
-          await deleteDoc(doc(db, "refrigerators", id));
-        } catch (e) {
-          console.error("Failed to remove fridge item:", e);
-          alert("削除に失敗しました: " + e.message);
-        }
+        return window.deleteFridgeItem(id);
       }
+
+      loadLocalFridgeItems();
 
 
 
