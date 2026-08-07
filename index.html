@@ -889,6 +889,64 @@
       touch-action: none;
     }
 
+    /* Floating Back to Top Button */
+    .btn-scroll-top {
+      position: fixed;
+      bottom: 24px;
+      right: 18px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF6B52 0%, #FF8F6B 100%);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 8px 24px rgba(255, 107, 82, 0.42), 0 2px 8px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 9999;
+      opacity: 0.95;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-scroll-top:hover {
+      opacity: 1;
+      transform: translateY(-4px) scale(1.08);
+      box-shadow: 0 12px 28px rgba(255, 107, 82, 0.48), 0 4px 12px rgba(0, 0, 0, 0.16);
+      background: linear-gradient(135deg, #FF5638 0%, #FF7E57 100%);
+    }
+
+    .btn-scroll-top:hover {
+      transform: translateY(-4px) scale(1.08);
+      box-shadow: 0 12px 28px rgba(255, 107, 82, 0.48), 0 4px 12px rgba(0, 0, 0, 0.16);
+      background: linear-gradient(135deg, #FF5638 0%, #FF7E57 100%);
+    }
+
+    .btn-scroll-top:active {
+      transform: translateY(0) scale(0.92);
+      box-shadow: 0 4px 12px rgba(255, 107, 82, 0.3);
+    }
+
+    .btn-scroll-top svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-scroll-top:hover svg {
+      transform: translateY(-2px);
+    }
+
     .modal-backdrop {
       position: fixed;
       top: 0;
@@ -1264,6 +1322,12 @@
     <!-- PAGE 1: レシピ一覧 -->
     <div id="page-list" class="page active">
 
+      <!-- Pull to Refresh Indicator -->
+      <div id="pull-to-refresh-indicator" style="height: 0px; opacity: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.82rem; font-weight: bold; color: var(--primary-dark); background: var(--primary-light); transition: height 0.2s ease, opacity 0.2s ease; border-radius: 12px; margin-bottom: 8px;">
+        <span id="pull-refresh-icon" style="font-size: 1.2rem; transition: transform 0.2s ease; display: inline-block;">🍳</span>
+        <span id="pull-refresh-text">下に引っ張って再同期...</span>
+      </div>
+
       <!-- 検索・フィルター・ソート -->
       <div class="search-filter-box">
         <div class="search-wrapper">
@@ -1271,15 +1335,18 @@
           <input type="text" id="search-input" class="search-input" placeholder="料理名や材料名で検索...">
         </div>
 
-        <div class="category-pills" id="category-pills">
-          <button class="pill active" data-cat="all">全て</button>
-          <button class="pill pill-fav" data-cat="fav">⭐ お気に入り</button>
-          <button class="pill" data-cat="主菜">主菜</button>
-          <button class="pill" data-cat="副菜">副菜</button>
-          <button class="pill" data-cat="汁物">汁物</button>
-          <button class="pill" data-cat="主食">主食</button>
-          <button class="pill" data-cat="デザート">デザート</button>
-          <button class="pill" data-cat="その他">その他</button>
+        <div style="display: flex; align-items: center; gap: 8px; margin: 10px 0 6px 0; width: 100%;">
+          <span style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted); white-space: nowrap;">📂 カテゴリ:</span>
+          <select id="category-select" style="flex: 1; padding: 7px 12px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer;">
+            <option value="all">すべてのカテゴリ</option>
+            <option value="fav">⭐ お気に入り</option>
+            <option value="主菜">🍱 主菜</option>
+            <option value="副菜">🥗 副菜</option>
+            <option value="汁物">🍲 汁物</option>
+            <option value="主食">🍚 主食</option>
+            <option value="デザート">🍰 デザート</option>
+            <option value="その他">📦 その他</option>
+          </select>
         </div>
 
         <div class="sort-bar">
@@ -1499,12 +1566,17 @@
         <div id="subpanel-suggest-local">
           <div style="margin-bottom: 14px; border-bottom: 2px solid var(--primary-light); padding-bottom: 8px;">
             <h3 style="font-size: 1.05rem; color: #555; margin: 0 0 8px 0;">📖 自分のレシピから作れるもの</h3>
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-              <span style="font-size: 0.8rem; color: #777; font-weight: bold;">🏷️ タグ・カテゴリ絞り込み:</span>
-              <select id="suggest-tag-select" class="form-input"
-                style="width: auto; min-width: 140px; padding: 5px 10px; font-size: 0.82rem; border-color: var(--primary-light); border-radius: 8px;"
-                onchange="suggestLocalRecipes()">
-                <option value="">すべてのタグ</option>
+            <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0 10px 0; width: 100%;">
+              <span style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted); white-space: nowrap;">📂 カテゴリ:</span>
+              <select id="suggest-tag-select" style="flex: 1; padding: 7px 12px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer;" onchange="suggestLocalRecipes()">
+                <option value="all">すべてのカテゴリ</option>
+                <option value="fav">⭐ お気に入り</option>
+                <option value="主菜">🍱 主菜</option>
+                <option value="副菜">🥗 副菜</option>
+                <option value="汁物">🍲 汁物</option>
+                <option value="主食">🍚 主食</option>
+                <option value="デザート">🍰 デザート</option>
+                <option value="その他">📦 その他</option>
               </select>
             </div>
           </div>
@@ -2038,7 +2110,13 @@
       </div>
     </div>
 
-    <!-- Dynamic PNG Canvas Generator for iOS Safari Apple Touch Icon -->
+  <!-- Floating Scroll To Top Button -->
+  <button id="btn-scroll-top" class="btn-scroll-top" aria-label="ページ最上部へ戻る" title="トップへ戻る">
+    <svg viewBox="0 0 24 24">
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
+  <!-- Dynamic PNG Canvas Generator for iOS Safari Apple Touch Icon -->
     <script>
       function generateCutePngIcon(size = 192) {
         const canvas = document.createElement('canvas');
@@ -2554,6 +2632,31 @@
         });
       }
 
+      // --- Floating Scroll to Top Logic ---
+      function handleScrollTopVisibility() {
+        const btnScrollTop = document.getElementById('btn-scroll-top');
+        if (!btnScrollTop) return;
+        const st = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        if (st > 30) {
+          btnScrollTop.classList.add('visible');
+        } else {
+          btnScrollTop.classList.remove('visible');
+        }
+      }
+
+      window.addEventListener('scroll', handleScrollTopVisibility, { passive: true });
+      document.addEventListener('scroll', handleScrollTopVisibility, { passive: true });
+
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('#btn-scroll-top');
+        if (btn) {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        }
+      });
+
       // Reset Form UI
       function resetForm() {
         editingRecipeId = null;
@@ -2810,10 +2913,16 @@
         }
       });
 
-      // --- Fetch Recipes & Render List ---
-      async function fetchRecipes() {
+      // --- Fetch Recipes & Render List with Real-time & Pull-to-Refresh ---
+      let unsubscribeRecipes = null;
+
+      async function fetchRecipes(isManualRefresh = false) {
         const container = document.getElementById('recipe-list-container');
-        container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔄</div><p>レシピを読み込み中...</p></div>`;
+        if (!isManualRefresh && recipesCache.length === 0) {
+          container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔄</div><p>レシピを読み込み中...</p></div>`;
+        }
+
+        if (!db) return;
 
         try {
           const q = query(collection(db, "recipes"), orderBy("createdAt", "desc"));
@@ -2829,11 +2938,120 @@
 
           updateFilterTagsUI();
           renderRecipeList();
+
+          // Setup real-time listener if not already listening
+          if (!unsubscribeRecipes) {
+            unsubscribeRecipes = onSnapshot(q, (snapshot) => {
+              recipesCache = [];
+              snapshot.forEach((docSnap) => {
+                recipesCache.push({
+                  id: docSnap.id,
+                  ...docSnap.data()
+                });
+              });
+              updateFilterTagsUI();
+              renderRecipeList();
+            }, (err) => {
+              console.warn("Recipes real-time sync warning:", err);
+            });
+          }
         } catch (e) {
           console.error(e);
-          container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>データの取得に失敗しました。設定情報を確認してください。</p></div>`;
+          if (!isManualRefresh) {
+            container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>データの取得に失敗しました。設定情報を確認してください。</p></div>`;
+          }
         }
       }
+
+      // --- Native Pull-to-Refresh Gesture Handling ---
+      let touchStartY = 0;
+      let pullDistance = 0;
+      const PULL_THRESHOLD = 60;
+      let isRefreshing = false;
+
+      const listPage = document.getElementById('page-list');
+
+      window.addEventListener('touchstart', (e) => {
+        if (window.scrollY <= 0 && !isRefreshing && currentAppMode === 'recipe' && listPage && listPage.classList.contains('active')) {
+          touchStartY = e.touches[0].clientY;
+          pullDistance = 0;
+        } else {
+          touchStartY = 0;
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (touchStartY <= 0 || isRefreshing) return;
+        const currentY = e.touches[0].clientY;
+        const diff = currentY - touchStartY;
+
+        if (diff > 0 && window.scrollY <= 0) {
+          pullDistance = Math.min(Math.pow(diff, 0.85), 90);
+
+          const indicator = document.getElementById('pull-to-refresh-indicator');
+          const icon = document.getElementById('pull-refresh-icon');
+          const text = document.getElementById('pull-refresh-text');
+
+          if (indicator) {
+            indicator.style.height = `${pullDistance}px`;
+            indicator.style.opacity = `${Math.min(pullDistance / PULL_THRESHOLD, 1)}`;
+
+            if (pullDistance >= PULL_THRESHOLD) {
+              icon.style.transform = 'rotate(180deg)';
+              text.innerText = '離して再同期...';
+            } else {
+              icon.style.transform = 'rotate(0deg)';
+              text.innerText = '下に引っ張って再同期...';
+            }
+          }
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchend', async () => {
+        if (touchStartY <= 0 || isRefreshing) return;
+
+        const indicator = document.getElementById('pull-to-refresh-indicator');
+        const icon = document.getElementById('pull-refresh-icon');
+        const text = document.getElementById('pull-refresh-text');
+
+        if (pullDistance >= PULL_THRESHOLD && db) {
+          isRefreshing = true;
+          if (indicator) {
+            indicator.style.height = '42px';
+            indicator.style.opacity = '1';
+            icon.style.transform = 'rotate(0deg)';
+            icon.style.animation = 'spin 0.8s linear infinite';
+            text.innerText = 'レシピを再同期中...';
+          }
+
+          await fetchRecipes(true);
+
+          if (indicator) {
+            icon.style.animation = 'none';
+            icon.innerText = '✨';
+            text.innerText = '最新のレシピに同期完了！';
+
+            setTimeout(() => {
+              indicator.style.height = '0px';
+              indicator.style.opacity = '0';
+              setTimeout(() => {
+                icon.innerText = '🍳';
+                isRefreshing = false;
+              }, 200);
+            }, 600);
+          } else {
+            isRefreshing = false;
+          }
+        } else {
+          if (indicator) {
+            indicator.style.height = '0px';
+            indicator.style.opacity = '0';
+          }
+        }
+
+        touchStartY = 0;
+        pullDistance = 0;
+      });
 
       // --- Fully Generic Japanese Text Normalization & Search Engine ---
 
@@ -3393,7 +3611,16 @@
           filterTagSelect.innerHTML = '<option value="">すべてのタグ</option>';
         }
         if (suggestTagSelect) {
-          suggestTagSelect.innerHTML = '<option value="">すべてのタグ</option>';
+          suggestTagSelect.innerHTML = `
+            <option value="all">すべてのカテゴリ</option>
+            <option value="fav">⭐ お気に入り</option>
+            <option value="主菜">🍱 主菜</option>
+            <option value="副菜">🥗 副菜</option>
+            <option value="汁物">🍲 汁物</option>
+            <option value="主食">🍚 主食</option>
+            <option value="デザート">🍰 デザート</option>
+            <option value="その他">📦 その他</option>
+          `;
         }
 
         const allTags = new Set();
@@ -3404,10 +3631,11 @@
           }
         });
 
+        const standardCats = new Set(['all', 'fav', '主菜', '副菜', '汁物', '主食', 'デザート', 'その他']);
         Array.from(allTags).sort().forEach(tag => {
           const safeTag = escapeHtml(tag);
           if (filterTagSelect) filterTagSelect.insertAdjacentHTML('beforeend', `<option value="${safeTag}">${safeTag}</option>`);
-          if (suggestTagSelect) suggestTagSelect.insertAdjacentHTML('beforeend', `<option value="${safeTag}">${safeTag}</option>`);
+          if (suggestTagSelect && !standardCats.has(tag)) suggestTagSelect.insertAdjacentHTML('beforeend', `<option value="${safeTag}">${safeTag}</option>`);
         });
 
         if (filterTagSelect) filterTagSelect.value = currentFilter;
@@ -3805,14 +4033,13 @@
         renderRecipeList();
       });
 
-      document.getElementById('category-pills').addEventListener('click', (e) => {
-        if (e.target.classList.contains('pill')) {
-          document.querySelectorAll('#category-pills .pill').forEach(p => p.classList.remove('active'));
-          e.target.classList.add('active');
-          activeCategory = e.target.dataset.cat;
+      const catSelect = document.getElementById('category-select');
+      if (catSelect) {
+        catSelect.addEventListener('change', (e) => {
+          activeCategory = e.target.value;
           renderRecipeList();
-        }
-      });
+        });
+      }
 
       // Sort Listener
       document.getElementById('sort-select').addEventListener('change', (e) => {
@@ -4379,7 +4606,9 @@
         const selectedTag = suggestTagSelect ? suggestTagSelect.value.trim() : '';
 
         const scored = recipesCache.filter(r => {
-          if (selectedTag) {
+          if (selectedTag === 'fav') {
+            if (!isFavorite(r.id)) return false;
+          } else if (selectedTag && selectedTag !== 'all' && selectedTag !== '') {
             const cat = (r.category || '').trim();
             const hasTag = Array.isArray(r.tags) && r.tags.some(t => String(t).trim() === selectedTag);
             if (cat !== selectedTag && !hasTag) return false;
