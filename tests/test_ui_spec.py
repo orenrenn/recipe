@@ -173,8 +173,7 @@ class TestFridgeItemModal:
         values = [o.get_attribute("value") for o in options.all()]
         expected = [
             "野菜・きのこ", "肉類", "魚介類", "卵・乳製品",
-            "豆腐・豆類", "米・麺・粉", "調味料・油",
-            "缶詰・乾物", "その他",
+            "穀物・麺類", "調味料", "加工品・その他", "その他",
         ]
         assert values == expected, f"カテゴリ選択肢が仕様と異なります: {values}"
 
