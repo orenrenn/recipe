@@ -2199,7 +2199,7 @@
     <!-- 🥦 食材の追加・編集 モーダル -->
     <div id="modal-fridge-item" class="modal-backdrop">
       <div class="modal-card"
-        style="max-width: 460px; max-height: 88vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border-radius: 24px; box-shadow: 0 16px 40px rgba(0,0,0,0.22);">
+        style="width: calc(100% - 24px); max-width: 460px; max-height: 88vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border-radius: 24px; box-shadow: 0 16px 40px rgba(0,0,0,0.22); margin: auto;">
         <!-- ヘッダー -->
         <div
           style="padding: 16px 20px; background: linear-gradient(135deg, #FFFDF9 0%, #FFF5F2 100%); border-bottom: 1.5px solid #F1F5F9; display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto;">
@@ -2212,7 +2212,7 @@
         </div>
 
         <!-- モーダル本体 -->
-        <div style="padding: 20px; background: white; overflow-y: auto; flex: 1; min-height: 0;">
+        <div style="padding: 16px; background: white; overflow-y: auto; flex: 1; min-height: 0;">
           <div style="margin-bottom: 14px;">
             <label style="font-weight: 800; font-size: 0.88rem; color: #334155; margin-bottom: 6px; display: block;">食材名
               <span style="color: var(--primary);">*</span></label>
@@ -2220,12 +2220,12 @@
               style="width: 100%; border-radius: 12px; font-weight: 700; padding: 12px 14px !important; box-sizing: border-box;">
           </div>
 
-          <div style="display: flex; gap: 10px; margin-bottom: 14px;">
+          <div style="display: flex; gap: 8px; margin-bottom: 14px;">
             <div style="flex: 1; min-width: 0;">
               <label
                 style="font-weight: 800; font-size: 0.88rem; color: #334155; margin-bottom: 6px; display: block;">保存場所</label>
               <select id="fridge-storage-input" class="form-input"
-                style="width: 100%; border-radius: 12px; font-weight: 700; font-size: 0.85rem !important; padding: 10px 20px 10px 8px !important; box-sizing: border-box;">
+                style="width: 100%; border-radius: 12px; font-weight: 700; font-size: 0.82rem !important; padding: 10px 14px 10px 6px !important; box-sizing: border-box; min-width: 0;">
                 <option value="❄️ 冷蔵">❄️ 冷蔵</option>
                 <option value="🧊 冷凍">🧊 冷凍</option>
                 <option value="📦 常温">📦 常温</option>
@@ -2235,7 +2235,7 @@
               <label
                 style="font-weight: 800; font-size: 0.88rem; color: #334155; margin-bottom: 6px; display: block;">カテゴリ</label>
               <select id="fridge-category-input" class="form-input"
-                style="width: 100%; border-radius: 12px; font-weight: 700; font-size: 0.85rem !important; padding: 10px 20px 10px 8px !important; box-sizing: border-box;">
+                style="width: 100%; border-radius: 12px; font-weight: 700; font-size: 0.82rem !important; padding: 10px 14px 10px 6px !important; box-sizing: border-box; min-width: 0;">
                 <option value="野菜・きのこ">🥬 野菜・きのこ</option>
                 <option value="肉類">🍖 肉類</option>
                 <option value="魚介類">🐟 魚介類</option>
@@ -2248,18 +2248,18 @@
             </div>
           </div>
 
-          <div style="display: flex; gap: 10px; margin-bottom: 22px;">
-            <div style="flex: 1;">
+          <div style="display: flex; gap: 8px; margin-bottom: 22px;">
+            <div style="flex: 1; min-width: 0;">
               <label
                 style="font-weight: 800; font-size: 0.88rem; color: #334155; margin-bottom: 6px; display: block;">分量・個数</label>
               <input type="text" id="fridge-amount-input" placeholder="例: 200g, 1パック..." class="form-input"
-                style="width: 100%; border-radius: 12px; font-weight: 700; padding: 10px 12px !important; box-sizing: border-box;">
+                style="width: 100%; border-radius: 12px; font-weight: 700; font-size: 0.82rem !important; padding: 10px 8px !important; box-sizing: border-box; min-width: 0;">
             </div>
-            <div style="flex: 1;">
+            <div style="flex: 1; min-width: 0;">
               <label
                 style="font-weight: 800; font-size: 0.88rem; color: #334155; margin-bottom: 6px; display: block;">賞味期限</label>
               <input type="date" id="fridge-expiry-input" class="form-input"
-                style="width: 100%; border-radius: 12px; font-weight: 700; padding: 9px 12px !important; box-sizing: border-box;">
+                style="width: 100%; border-radius: 12px; font-weight: 700; font-size: 0.80rem !important; padding: 9px 4px !important; box-sizing: border-box; min-width: 0; max-width: 100%;">
             </div>
           </div>
 
