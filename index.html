@@ -2260,29 +2260,13 @@
               style="width: 100%; border-radius: 12px; font-weight: 700; font-size: 0.95rem !important; padding: 12px 14px !important; box-sizing: border-box; line-height: 1.5;">
           </div>
           
-          <div style="margin-bottom: 22px;">
+          <div style="margin-bottom: 22px;" id="expiry-picker-container">
             <label style="font-weight: 800; font-size: 0.88rem; color: #334155; margin-bottom: 6px; display: block;">賞味期限</label>
-            <div id="fridge-expiry-wrapper"
-              style="position: relative; border: 1.5px solid var(--border); border-radius: 12px; background: #fff; transition: border-color 0.2s ease, box-shadow 0.2s ease;">
-              <div id="fridge-expiry-display"
-                style="padding: 12px 14px; font-size: 0.95rem; font-weight: 700; color: #94a3b8; line-height: 1.5; user-select: none; pointer-events: none;">未設定 (タップで選択)</div>
-              <input type="date" id="fridge-expiry-input"
-                onclick="if(this.showPicker) this.showPicker();"
-                onchange="
-                  var d = this.value;
-                  var el = document.getElementById('fridge-expiry-display');
-                  if (d) {
-                    var parts = d.split('-');
-                    el.textContent = parts[0] + '/' + parts[1] + '/' + parts[2];
-                    el.style.color = 'var(--text)';
-                  } else {
-                    el.textContent = '未設定 (タップで選択)';
-                    el.style.color = '#94a3b8';
-                  }
-                "
-                onfocus="document.getElementById('fridge-expiry-wrapper').style.borderColor='var(--primary)'; document.getElementById('fridge-expiry-wrapper').style.boxShadow='0 0 0 3px rgba(255,107,82,0.15)';"
-                onblur="document.getElementById('fridge-expiry-wrapper').style.borderColor='var(--border)'; document.getElementById('fridge-expiry-wrapper').style.boxShadow='none';"
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; border: none; background: transparent; font-size: 16px;">
+            <input type="hidden" id="fridge-expiry-input" value="">
+            <div id="expiry-trigger" onclick="toggleExpiryCalendar()"
+              style="padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 12px; background: #fff; font-size: 0.95rem; font-weight: 700; color: #94a3b8; line-height: 1.5; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: border-color 0.2s ease;">
+              <span id="expiry-display-text">未設定 (タップで選択)</span>
+              <span style="font-size: 1.1rem;">📅</span>
             </div>
           </div>
 
@@ -2290,6 +2274,33 @@
             style="width: 100%; padding: 14px; border-radius: 14px; font-size: 1rem; font-weight: 800; background: var(--primary); color: white; border: none; box-shadow: 0 4px 14px rgba(255, 107, 82, 0.35); cursor: pointer;">
             <span>➕</span> <span id="btn-save-fridge-text">食材を保存する</span>
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendar Modal -->
+    <div id="modal-expiry-calendar" class="modal-backdrop" style="z-index: 10001;">
+      <div class="modal-card" style="max-width: 340px; border-radius: 20px; overflow: hidden; animation: modalSlideUp 0.3s ease;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: linear-gradient(135deg, #FF6B52, #FF8A6B); color: white;">
+          <button type="button" onclick="changeExpiryMonth(-1)" style="background: rgba(255,255,255,0.25); border: none; color: white; width: 34px; height: 34px; border-radius: 50%; font-size: 1rem; cursor: pointer; font-weight: bold;">◀</button>
+          <span id="expiry-cal-title" style="font-weight: 800; font-size: 1.05rem;"></span>
+          <button type="button" onclick="changeExpiryMonth(1)" style="background: rgba(255,255,255,0.25); border: none; color: white; width: 34px; height: 34px; border-radius: 50%; font-size: 1rem; cursor: pointer; font-weight: bold;">▶</button>
+        </div>
+        <div style="padding: 10px 12px 6px;">
+          <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 4px;">
+            <span style="font-size: 0.78rem; font-weight: 800; color: #ef4444; padding: 4px 0;">日</span>
+            <span style="font-size: 0.78rem; font-weight: 800; color: #64748b; padding: 4px 0;">月</span>
+            <span style="font-size: 0.78rem; font-weight: 800; color: #64748b; padding: 4px 0;">火</span>
+            <span style="font-size: 0.78rem; font-weight: 800; color: #64748b; padding: 4px 0;">水</span>
+            <span style="font-size: 0.78rem; font-weight: 800; color: #64748b; padding: 4px 0;">木</span>
+            <span style="font-size: 0.78rem; font-weight: 800; color: #64748b; padding: 4px 0;">金</span>
+            <span style="font-size: 0.78rem; font-weight: 800; color: #3b82f6; padding: 4px 0;">土</span>
+          </div>
+          <div id="expiry-cal-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; gap: 2px;"></div>
+        </div>
+        <div style="padding: 8px 14px 14px; display: flex; gap: 8px;">
+          <button type="button" onclick="clearExpiryDate()" style="flex: 1; padding: 10px; border: 1.5px solid var(--border); border-radius: 12px; background: #f8fafc; color: #64748b; font-weight: 700; font-size: 0.9rem; cursor: pointer;">クリア</button>
+          <button type="button" onclick="selectExpiryToday()" style="flex: 1; padding: 10px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: 700; font-size: 0.9rem; cursor: pointer; box-shadow: 0 2px 8px rgba(255,107,82,0.3);">今日</button>
         </div>
       </div>
     </div>
@@ -4288,6 +4299,113 @@
       // --- Fridge Ingredient Stock Modal Logic & Rendering ---
       let editingFridgeItemId = null;
 
+      // カスタムカレンダー日付ピッカー
+      let expiryCalYear, expiryCalMonth, expirySelectedDate = null;
+
+      window.toggleExpiryCalendar = function() {
+        const modal = document.getElementById('modal-expiry-calendar');
+        const today = new Date();
+        if (expirySelectedDate) {
+          expiryCalYear = expirySelectedDate.getFullYear();
+          expiryCalMonth = expirySelectedDate.getMonth();
+        } else {
+          expiryCalYear = today.getFullYear();
+          expiryCalMonth = today.getMonth();
+        }
+        renderExpiryCalendar();
+        modal.classList.add('active');
+      };
+
+      function closeExpiryCalendar() {
+        document.getElementById('modal-expiry-calendar').classList.remove('active');
+      }
+
+      // 背景クリックで閉じる
+      document.getElementById('modal-expiry-calendar')?.addEventListener('click', function(e) {
+        if (e.target === this) closeExpiryCalendar();
+      });
+
+      function renderExpiryCalendar() {
+        const title = document.getElementById('expiry-cal-title');
+        const grid = document.getElementById('expiry-cal-grid');
+        title.textContent = expiryCalYear + '年 ' + (expiryCalMonth + 1) + '月';
+
+        const firstDay = new Date(expiryCalYear, expiryCalMonth, 1).getDay();
+        const daysInMonth = new Date(expiryCalYear, expiryCalMonth + 1, 0).getDate();
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        let html = '';
+        for (let i = 0; i < firstDay; i++) {
+          html += '<div style="padding: 6px;"></div>';
+        }
+        for (let d = 1; d <= daysInMonth; d++) {
+          const dateStr = expiryCalYear + '-' + String(expiryCalMonth + 1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+          const thisDate = new Date(expiryCalYear, expiryCalMonth, d);
+          const isToday = thisDate.getTime() === today.getTime();
+          const isSelected = expirySelectedDate && thisDate.getTime() === expirySelectedDate.getTime();
+          const dayOfWeek = (firstDay + d - 1) % 7;
+          const isSun = dayOfWeek === 0;
+          const isSat = dayOfWeek === 6;
+
+          let bg = 'transparent', fg = '#334155', border = 'transparent';
+          if (isSelected) { bg = 'var(--primary)'; fg = 'white'; }
+          else if (isToday) { border = 'var(--primary)'; fg = 'var(--primary)'; }
+          if (!isSelected && isSun) fg = '#ef4444';
+          if (!isSelected && isSat) fg = '#3b82f6';
+
+          html += '<div onclick="selectExpiryDate(\'' + dateStr + '\')" style="padding: 6px 0; cursor: pointer; border-radius: 50%; font-size: 0.85rem; font-weight: 700; color: ' + fg + '; background: ' + bg + '; border: 2px solid ' + border + '; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; transition: background 0.15s;">' + d + '</div>';
+        }
+        grid.innerHTML = html;
+      }
+
+      window.changeExpiryMonth = function(delta) {
+        expiryCalMonth += delta;
+        if (expiryCalMonth > 11) { expiryCalMonth = 0; expiryCalYear++; }
+        if (expiryCalMonth < 0) { expiryCalMonth = 11; expiryCalYear--; }
+        renderExpiryCalendar();
+      };
+
+      window.selectExpiryDate = function(dateStr) {
+        const parts = dateStr.split('-');
+        expirySelectedDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+        document.getElementById('fridge-expiry-input').value = dateStr;
+        document.getElementById('expiry-display-text').textContent = parts[0] + '/' + parts[1] + '/' + parts[2];
+        document.getElementById('expiry-display-text').style.color = 'var(--text)';
+        closeExpiryCalendar();
+      };
+
+      window.clearExpiryDate = function() {
+        expirySelectedDate = null;
+        document.getElementById('fridge-expiry-input').value = '';
+        document.getElementById('expiry-display-text').textContent = '未設定 (タップで選択)';
+        document.getElementById('expiry-display-text').style.color = '#94a3b8';
+        closeExpiryCalendar();
+      };
+
+      window.selectExpiryToday = function() {
+        const t = new Date();
+        const dateStr = t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0') + '-' + String(t.getDate()).padStart(2,'0');
+        selectExpiryDate(dateStr);
+      };
+
+      function setExpiryFromValue(dateStr) {
+        if (!dateStr) {
+          expirySelectedDate = null;
+          document.getElementById('fridge-expiry-input').value = '';
+          document.getElementById('expiry-display-text').textContent = '未設定 (タップで選択)';
+          document.getElementById('expiry-display-text').style.color = '#94a3b8';
+          return;
+        }
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+          expirySelectedDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+          document.getElementById('fridge-expiry-input').value = dateStr;
+          document.getElementById('expiry-display-text').textContent = parts[0] + '/' + parts[1] + '/' + parts[2];
+          document.getElementById('expiry-display-text').style.color = 'var(--text)';
+        }
+      }
+
       window.openFridgeItemModal = function (item = null) {
         if (window.closeAllModals) window.closeAllModals();
         const modal = document.getElementById('modal-fridge-item');
@@ -4301,7 +4419,8 @@
 
           document.getElementById('fridge-ingredient-input').value = item.name || '';
           document.getElementById('fridge-amount-input').value = item.amount || '';
-          document.getElementById('fridge-expiry-input').value = item.expiry || '';
+          closeExpiryCalendar();
+          setExpiryFromValue(item.expiry || '');
           document.getElementById('fridge-storage-input').value = item.storage || '❄️ 冷蔵';
           document.getElementById('fridge-category-input').value = item.category || '野菜・きのこ';
         } else {
@@ -4311,7 +4430,8 @@
 
           document.getElementById('fridge-ingredient-input').value = '';
           document.getElementById('fridge-amount-input').value = '';
-          document.getElementById('fridge-expiry-input').value = '';
+          closeExpiryCalendar();
+          setExpiryFromValue('');
           document.getElementById('fridge-storage-input').value = '❄️ 冷蔵';
           document.getElementById('fridge-category-input').value = '野菜・きのこ';
         }
