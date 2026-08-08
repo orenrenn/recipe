@@ -2262,12 +2262,27 @@
           
           <div style="margin-bottom: 22px;">
             <label style="font-weight: 800; font-size: 0.88rem; color: #334155; margin-bottom: 6px; display: block;">賞味期限</label>
-            <div style="position: relative;">
-              <input type="date" id="fridge-expiry-input" class="form-input"
+            <div id="fridge-expiry-wrapper"
+              style="position: relative; border: 1.5px solid var(--border); border-radius: 12px; background: #fff; transition: border-color 0.2s ease, box-shadow 0.2s ease;">
+              <div id="fridge-expiry-display"
+                style="padding: 12px 14px; font-size: 0.95rem; font-weight: 700; color: #94a3b8; line-height: 1.5; user-select: none; pointer-events: none;">未設定 (タップで選択)</div>
+              <input type="date" id="fridge-expiry-input"
                 onclick="if(this.showPicker) this.showPicker();"
-                onchange="this.style.color = this.value ? 'var(--text)' : 'transparent'; document.getElementById('fridge-expiry-placeholder').style.display = this.value ? 'none' : 'block';"
-                style="width: 100%; border-radius: 12px; font-weight: 700; font-size: 0.95rem !important; padding: 12px 14px !important; box-sizing: border-box; line-height: 1.5; color: transparent; position: relative; z-index: 2; background-color: transparent; cursor: pointer;">
-              <div id="fridge-expiry-placeholder" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.95rem; font-weight: 700; z-index: 1; pointer-events: none;">未設定 (タップで選択)</div>
+                onchange="
+                  var d = this.value;
+                  var el = document.getElementById('fridge-expiry-display');
+                  if (d) {
+                    var parts = d.split('-');
+                    el.textContent = parts[0] + '/' + parts[1] + '/' + parts[2];
+                    el.style.color = 'var(--text)';
+                  } else {
+                    el.textContent = '未設定 (タップで選択)';
+                    el.style.color = '#94a3b8';
+                  }
+                "
+                onfocus="document.getElementById('fridge-expiry-wrapper').style.borderColor='var(--primary)'; document.getElementById('fridge-expiry-wrapper').style.boxShadow='0 0 0 3px rgba(255,107,82,0.15)';"
+                onblur="document.getElementById('fridge-expiry-wrapper').style.borderColor='var(--border)'; document.getElementById('fridge-expiry-wrapper').style.boxShadow='none';"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; border: none; background: transparent; font-size: 16px;">
             </div>
           </div>
 
